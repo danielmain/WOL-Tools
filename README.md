@@ -59,6 +59,8 @@ nix run .#deploy
 
 | Command | Action |
 |---|---|
+| `npm start` | Launches Firefox with extension pre-loaded, live-reloading, and opened to `wol.jw.org` |
+| `npm run start:chrome` | Launches Chrome/Chromium with extension pre-loaded and live-reloading |
 | `npm run build` | Builds packages for Chrome/Chromium, Firefox (`dist/*.xpi`), and Safari macOS |
 | `npm run build:chrome` | Bundles clean Chromium zip into `dist/` |
 | `npm run build:firefox` | Generates both `.zip` and `.xpi` add-on archives in `dist/` |
@@ -173,9 +175,7 @@ Highlights replicate native JW Library colors:
 ├── AGENT.md                 # Technical guide and operational rules for AI agents
 ├── README.md                # Project documentation (this file)
 ├── flake.nix                # Nix Flake devShell & AMO deployment app
-├── package.json             # Build, lint, test, bump, and multi-store publish scripts
-├── build.sh                 # Standalone bash packager (creates wol-highlights.xpi)
-├── run-firefox.sh           # Firefox development automation runner
+├── package.json             # Build, lint, dev runner, bump, and multi-store publish scripts
 ├── usermark.md              # Deep dive into UserMark schema, tokens, and WOL DOM mapping
 ├── scripts/                 # Cross-browser build & automated store publishing tools
 │   ├── bump-version.js      # Version bumper across manifest, package.json, and Safari

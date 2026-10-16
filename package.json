@@ -6,6 +6,9 @@
   "author": "Daniel Main <addons@danielmain.mozmail.com>",
   "scripts": {
     "clean": "rm -rf dist",
+    "start": "npm run start:firefox",
+    "start:firefox": "npx web-ext run --source-dir wol-highlights --start-url https://wol.jw.org",
+    "start:chrome": "npx web-ext run --target=chromium --source-dir wol-highlights --start-url https://wol.jw.org",
     "generate:icons": "mkdir -p wol-highlights/icons && sips -z 16 16 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-16.png && sips -z 32 32 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-32.png && sips -z 128 128 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-128.png",
     "build:chrome": "mkdir -p dist && npx web-ext build --overwrite-dest --source-dir wol-highlights --artifacts-dir dist --ignore-files test test/**",
     "build:firefox": "npm run build:chrome && node -e \"const fs=require('fs');const path=require('path');const dir='dist';const zip=fs.readdirSync(dir).find((name)=>name.endsWith('.zip'));if(!zip){throw new Error('No zip artifact found in dist');}const from=path.join(dir,zip);const to=path.join(dir,zip.replace(/\\.zip$/,'.xpi'));fs.copyFileSync(from,to);console.log('Created', to);\"",

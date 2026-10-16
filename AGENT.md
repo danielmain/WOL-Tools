@@ -26,9 +26,7 @@ The **WOL Highlights** extension (`wol-highlights/`) runs entirely client-side i
 ├── AGENT.md                 <-- AI agent operational guidelines (this file)
 ├── README.md                <-- Project overview & user-facing documentation
 ├── flake.nix                <-- Nix devShell and automated AMO deploy app
-├── package.json             <-- Build, lint, bump, and multi-store publish automation
-├── build.sh                 <-- Standalone bash packager generating wol-highlights.xpi
-├── run-firefox.sh           <-- Automated dev launcher via Marionette injection
+├── package.json             <-- Build, lint, dev runner, bump, and multi-store publish scripts
 ├── usermark.md              <-- Architectural spec of UserMark, schema, and WOL DOM mapping
 ├── scripts/                 <-- Store deployment & publishing automation
 │   ├── bump-version.js      <-- Version bumper across manifest, package.json, and Safari
@@ -209,20 +207,20 @@ The test runner is located at `wol-highlights/test/run.html`. It tests:
 4. Bible chapters (Exodus 5:9, Exodus 6:3, Exodus 6:6) ensuring verse numbers are excluded and boundary punctuation matches expected offsets.
 
 ### Packaging & Development Execution
-- **Rebuild Extension Package**:
+- **Rebuild Extension Packages**:
   ```bash
-  ./build.sh
+  npm run build           # Chrome, Firefox (dist/*.xpi), and Safari macOS
+  npm run build:firefox   # Builds dist/wol_highlights-*.xpi and dist/wol_highlights-*.zip
   ```
-  Zips `wol-highlights/` into `wol-highlights.xpi` excluding tests.
-- **Run Firefox with Extension Pre-Loaded**:
+- **Run Live Development Sessions**:
   ```bash
-  ./run-firefox.sh
+  npm start               # Firefox with hot-reloading opened to wol.jw.org
+  npm run start:chrome    # Chromium with hot-reloading
   ```
-  Launches a clean temporary Firefox profile, injects the extension via Marionette WebDriver, and navigates to `https://wol.jw.org`.
 
 ### Developer Checklist for Code Changes
 - [ ] If changing tokenization: verify punctuation boundaries and non-breaking space handling against test fixtures.
 - [ ] If changing DOM wrapping: ensure `clearMarks()` properly restores the DOM and `parent.normalize()` is called.
 - [ ] Ensure no `import`/`export` syntax is introduced into content scripts (`lib/tokenize.js`, `lib/languages.js`, `lib/highlight.js`, `content.js`).
 - [ ] Ensure all operations remain 100% offline and no external network calls are introduced.
-- [ ] Run `./build.sh` to update `wol-highlights.xpi` before deployment or release.
+- [ ] Run `npm run lint` and `npm run build` before deployment or release.
