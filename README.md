@@ -1,95 +1,115 @@
 # WOL Highlights & JW Library UserMark Tools
 
-A privacy-first browser extension and reverse-engineering toolkit that renders your personal **JW Library** study highlights directly on **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**.
+A privacy-first, cross-browser WebExtension and reverse-engineering toolkit that renders your personal **JW Library** study highlights directly on **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**.
+
+Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, and **Apple Safari (macOS & iOS)**.
 
 ---
 
 > [!TIP]
-> **Quick Installation in Firefox:**  
-> Navigate to `about:debugging#/runtime/this-firefox` &rarr; click **Load Temporary Add-on...** &rarr; select **`wol-highlights/manifest.json`** (or build a `.xpi` package using `./build.sh`).
+> **Quick Start for Local Development:**
+> - **Firefox**: `about:debugging` &rarr; **This Firefox** &rarr; **Load Temporary Add-on...** &rarr; select `wol-highlights/manifest.json`.
+> - **Chrome / Edge / Brave**: `chrome://extensions` &rarr; toggle **Developer mode** &rarr; click **Load unpacked** &rarr; select the `wol-highlights/` directory.
+> - **Safari**: Build and run the native wrapper via `npm run build:safari` or open `safari/WOL Highlights/WOL Highlights.xcodeproj`.
 
 ---
 
-## Overview
+## Browser Support Matrix
 
-JW Library backup files (`.jwlibrary`) do not store publication text. Instead, they record lightweight relational entries consisting of color identifiers and token-based word offsets pointing at publications, paragraphs, or Bible verses.
-
-This repository provides:
-
-1. **`wol-highlights/`**: A Manifest V3 Firefox extension that parses your exported JW Library backup (`.jwlibrary` or `userData.db`) entirely client-side using WebAssembly SQLite (`sql.js`), indexes your marks in local storage, and accurately paints text on `wol.jw.org` in native JW Library colors.
-2. **`usermark.md`**: Comprehensive architectural reverse-engineering documentation detailing the JW Library SQLite database schema (`UserMark`, `Location`, `BlockRange`), Unicode tokenization semantics, and DOM alignment heuristics.
-3. **Developer Tooling**: Scripts to package (`./build.sh`) and run automated browser sessions with the extension loaded (`./run-firefox.sh`).
-
----
-
-## Installation & Development
-
-### 1. Temporary Installation (Standard Firefox)
-
-Works immediately in standard Firefox Release, Developer Edition, or Nightly:
-
-1. Open Firefox and go to `about:debugging` (or `about:debugging#/runtime/this-firefox`).
-2. Click **This Firefox** in the sidebar.
-3. Click **Load Temporary Add-on...**.
-4. Select `wol-highlights/manifest.json` (or `wol-highlights.xpi` if packaged).
-5. The **WOL Highlights** icon will appear in your browser toolbar.
-
-> [!NOTE]
-> Firefox unloads temporary extensions when the browser is quit. To reload after restarting Firefox, repeat step 3.
+| Browser / Platform | Support Level | Distribution / Loading |
+|---|---|---|
+| **Mozilla Firefox** (Desktop & Android) | Native MV3 | AMO Store, self-hosted signed `.xpi`, or temporary add-on |
+| **Google Chrome / Chromium / Brave** | Native MV3 | Chrome Web Store or unpacked developer folder |
+| **Microsoft Edge** | Native MV3 | Edge Add-ons store or unpacked developer folder |
+| **Apple Safari** (macOS 12+ & iOS 15+) | Native Safari Web Extension | Packaged native App & Extension in `safari/` |
 
 ---
 
-### 2. Packaging the Extension (`build.sh`)
+## Key Features & Architecture
 
-To bundle the extension into a standard Firefox add-on archive (`.xpi`):
+JW Library backup files (`.jwlibrary`) do not store publication text. Instead, they store lightweight relational entries consisting of color identifiers and token-based word offsets pointing at publications, paragraphs, or Bible verses.
+
+1. **100% Client-Side SQLite Parsing**: Uses WebAssembly SQLite (`sql.js`) to parse `.jwlibrary` (Zip) or `userData.db` directly in your browser.
+2. **Deterministic Unicode Tokenization**: Precise tokenization engine matching JW Library's word/punctuation boundaries and skipping non-counting annotations (paragraph numbers, footnote letters, cross-references).
+3. **Reactive Content Script**: Dynamically detects client-side page transitions on `wol.jw.org` using `MutationObserver` and paints matching text using native JW Library colors.
+4. **Zero Network Telemetry**: 100% offline; your personal study backups are never uploaded anywhere.
+
+---
+
+## Development & Automation Workflow
+
+This repository includes modern cross-browser build, lint, versioning, and store-deployment tooling modeled after production extension workflows.
+
+### 1. Nix Flake Environment
+
+If you use [Nix](https://nixos.org/), enter the reproducible dev shell with all required toolchains (`nodejs`, `web-ext`, `jq`, `zip`, `resvg`, `rbw`, `bitwarden-cli`):
 
 ```bash
-./build.sh
+nix develop
 ```
 
-This creates a clean, production-ready `wol-highlights.xpi` in the repository root (automatically excluded from version control).
-
----
-
-### 3. Automated Dev Runner (`run-firefox.sh`)
-
-If developing on macOS/Linux with Firefox installed, you can launch an isolated development session:
-
+Deploy directly to Mozilla Add-ons (AMO) using the Flake app:
 ```bash
-./run-firefox.sh
+nix run .#deploy
 ```
-
-This automatically packages the extension, creates a clean temporary profile, injects the extension via Marionette WebDriver, and opens `https://wol.jw.org`.
 
 ---
 
-### 4. Permanent Installation (Survives Restarts)
+### 2. NPM Scripts
 
-To keep the add-on permanently installed without reloading on every browser start:
+| Command | Action |
+|---|---|
+| `npm run build` | Builds packages for Chrome/Chromium, Firefox (`dist/*.xpi`), and Safari macOS |
+| `npm run build:chrome` | Bundles clean Chromium zip into `dist/` |
+| `npm run build:firefox` | Generates both `.zip` and `.xpi` add-on archives in `dist/` |
+| `npm run build:safari` | Builds macOS Safari App & Extension using `xcodebuild` |
+| `npm run lint` | Runs `web-ext lint` with zero errors/warnings |
+| `npm run generate:icons` | Generates all standard multi-resolution icons (16, 32, 48, 128 px) |
+| `npm run bump` | Bumps patch version in `manifest.json`, `package.json`, and Safari Xcode project |
+| `npm run bump:minor` | Bumps minor version across all project manifests |
+| `npm run bump:major` | Bumps major version across all project manifests |
+| `npm run pull:env` | Automatically pulls store API secrets from Bitwarden CLI (`bw`) into `.env` |
+| `npm run auth:chrome` | Interactive OAuth2 helper to generate Chrome Web Store refresh token |
+| `npm run publish:firefox` | Automated build and submission to Mozilla Add-ons (AMO) |
+| `npm run publish:chrome` | Automated upload and publish to Google Chrome Web Store |
+| `npm run publish:edge` | Automated upload and publish to Microsoft Edge Add-ons |
+| `npm run publish` | One-command publication pipeline across Firefox, Chrome, and Edge |
 
-- **Self-Distribution Signing on AMO (Recommended)**:
-  1. Visit the [Mozilla Add-on Developer Hub](https://addons.mozilla.org/developers/addon/submit/distribution).
-  2. Select **"On your own"** (self-distribution / unlisted).
-  3. Upload `wol-highlights.xpi` generated by `./build.sh`.
-  4. Download your signed `.xpi` once automated verification finishes (~2 minutes).
-  5. Drag-and-drop the signed `.xpi` into Firefox or load it via `about:addons` &rarr; ⚙️ &rarr; **Install Add-on From File...**.
+---
 
-- **Firefox Developer Edition / Nightly / ESR**:
-  1. Open `about:config` and set `xpinstall.signatures.required` to `false`.
-  2. In `about:addons`, choose **Install Add-on From File...** and select `wol-highlights.xpi`.
+## Installation Guide
+
+### Option A: Mozilla Firefox
+
+1. Go to `about:debugging#/runtime/this-firefox`.
+2. Click **Load Temporary Add-on...**.
+3. Select `wol-highlights/manifest.json` (or `dist/wol_highlights-*.xpi` built via `npm run build:firefox`).
+
+### Option B: Google Chrome / Edge / Brave
+
+1. Open `chrome://extensions` (or `edge://extensions`).
+2. Turn on the **Developer mode** toggle in the top-right corner.
+3. Click **Load unpacked** and select the **`wol-highlights`** folder.
+
+### Option C: Apple Safari (macOS)
+
+1. Run `npm run build:safari` (or open `safari/WOL Highlights/WOL Highlights.xcodeproj` in Xcode).
+2. In Safari, open **Settings &rarr; Advanced** and check **Show features for web developers**.
+3. In Safari's **Developer** menu, enable **Allow Unsigned Extensions**.
+4. Open **Settings &rarr; Extensions** and enable **WOL Highlights**.
 
 ---
 
 ## Usage Guide
 
-1. Export a backup from the JW Library app on your phone, tablet, or computer (*Settings &rarr; Backup and Restore*).
-2. Click the **WOL Highlights** button in your browser toolbar.
-3. Click **Load backup** and choose your `.jwlibrary` export file (or an extracted `userData.db`).
-   - *Tip:* If your browser popup closes when opening the OS file chooser, click **Open in permanent tab** in the popup header to manage backups in a full browser tab.
-4. The popup displays the loaded file name, total highlight count, affected articles, Bible chapters, and color breakdown.
+1. Export a backup from your JW Library app (*Settings &rarr; Backup and Restore*).
+2. Click the **WOL Highlights** icon in your browser toolbar.
+3. Click **Load backup** and choose your `.jwlibrary` file (or `userData.db`).
+   - *Tip:* Click **Open in permanent tab** in the popup header if you prefer managing backups in a full tab.
+4. The popup confirms the loaded file name, total highlight count, affected articles, Bible chapters, and color breakdown.
 5. Open any matching study article or Bible chapter on [wol.jw.org](https://wol.jw.org).
-6. Your highlights appear automatically matching your JW Library colors.
-7. Use the **Show highlights** toggle to quickly show or hide highlights at any time.
+6. Highlights appear automatically matching your JW Library colors.
+7. Use the **Show highlights** toggle in the popup to show or hide highlights at any time.
 
 ---
 
@@ -117,8 +137,8 @@ UserMark (ColorIndex, UserMarkGuid)
 JW Library addresses text using **0-indexed token offsets** (inclusive range `[StartToken, EndToken]`):
 - **Word tokens**: Consecutive sequences of Unicode letters, digits, and connector punctuation (`[\p{L}\p{N}\p{Pc}]`).
 - **Punctuation tokens**: Any non-whitespace character that is not a word token (e.g. periods, quotation marks, brackets, hyphens).
-- **Ignored characters**: Whitespace (including non-breaking spaces `\u00A0`, narrow spaces `\u202F`, etc.) is skipped and does not advance the token counter.
-- Special tokens (e.g. soft hyphens `\u00AD`) are counted as individual tokens.
+- **Whitespace**: Skipped and does not advance the token counter.
+- **Special tokens**: Soft hyphens (`\u00AD`) are counted as individual tokens.
 
 ### DOM Range Alignment (`lib/highlight.js`)
 
@@ -127,9 +147,8 @@ When visiting an article or chapter:
    - Paragraph numbers (`.parNum`), page numbers (`.pageNum`), footnote letters (`.fn`).
    - Chapter/verse number anchors (`a.vl`, `a.cl`), ruby text (`rt`, `rp`).
    - Study Bible cross-reference markers containing only `+` (`a.b`).
-2. The collected text is tokenized and aligned with the `StartToken` and `EndToken` boundaries.
-3. DOM text nodes are sliced via `Text.splitText()` in descending document order and wrapped in `<mark class="wol-hl wol-c{1-6}">`.
-4. If a highlight crosses an embedded hyperlink (`<a>`), multiple discrete `<mark>` tags wrap each fragment cleanly without distorting DOM structure.
+2. Slices are mapped and text nodes are split via `Text.splitText()` in descending document order and wrapped in `<mark class="wol-hl wol-c{1-6}">`.
+3. Highlights crossing embedded hyperlinks (`<a>`) wrap each text fragment cleanly without breaking DOM structure.
 
 ### Color Mapping
 
@@ -150,21 +169,32 @@ Highlights replicate native JW Library colors:
 
 ```text
 .
-├── .gitignore               # Ignored build outputs, local test databases, and OS files
+├── .gitignore               # Ignored build outputs, local test databases, and secrets
 ├── AGENT.md                 # Technical guide and operational rules for AI agents
 ├── README.md                # Project documentation (this file)
-├── build.sh                 # Extension packaging script
+├── flake.nix                # Nix Flake devShell & AMO deployment app
+├── package.json             # Build, lint, test, bump, and multi-store publish scripts
+├── build.sh                 # Standalone bash packager (creates wol-highlights.xpi)
 ├── run-firefox.sh           # Firefox development automation runner
 ├── usermark.md              # Deep dive into UserMark schema, tokens, and WOL DOM mapping
-└── wol-highlights/          # Firefox WebExtension source (Manifest V3)
+├── scripts/                 # Cross-browser build & automated store publishing tools
+│   ├── bump-version.js      # Version bumper across manifest, package.json, and Safari
+│   ├── publish-firefox.js   # Mozilla Add-ons (AMO) sign & publish automation
+│   ├── publish-chrome.js    # Chrome Web Store upload & publish automation
+│   ├── publish-edge.js      # Microsoft Edge Add-ons upload & publish automation
+│   ├── publish-all.js       # Unified multi-store publishing script
+│   ├── pull-bw-env.js       # Bitwarden CLI secret synchronizer
+│   └── auth-chrome.js       # Interactive OAuth2 generator for Chrome Web Store
+├── safari/                  # Native Safari Web Extension Xcode project (macOS & iOS)
+│   └── WOL Highlights/      # Xcode project referencing wol-highlights/ assets
+└── wol-highlights/          # Cross-browser WebExtension source (Manifest V3)
     ├── manifest.json        # Extension manifest
     ├── popup.html           # Toolbar popup interface
     ├── popup.css            # Toolbar popup styling
     ├── popup.js             # Backup loader, storage manager, and popup controller
     ├── content.css          # Injected highlight styles
     ├── content.js           # Content script coordinating page detection and highlight lifecycle
-    ├── icons/
-    │   └── icon-48.png      # Extension icon
+    ├── icons/               # Multi-resolution icons (16, 32, 48, 128 px)
     ├── lib/
     │   ├── backup.js        # Stream-based zip unpacker (DecompressionStream) & SQLite indexer
     │   ├── highlight.js     # DOM TreeWalker and text node split/wrap engine
@@ -183,14 +213,6 @@ Highlights replicate native JW Library colors:
 - **100% Client-Side**: All parsing and highlight lookups occur strictly in your browser using local storage (`ext.storage.local`).
 - **Zero Telemetry**: No network requests are made. Your personal backup files and study marks are never transmitted to external servers.
 - **Minimal Permissions**: Requests only `storage`, `tabs`, and access to `https://wol.jw.org/*`.
-
----
-
-## Limitations & Scope
-
-- **Text Consistency**: The publication text on [wol.jw.org](https://wol.jw.org) must match the edition the highlight was originally made on. If the web edition and app edition diverge within a paragraph, the highlight is safely skipped rather than placed on incorrect words.
-- **Supported Items**: Currently renders highlights and multi-range marks. Notes, bookmarks, and audio/video playlists are not rendered.
-- **Database Engine**: Uses [sql.js](https://github.com/sql-js/sql.js) 1.13.0 (MIT License) compiled to WebAssembly.
 
 ---
 

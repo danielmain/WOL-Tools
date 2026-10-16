@@ -1,0 +1,967 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		658478273082398A00113003 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658478263082398A00113003 /* AppDelegate.swift */; };
+		658478293082398A00113003 /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658478283082398A00113003 /* SceneDelegate.swift */; };
+		6584782C3082398A00113003 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6584782A3082398A00113003 /* LaunchScreen.storyboard */; };
+		6584782F3082398A00113003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 6584782D3082398A00113003 /* Main.storyboard */; };
+		658478383082398A00113003 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658478373082398A00113003 /* AppDelegate.swift */; };
+		6584783B3082398A00113003 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 658478393082398A00113003 /* Main.storyboard */; };
+		658478423082398A00113003 /* WOL Highlights Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 658478413082398A00113003 /* WOL Highlights Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		6584784C3082398A00113003 /* WOL Highlights Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 6584784B3082398A00113003 /* WOL Highlights Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		658478513082398A00113003 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 658478163082398900113003 /* Main.html */; };
+		658478523082398A00113003 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = 658478163082398900113003 /* Main.html */; };
+		658478533082398A00113003 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 658478183082398900113003 /* Icon.png */; };
+		658478543082398A00113003 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = 658478183082398900113003 /* Icon.png */; };
+		658478553082398A00113003 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478193082398900113003 /* Style.css */; };
+		658478563082398A00113003 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478193082398900113003 /* Style.css */; };
+		658478573082398A00113003 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 6584781A3082398900113003 /* Script.js */; };
+		658478583082398A00113003 /* Script.js in Resources */ = {isa = PBXBuildFile; fileRef = 6584781A3082398900113003 /* Script.js */; };
+		658478593082398A00113003 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6584781B3082398900113003 /* ViewController.swift */; };
+		6584785A3082398A00113003 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6584781B3082398900113003 /* ViewController.swift */; };
+		6584785B3082398A00113003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6584781C3082398A00113003 /* Assets.xcassets */; };
+		6584785C3082398A00113003 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 6584781C3082398A00113003 /* Assets.xcassets */; };
+		6584785D3082398A00113003 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6584781E3082398A00113003 /* SafariWebExtensionHandler.swift */; };
+		6584785E3082398A00113003 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6584781E3082398A00113003 /* SafariWebExtensionHandler.swift */; };
+		658478793082398A00113003 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 658478703082398A00113003 /* popup.js */; };
+		6584787A3082398A00113003 /* content.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478713082398A00113003 /* content.css */; };
+		6584787B3082398A00113003 /* test in Resources */ = {isa = PBXBuildFile; fileRef = 658478723082398A00113003 /* test */; };
+		6584787C3082398A00113003 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 658478733082398A00113003 /* popup.html */; };
+		6584787D3082398A00113003 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 658478743082398A00113003 /* icons */; };
+		6584787E3082398A00113003 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 658478753082398A00113003 /* manifest.json */; };
+		6584787F3082398A00113003 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 658478763082398A00113003 /* lib */; };
+		658478803082398A00113003 /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478773082398A00113003 /* popup.css */; };
+		658478813082398A00113003 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 658478783082398A00113003 /* content.js */; };
+		658478823082398A00113003 /* popup.js in Resources */ = {isa = PBXBuildFile; fileRef = 658478703082398A00113003 /* popup.js */; };
+		658478833082398A00113003 /* content.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478713082398A00113003 /* content.css */; };
+		658478843082398A00113003 /* test in Resources */ = {isa = PBXBuildFile; fileRef = 658478723082398A00113003 /* test */; };
+		658478853082398A00113003 /* popup.html in Resources */ = {isa = PBXBuildFile; fileRef = 658478733082398A00113003 /* popup.html */; };
+		658478863082398A00113003 /* icons in Resources */ = {isa = PBXBuildFile; fileRef = 658478743082398A00113003 /* icons */; };
+		658478873082398A00113003 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 658478753082398A00113003 /* manifest.json */; };
+		658478883082398A00113003 /* lib in Resources */ = {isa = PBXBuildFile; fileRef = 658478763082398A00113003 /* lib */; };
+		658478893082398A00113003 /* popup.css in Resources */ = {isa = PBXBuildFile; fileRef = 658478773082398A00113003 /* popup.css */; };
+		6584788A3082398A00113003 /* content.js in Resources */ = {isa = PBXBuildFile; fileRef = 658478783082398A00113003 /* content.js */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		658478433082398A00113003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 658478103082398900113003 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 658478403082398A00113003;
+			remoteInfo = "WOL Highlights Extension (iOS)";
+		};
+		6584784D3082398A00113003 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 658478103082398900113003 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 6584784A3082398A00113003;
+			remoteInfo = "WOL Highlights Extension (macOS)";
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		658478643082398A00113003 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				658478423082398A00113003 /* WOL Highlights Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+		6584786B3082398A00113003 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			dstPath = "";
+			dstSubfolder = PlugIns;
+			files = (
+				6584784C3082398A00113003 /* WOL Highlights Extension.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		658478173082398900113003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = Base.lproj/Main.html; sourceTree = "<group>"; };
+		658478183082398900113003 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
+		658478193082398900113003 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
+		6584781A3082398900113003 /* Script.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = Script.js; sourceTree = "<group>"; };
+		6584781B3082398900113003 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		6584781C3082398A00113003 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		6584781E3082398A00113003 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
+		658478233082398A00113003 /* WOL Highlights.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WOL Highlights.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		658478263082398A00113003 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		658478283082398A00113003 /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
+		6584782B3082398A00113003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		6584782E3082398A00113003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		658478303082398A00113003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		658478353082398A00113003 /* WOL Highlights.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "WOL Highlights.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		658478373082398A00113003 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+		6584783A3082398A00113003 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		6584783C3082398A00113003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		658478413082398A00113003 /* WOL Highlights Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "WOL Highlights Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		658478463082398A00113003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		6584784B3082398A00113003 /* WOL Highlights Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "WOL Highlights Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		658478503082398A00113003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		658478703082398A00113003 /* popup.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = popup.js; path = "../../../wol-highlights/popup.js"; sourceTree = "<group>"; };
+		658478713082398A00113003 /* content.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = content.css; path = "../../../wol-highlights/content.css"; sourceTree = "<group>"; };
+		658478723082398A00113003 /* test */ = {isa = PBXFileReference; lastKnownFileType = folder; name = test; path = "../../../wol-highlights/test"; sourceTree = "<group>"; };
+		658478733082398A00113003 /* popup.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = popup.html; path = "../../../wol-highlights/popup.html"; sourceTree = "<group>"; };
+		658478743082398A00113003 /* icons */ = {isa = PBXFileReference; lastKnownFileType = folder; name = icons; path = "../../../wol-highlights/icons"; sourceTree = "<group>"; };
+		658478753082398A00113003 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = "../../../wol-highlights/manifest.json"; sourceTree = "<group>"; };
+		658478763082398A00113003 /* lib */ = {isa = PBXFileReference; lastKnownFileType = folder; name = lib; path = "../../../wol-highlights/lib"; sourceTree = "<group>"; };
+		658478773082398A00113003 /* popup.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = popup.css; path = "../../../wol-highlights/popup.css"; sourceTree = "<group>"; };
+		658478783082398A00113003 /* content.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.js; path = "../../../wol-highlights/content.js"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		658478203082398A00113003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		658478323082398A00113003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		6584783E3082398A00113003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		658478483082398A00113003 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		6584780F3082398900113003 = {
+			isa = PBXGroup;
+			children = (
+				658478143082398900113003 /* Shared (App) */,
+				6584781D3082398A00113003 /* Shared (Extension) */,
+				658478253082398A00113003 /* iOS (App) */,
+				658478363082398A00113003 /* macOS (App) */,
+				658478453082398A00113003 /* iOS (Extension) */,
+				6584784F3082398A00113003 /* macOS (Extension) */,
+				658478243082398A00113003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		658478143082398900113003 /* Shared (App) */ = {
+			isa = PBXGroup;
+			children = (
+				6584781B3082398900113003 /* ViewController.swift */,
+				6584781C3082398A00113003 /* Assets.xcassets */,
+				658478153082398900113003 /* Resources */,
+			);
+			path = "Shared (App)";
+			sourceTree = "<group>";
+		};
+		658478153082398900113003 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				658478163082398900113003 /* Main.html */,
+				658478183082398900113003 /* Icon.png */,
+				658478193082398900113003 /* Style.css */,
+				6584781A3082398900113003 /* Script.js */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+		6584781D3082398A00113003 /* Shared (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				6584786F3082398A00113003 /* Resources */,
+				6584781E3082398A00113003 /* SafariWebExtensionHandler.swift */,
+			);
+			path = "Shared (Extension)";
+			sourceTree = "<group>";
+		};
+		658478243082398A00113003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				658478233082398A00113003 /* WOL Highlights.app */,
+				658478353082398A00113003 /* WOL Highlights.app */,
+				658478413082398A00113003 /* WOL Highlights Extension.appex */,
+				6584784B3082398A00113003 /* WOL Highlights Extension.appex */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		658478253082398A00113003 /* iOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				658478263082398A00113003 /* AppDelegate.swift */,
+				658478283082398A00113003 /* SceneDelegate.swift */,
+				6584782A3082398A00113003 /* LaunchScreen.storyboard */,
+				6584782D3082398A00113003 /* Main.storyboard */,
+				658478303082398A00113003 /* Info.plist */,
+			);
+			path = "iOS (App)";
+			sourceTree = "<group>";
+		};
+		658478363082398A00113003 /* macOS (App) */ = {
+			isa = PBXGroup;
+			children = (
+				658478373082398A00113003 /* AppDelegate.swift */,
+				658478393082398A00113003 /* Main.storyboard */,
+				6584783C3082398A00113003 /* Info.plist */,
+			);
+			path = "macOS (App)";
+			sourceTree = "<group>";
+		};
+		658478453082398A00113003 /* iOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				658478463082398A00113003 /* Info.plist */,
+			);
+			path = "iOS (Extension)";
+			sourceTree = "<group>";
+		};
+		6584784F3082398A00113003 /* macOS (Extension) */ = {
+			isa = PBXGroup;
+			children = (
+				658478503082398A00113003 /* Info.plist */,
+			);
+			path = "macOS (Extension)";
+			sourceTree = "<group>";
+		};
+		6584786F3082398A00113003 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				658478703082398A00113003 /* popup.js */,
+				658478713082398A00113003 /* content.css */,
+				658478723082398A00113003 /* test */,
+				658478733082398A00113003 /* popup.html */,
+				658478743082398A00113003 /* icons */,
+				658478753082398A00113003 /* manifest.json */,
+				658478763082398A00113003 /* lib */,
+				658478773082398A00113003 /* popup.css */,
+				658478783082398A00113003 /* content.js */,
+			);
+			name = Resources;
+			path = "Shared (Extension)";
+			sourceTree = SOURCE_ROOT;
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		658478223082398A00113003 /* WOL Highlights (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 658478653082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights (iOS)" */;
+			buildPhases = (
+				6584781F3082398A00113003 /* Sources */,
+				658478203082398A00113003 /* Frameworks */,
+				658478213082398A00113003 /* Resources */,
+				658478643082398A00113003 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				658478443082398A00113003 /* PBXTargetDependency */,
+			);
+			name = "WOL Highlights (iOS)";
+			productName = "WOL Highlights (iOS)";
+			productReference = 658478233082398A00113003 /* WOL Highlights.app */;
+			productType = "com.apple.product-type.application";
+		};
+		658478343082398A00113003 /* WOL Highlights (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 6584786C3082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights (macOS)" */;
+			buildPhases = (
+				658478313082398A00113003 /* Sources */,
+				658478323082398A00113003 /* Frameworks */,
+				658478333082398A00113003 /* Resources */,
+				6584786B3082398A00113003 /* Embed Foundation Extensions */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				6584784E3082398A00113003 /* PBXTargetDependency */,
+			);
+			name = "WOL Highlights (macOS)";
+			productName = "WOL Highlights (macOS)";
+			productReference = 658478353082398A00113003 /* WOL Highlights.app */;
+			productType = "com.apple.product-type.application";
+		};
+		658478403082398A00113003 /* WOL Highlights Extension (iOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 658478613082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights Extension (iOS)" */;
+			buildPhases = (
+				6584783D3082398A00113003 /* Sources */,
+				6584783E3082398A00113003 /* Frameworks */,
+				6584783F3082398A00113003 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "WOL Highlights Extension (iOS)";
+			productName = "WOL Highlights Extension (iOS)";
+			productReference = 658478413082398A00113003 /* WOL Highlights Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		6584784A3082398A00113003 /* WOL Highlights Extension (macOS) */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 658478683082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights Extension (macOS)" */;
+			buildPhases = (
+				658478473082398A00113003 /* Sources */,
+				658478483082398A00113003 /* Frameworks */,
+				658478493082398A00113003 /* Resources */,
+			);
+			buildRules = (
+			);
+			name = "WOL Highlights Extension (macOS)";
+			productName = "WOL Highlights Extension (macOS)";
+			productReference = 6584784B3082398A00113003 /* WOL Highlights Extension.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		658478103082398900113003 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					658478223082398A00113003 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					658478343082398A00113003 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					658478403082398A00113003 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					6584784A3082398A00113003 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+				};
+			};
+			buildConfigurationList = 658478133082398900113003 /* Build configuration list for PBXProject "WOL Highlights" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 6584780F3082398900113003;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 658478243082398A00113003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				658478223082398A00113003 /* WOL Highlights (iOS) */,
+				658478343082398A00113003 /* WOL Highlights (macOS) */,
+				658478403082398A00113003 /* WOL Highlights Extension (iOS) */,
+				6584784A3082398A00113003 /* WOL Highlights Extension (macOS) */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		658478213082398A00113003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				658478533082398A00113003 /* Icon.png in Resources */,
+				6584782C3082398A00113003 /* LaunchScreen.storyboard in Resources */,
+				658478513082398A00113003 /* Main.html in Resources */,
+				658478573082398A00113003 /* Script.js in Resources */,
+				6584785B3082398A00113003 /* Assets.xcassets in Resources */,
+				6584782F3082398A00113003 /* Main.storyboard in Resources */,
+				658478553082398A00113003 /* Style.css in Resources */,
+			);
+		};
+		658478333082398A00113003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				658478543082398A00113003 /* Icon.png in Resources */,
+				658478563082398A00113003 /* Style.css in Resources */,
+				6584783B3082398A00113003 /* Main.storyboard in Resources */,
+				658478583082398A00113003 /* Script.js in Resources */,
+				6584785C3082398A00113003 /* Assets.xcassets in Resources */,
+				658478523082398A00113003 /* Main.html in Resources */,
+			);
+		};
+		6584783F3082398A00113003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				658478823082398A00113003 /* popup.js in Resources */,
+				658478853082398A00113003 /* popup.html in Resources */,
+				658478833082398A00113003 /* content.css in Resources */,
+				658478863082398A00113003 /* icons in Resources */,
+				658478893082398A00113003 /* popup.css in Resources */,
+				658478883082398A00113003 /* lib in Resources */,
+				6584788A3082398A00113003 /* content.js in Resources */,
+				658478873082398A00113003 /* manifest.json in Resources */,
+				658478843082398A00113003 /* test in Resources */,
+			);
+		};
+		658478493082398A00113003 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+				658478793082398A00113003 /* popup.js in Resources */,
+				6584787C3082398A00113003 /* popup.html in Resources */,
+				6584787A3082398A00113003 /* content.css in Resources */,
+				6584787D3082398A00113003 /* icons in Resources */,
+				658478803082398A00113003 /* popup.css in Resources */,
+				6584787F3082398A00113003 /* lib in Resources */,
+				658478813082398A00113003 /* content.js in Resources */,
+				6584787E3082398A00113003 /* manifest.json in Resources */,
+				6584787B3082398A00113003 /* test in Resources */,
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		6584781F3082398A00113003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				658478593082398A00113003 /* ViewController.swift in Sources */,
+				658478273082398A00113003 /* AppDelegate.swift in Sources */,
+				658478293082398A00113003 /* SceneDelegate.swift in Sources */,
+			);
+		};
+		658478313082398A00113003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				6584785A3082398A00113003 /* ViewController.swift in Sources */,
+				658478383082398A00113003 /* AppDelegate.swift in Sources */,
+			);
+		};
+		6584783D3082398A00113003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				6584785D3082398A00113003 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+		};
+		658478473082398A00113003 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+				6584785E3082398A00113003 /* SafariWebExtensionHandler.swift in Sources */,
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		658478443082398A00113003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 658478403082398A00113003 /* WOL Highlights Extension (iOS) */;
+			targetProxy = 658478433082398A00113003 /* PBXContainerItemProxy */;
+		};
+		6584784E3082398A00113003 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 6584784A3082398A00113003 /* WOL Highlights Extension (macOS) */;
+			targetProxy = 6584784D3082398A00113003 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin PBXVariantGroup section */
+		658478163082398900113003 /* Main.html */ = {
+			isa = PBXVariantGroup;
+			children = (
+				658478173082398900113003 /* Base */,
+			);
+			name = Main.html;
+			sourceTree = "<group>";
+		};
+		6584782A3082398A00113003 /* LaunchScreen.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6584782B3082398A00113003 /* Base */,
+			);
+			name = LaunchScreen.storyboard;
+			sourceTree = "<group>";
+		};
+		6584782D3082398A00113003 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6584782E3082398A00113003 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+		658478393082398A00113003 /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				6584783A3082398A00113003 /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		6584785F3082398A00113003 /* Debug configuration for PBXProject "WOL Highlights" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		658478603082398A00113003 /* Release configuration for PBXProject "WOL Highlights" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		658478623082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights Extension (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights.Extension";
+				PRODUCT_NAME = "WOL Highlights Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		658478633082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights Extension (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights.Extension";
+				PRODUCT_NAME = "WOL Highlights Extension";
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		658478663082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights";
+				PRODUCT_NAME = "WOL Highlights";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		658478673082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights (iOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "iOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights";
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
+				INFOPLIST_KEY_UIMainStoryboardFile = Main;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights";
+				PRODUCT_NAME = "WOL Highlights";
+				SDKROOT = iphoneos;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		658478693082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights Extension (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights.Extension";
+				PRODUCT_NAME = "WOL Highlights Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6584786A3082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights Extension (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights Extension";
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+					"@executable_path/../../../../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights.Extension";
+				PRODUCT_NAME = "WOL Highlights Extension";
+				SDKROOT = macosx;
+				SKIP_INSTALL = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		6584786D3082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights";
+				PRODUCT_NAME = "WOL Highlights";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		6584786E3082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights (macOS)" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_OUTGOING_NETWORK_CONNECTIONS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = "macOS (App)/Info.plist";
+				INFOPLIST_KEY_CFBundleDisplayName = "WOL Highlights";
+				INFOPLIST_KEY_NSMainStoryboardFile = Main;
+				INFOPLIST_KEY_NSPrincipalClass = NSApplication;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MACOSX_DEPLOYMENT_TARGET = 12.0;
+				MARKETING_VERSION = 1.0.0;
+				OTHER_LDFLAGS = (
+					"-framework",
+					SafariServices,
+					"-framework",
+					WebKit,
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = "com.danielmain.wol-highlights";
+				PRODUCT_NAME = "WOL Highlights";
+				REGISTER_APP_GROUPS = YES;
+				SDKROOT = macosx;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		658478133082398900113003 /* Build configuration list for PBXProject "WOL Highlights" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6584785F3082398A00113003 /* Debug configuration for PBXProject "WOL Highlights" */,
+				658478603082398A00113003 /* Release configuration for PBXProject "WOL Highlights" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		658478613082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights Extension (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				658478623082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights Extension (iOS)" */,
+				658478633082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights Extension (iOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		658478653082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights (iOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				658478663082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights (iOS)" */,
+				658478673082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights (iOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		658478683082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights Extension (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				658478693082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights Extension (macOS)" */,
+				6584786A3082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights Extension (macOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		6584786C3082398A00113003 /* Build configuration list for PBXNativeTarget "WOL Highlights (macOS)" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				6584786D3082398A00113003 /* Debug configuration for PBXNativeTarget "WOL Highlights (macOS)" */,
+				6584786E3082398A00113003 /* Release configuration for PBXNativeTarget "WOL Highlights (macOS)" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 658478103082398900113003 /* Project object */;
+	validationLevel = 1;
+}

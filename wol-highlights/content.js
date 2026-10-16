@@ -271,14 +271,20 @@ ext.storage.onChanged.addListener((changes, area) => {
   }
 });
 
-ext.runtime.onMessage.addListener((message) => {
+ext.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log("[WOL Highlights Content] Received runtime message:", message);
-  if (message?.type === "wol-status") return Promise.resolve(lastStatus);
+  if (message?.type === "wol-status") {
+    sendResponse(lastStatus);
+    return false;
+  }
   if (message?.type === "wol-reapply") {
     console.log("[WOL Highlights Content] Received 'wol-reapply'. Forcing re-apply...");
-    return apply(true);
+    apply(true)
+      .then((status) => sendResponse(status))
+      .catch((err) => sendResponse({ error: err ? err.message : "Unknown error" }));
+    return true; // Keep message channel open for async response (required for Chrome/Safari)
   }
-  return undefined;
+  return false;
 });
 
 console.log("[WOL Highlights Content] Initializing content script apply()...");

@@ -16,6 +16,21 @@ Thumbs.db
 *.sublime-workspace
 *.sublime-project
 
+# Xcode / Safari User Data & Derived Files
+xcuserdata/
+*.xcscmblueprint
+DerivedData/
+
+# Node & Package Managers
+node_modules/
+package-lock.json
+
+# Environment Variables & Secrets
+.env
+.env.*
+.envrc
+.direnv/
+
 # Build Outputs & Packaged Extensions (generated binaries)
 *.xpi
 dist/

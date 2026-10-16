@@ -2,18 +2,26 @@
   "manifest_version": 3,
   "name": "WOL Highlights",
   "version": "1.0.0",
-  "description": "Show JW Library highlights from a userData backup on wol.jw.org.",
+  "description": "Show JW Library personal study highlights directly on wol.jw.org.",
+  "author": "Daniel Main <addons@danielmain.mozmail.com>",
   "browser_specific_settings": {
     "gecko": {
-      "id": "wol-highlights@local",
-      "strict_min_version": "128.0",
+      "id": "wol-highlights@danielmain.mozmail.com",
+      "strict_min_version": "142.0",
       "data_collection_permissions": {
-        "required": ["none"]
+        "required": [
+          "none"
+        ]
       }
     }
   },
-  "permissions": ["storage", "tabs"],
-  "host_permissions": ["https://wol.jw.org/*"],
+  "permissions": [
+    "storage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://wol.jw.org/*"
+  ],
   "content_security_policy": {
     "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
   },
@@ -21,7 +29,10 @@
     "default_title": "WOL Highlights",
     "default_popup": "popup.html",
     "default_icon": {
-      "48": "icons/icon-48.png"
+      "16": "icons/icon-16.png",
+      "32": "icons/icon-32.png",
+      "48": "icons/icon-48.png",
+      "128": "icons/icon-128.png"
     }
   },
   "options_ui": {
@@ -29,18 +40,25 @@
     "open_in_tab": true
   },
   "icons": {
-    "48": "icons/icon-48.png"
+    "16": "icons/icon-16.png",
+    "32": "icons/icon-32.png",
+    "48": "icons/icon-48.png",
+    "128": "icons/icon-128.png"
   },
   "content_scripts": [
     {
-      "matches": ["https://wol.jw.org/*"],
+      "matches": [
+        "https://wol.jw.org/*"
+      ],
       "js": [
         "lib/tokenize.js",
         "lib/languages.js",
         "lib/highlight.js",
         "content.js"
       ],
-      "css": ["content.css"],
+      "css": [
+        "content.css"
+      ],
       "run_at": "document_idle"
     }
   ]

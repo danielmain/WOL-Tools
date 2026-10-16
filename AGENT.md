@@ -22,17 +22,29 @@ The **WOL Highlights** extension (`wol-highlights/`) runs entirely client-side i
 
 ```text
 /
-├── .gitignore               <-- Git exclusion rules (ignores *.xpi, *.zip, *.db, userdata/)
+├── .gitignore               <-- Git exclusion rules (ignores *.xpi, *.zip, dist/, .env, *.db)
 ├── AGENT.md                 <-- AI agent operational guidelines (this file)
 ├── README.md                <-- Project overview & user-facing documentation
-├── build.sh                 <-- Packaging script generating wol-highlights.xpi
+├── flake.nix                <-- Nix devShell and automated AMO deploy app
+├── package.json             <-- Build, lint, bump, and multi-store publish automation
+├── build.sh                 <-- Standalone bash packager generating wol-highlights.xpi
 ├── run-firefox.sh           <-- Automated dev launcher via Marionette injection
 ├── usermark.md              <-- Architectural spec of UserMark, schema, and WOL DOM mapping
+├── scripts/                 <-- Store deployment & publishing automation
+│   ├── bump-version.js      <-- Version bumper across manifest, package.json, and Safari
+│   ├── publish-firefox.js   <-- Mozilla Add-ons (AMO) sign & publish automation
+│   ├── publish-chrome.js    <-- Chrome Web Store upload & publish automation
+│   ├── publish-edge.js      <-- Microsoft Edge Add-ons upload & publish automation
+│   ├── publish-all.js       <-- Unified multi-store publishing script
+│   ├── pull-bw-env.js       <-- Bitwarden CLI secret synchronizer
+│   └── auth-chrome.js       <-- Interactive OAuth2 generator for Chrome Web Store
+├── safari/                  <-- Native Safari Web Extension project (macOS & iOS)
+│   └── WOL Highlights/      <-- Xcode project referencing wol-highlights/ assets
 └── wol-highlights/          <-- BROWSER EXTENSION ROOT (Manifest V3)
-    ├── manifest.json        <-- EXTENSION MANIFEST (Load THIS in about:debugging)
+    ├── manifest.json        <-- EXTENSION MANIFEST (Load THIS in browser developer tools)
     ├── popup.html/.css/.js  <-- Extension popup interface & backup loader
     ├── content.css/.js      <-- Injected styling and content script controller
-    ├── icons/icon-48.png    <-- Extension icon
+    ├── icons/               <-- Multi-resolution icons (16, 32, 48, 128 px)
     ├── lib/
     │   ├── backup.js        <-- In-browser zip unpacker & SQLite indexer
     │   ├── highlight.js     <-- DOM TreeWalker & text node split/wrap engine
@@ -45,8 +57,8 @@ The **WOL Highlights** extension (`wol-highlights/`) runs entirely client-side i
 ```
 
 > [!NOTE]
-> Backup archives (`.jwlibrary`, `userData.db`, etc.) and generated packages (`wol-highlights.xpi`) are excluded by `.gitignore`.
-> The only `manifest.json` in the repository is the WebExtension manifest located at `wol-highlights/manifest.json`.
+> Backup archives (`.jwlibrary`, `userData.db`, etc.), build directories (`dist/`), and generated packages are excluded by `.gitignore`.
+> Cross-browser compatible with Firefox, Chrome/Chromium, Edge, Brave, and Safari.
 
 ---
 
