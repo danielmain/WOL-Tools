@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-set -e
+set -euo pipefail
 
 DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$DIR/wol-highlights"
-rm -f "$DIR/wol-highlights.xpi"
-zip -r "$DIR/wol-highlights.xpi" * -x "test/*"
+OUTPUT="$DIR/wol-highlights.xpi"
+SRC_DIR="$DIR/wol-highlights"
 
-echo "Package created at: $DIR/wol-highlights.xpi"
+echo "Building WOL Highlights extension package..."
+rm -f "$OUTPUT"
+
+(
+  cd "$SRC_DIR"
+  zip -r "$OUTPUT" . -x "test/*" -x "*.DS_Store" -x ".*"
+)
+
+echo "Package successfully created at: $OUTPUT"

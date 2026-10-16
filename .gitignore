@@ -1,0 +1,37 @@
+# Operating System Files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+
+# IDE and Editor Configuration
+.idea/
+.vscode/
+*.swp
+*.swo
+*.sublime-workspace
+*.sublime-project
+
+# Build Outputs & Packaged Extensions (generated binaries)
+*.xpi
+dist/
+build/
+
+# JW Library User Data & Backups (private user data and sqlite databases)
+userdata/
+userData/
+*.jwlibrary
+*.db
+*.sqlite
+*.sqlite3
+userData.db
+default_thumbnail.png
+
+# Test Output & Scratch Files
+tmp-fixtures/
+scratch/
+*.log
