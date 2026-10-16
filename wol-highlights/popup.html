@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>WOL Highlights</title>
+    <link rel="stylesheet" href="popup.css">
+  </head>
+  <body>
+    <header>
+      <img src="icons/icon-48.png" alt="" width="28" height="28">
+      <div>
+        <h1>WOL Highlights</h1>
+        <p>JW Library marks on wol.jw.org</p>
+      </div>
+    </header>
+
+    <label class="file">
+      <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,application/octet-stream">
+      <span>Load backup</span>
+    </label>
+    <p class="hint">Choose or drag &amp; drop a <code>.jwlibrary</code> or <code>userData.db</code> file. <a id="open-tab" href="#">Open in tab</a> if popup closes.</p>
+
+    <section id="loaded" hidden>
+      <p id="file-name"></p>
+      <p id="counts"></p>
+      <ul id="colors"></ul>
+      <label class="toggle">
+        <input id="enabled" type="checkbox">
+        <span>Show highlights</span>
+      </label>
+      <button id="remove" type="button">Remove loaded backup</button>
+    </section>
+
+    <section id="page">
+      <h2>This page</h2>
+      <p id="page-status">Open an article on wol.jw.org.</p>
+    </section>
+
+    <p id="message" role="status"></p>
+    <script src="lib/sql-wasm.js"></script>
+    <script src="lib/backup.js"></script>
+    <script type="module" src="popup.js"></script>
+  </body>
+</html>

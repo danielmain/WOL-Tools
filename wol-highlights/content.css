@@ -1,0 +1,17 @@
+mark.wol-hl {
+  color: inherit;
+  font: inherit;
+  border: 0;
+  border-radius: 2px;
+  padding: 0 1px;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+mark.wol-c1 { background-color: #ffe36b; }
+mark.wol-c2 { background-color: #b6e89a; }
+mark.wol-c3 { background-color: #a9d4fb; }
+mark.wol-c4 { background-color: #f7b4c4; }
+mark.wol-c5 { background-color: #ffc48a; }
+mark.wol-c6 { background-color: #d8c0f8; }
+mark.wol-c0 { background-color: #e6e6e6; }

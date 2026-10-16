@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>loading</title>
+  </head>
+  <body>
+    <pre id="out"></pre>
+    <script src="../lib/sql-wasm.js"></script>
+    <script src="../lib/tokenize.js"></script>
+    <script src="../lib/highlight.js"></script>
+    <script src="../lib/backup.js"></script>
+    <script type="module">
+      const wasmUrl = new URL("../lib/sql-wasm.wasm", import.meta.url).href;
+      const out = document.querySelector("#out");
+
+      function fail(message) {
+        return { ok: false, message };
+      }
+
+      function textOf(root) {
+        return [...root.querySelectorAll("mark.wol-hl")].map((mark) => mark.textContent).join("");
+      }
+
+      function applyDocument(article, paragraphs) {
+        let applied = 0;
+        let missing = 0;
+        let skipped = 0;
+        const samples = [];
+        for (const [paragraphId, ranges] of Object.entries(paragraphs)) {
+          const paragraph = article.querySelector(`p[data-pid="${CSS.escape(paragraphId)}"]`);
+          if (!paragraph) {
+            missing += ranges.length;
+            continue;
+          }
+          const before = collectText(paragraph).text;
+          const tokens = tokenize(before);
+          const result = highlightBlock(paragraph, ranges);
+          applied += result.applied;
+          skipped += result.skipped;
+          for (const [start, end] of ranges) {
+            if (end >= tokens.length) continue;
+            const expected = before.slice(tokens[start].start, tokens[end].end);
+            const marks = [...paragraph.querySelectorAll("mark.wol-hl")];
+            samples.push({ paragraphId, start, end, expected, markCount: marks.length });
+          }
+        }
+        return { applied, missing, skipped, samples };
+      }
+
+      function verseText(article, id) {
+        const span = article.querySelector(`#${CSS.escape(id)}`);
+        if (!span) return null;
+        const marks = [...span.querySelectorAll("mark.wol-hl")].map((mark) => mark.textContent).join("");
+        return { marks, plain: span.textContent };
+      }
+
+      try {
+        const dbBytes = new Uint8Array(await (await fetch("/userData.db")).arrayBuffer());
+        const zipBytes = new Uint8Array(await (await fetch("/userdata.zip")).arrayBuffer());
+        const fromDb = await parseBackup(dbBytes, globalThis.initSqlJs, wasmUrl);
+        const fromZip = await parseBackup(zipBytes, globalThis.initSqlJs, wasmUrl);
+        const checks = [];
+
+        checks.push(fromDb.highlightCount === fromZip.highlightCount
+          ? { ok: true, message: `db and zip both have ${fromDb.highlightCount} highlights` }
+          : fail(`count mismatch db ${fromDb.highlightCount} zip ${fromZip.highlightCount}`));
+
+        const articleHtml = await (await fetch("/tmp-fixtures/article.html")).text();
+        const articleDoc = new DOMParser().parseFromString(articleHtml, "text/html");
+        const article = articleDoc.querySelector("#article");
+        const doc = fromDb.docs["2025441"];
+        const docResult = applyDocument(article, doc);
+        checks.push(docResult.skipped === 0
+          ? { ok: true, message: `article applied ${docResult.applied}, missing ${docResult.missing}, skipped 0` }
+          : fail(`article skipped ${docResult.skipped}`));
+        checks.push(docResult.applied === 69
+          ? { ok: true, message: "all 69 article highlights placed" }
+          : fail(`expected 69 placed, got ${docResult.applied}`));
+
+        const paragraph = article.querySelector('p[data-pid="7"]');
+        const marks = [...paragraph.querySelectorAll("mark.wol-hl")].map((mark) => mark.textContent);
+        checks.push(marks.some((text) => text.includes("Qué les diría ahora al resto de sus hijos varones"))
+          ? { ok: true, message: "paragraph 7 first highlight" }
+          : fail(`paragraph 7 marks: ${marks.join(" | ")}`));
+        checks.push(marks.some((text) => text.includes("Zabulón") && text.includes("Benjamín"))
+          ? { ok: true, message: "paragraph 7 name list" }
+          : fail(`paragraph 7 name list missing: ${marks.join(" | ")}`));
+
+        const happy = [...article.querySelectorAll("mark.wol-hl")]
+          .map((mark) => mark.textContent)
+          .find((text) => text.includes("siempre hay razones para sentirnos felices"));
+        checks.push(happy
+          ? { ok: true, message: "paragraph 10 happy sentence" }
+          : fail("missing 'siempre hay razones para sentirnos felices'"));
+
+        function paintChapter(html, rangesByVerse) {
+          const doc = new DOMParser().parseFromString(html, "text/html");
+          const chapter = doc.querySelector("#article");
+          for (const [verse, ranges] of Object.entries(rangesByVerse)) {
+            const parts = [...chapter.querySelectorAll("span.v[id]")].filter((span) => {
+              const match = span.id.match(/^v\d+-\d+-(\d+)-\d+$/);
+              return match && match[1] === verse;
+            });
+            highlightBlock(parts, ranges);
+          }
+          return chapter;
+        }
+
+        const ex5 = paintChapter(await (await fetch("/tmp-fixtures/exodus5.html")).text(), fromDb.bible["1|nwtsty|2|5"]);
+        const verse9 = verseText(ex5, "v2-5-9-1");
+        checks.push(verse9 && verse9.marks.startsWith("Pónganlos") && verse9.marks.includes("mentiras") && !verse9.marks.includes("9")
+          ? { ok: true, message: `Exodus 5:9 “${verse9.marks}”` }
+          : fail(`Exodus 5:9 “${verse9 && verse9.marks}”`));
+
+        const ex6 = paintChapter(await (await fetch("/tmp-fixtures/exodus6.html")).text(), fromDb.bible["1|nwtsty|2|6"]);
+        const verse6 = verseText(ex6, "v2-6-6-1");
+        const rescue = "Los rescataré con brazo poderoso y con grandes castigos";
+        checks.push(verse6 && verse6.marks.includes(rescue)
+          ? { ok: true, message: `Exodus 6:6 “${verse6.marks}”` }
+          : fail(`Exodus 6:6 “${verse6 && verse6.marks}”`));
+        const verse3 = verseText(ex6, "v2-6-3-1");
+        checks.push(verse3 && verse3.marks.startsWith("Yo me aparecía") && verse3.marks.trimEnd().endsWith("ellos")
+          ? { ok: true, message: `Exodus 6:3 ends at “${verse3.marks.slice(-24)}”` }
+          : fail(`Exodus 6:3 “${verse3 && verse3.marks}”`));
+
+        const failed = checks.filter((check) => !check.ok);
+        out.textContent = JSON.stringify({ ok: failed.length === 0, highlightCount: fromDb.highlightCount, checks }, null, 2);
+        document.title = failed.length ? "failed" : "passed";
+      } catch (error) {
+        out.textContent = JSON.stringify({ ok: false, message: String(error && error.stack || error) }, null, 2);
+        document.title = "failed";
+      }
+    </script>
+  </body>
+</html>

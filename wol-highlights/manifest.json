@@ -1,0 +1,43 @@
+{
+  "manifest_version": 3,
+  "name": "WOL Highlights",
+  "version": "1.0.0",
+  "description": "Show JW Library highlights from a userData backup on wol.jw.org.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "wol-highlights@local",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": ["storage", "tabs"],
+  "host_permissions": ["https://wol.jw.org/*"],
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'"
+  },
+  "action": {
+    "default_title": "WOL Highlights",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "48": "icons/icon-48.png"
+    }
+  },
+  "icons": {
+    "48": "icons/icon-48.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://wol.jw.org/*"],
+      "js": [
+        "lib/tokenize.js",
+        "lib/languages.js",
+        "lib/highlight.js",
+        "content.js"
+      ],
+      "css": ["content.css"],
+      "run_at": "document_idle"
+    }
+  ]
+}
