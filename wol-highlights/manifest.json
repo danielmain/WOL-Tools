@@ -24,6 +24,10 @@
       "48": "icons/icon-48.png"
     }
   },
+  "options_ui": {
+    "page": "popup.html",
+    "open_in_tab": true
+  },
   "icons": {
     "48": "icons/icon-48.png"
   },

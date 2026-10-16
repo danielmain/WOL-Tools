@@ -42,26 +42,52 @@ h2 {
   align-items: center;
 }
 
-.file span, #remove {
+.actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.file span, #remove, .btn-tab {
   border: 1px solid #c8c8c8;
   border-radius: 6px;
   background: #f6f6f6;
   cursor: pointer;
 }
 
-.file span {
+.file span, .btn-tab {
   padding: 7px 12px;
   font-weight: 600;
+  font-size: 13px;
+}
+
+.btn-tab {
+  color: #0b57d0;
+  background: #f4f8ff;
+  border-color: #bad3f8;
 }
 
 .file span:hover, #remove:hover { background: #eee; }
+.btn-tab:hover { background: #e3effe; }
 
-.hint { margin: 8px 0 12px; }
+.hint { margin: 8px 0 12px; font-size: 12px; line-height: 1.4; }
 
 #open-tab {
   color: #0b57d0;
   text-decoration: underline;
   cursor: pointer;
+}
+
+@media (min-width: 480px) {
+  body {
+    width: auto;
+    max-width: 480px;
+    margin: 48px auto;
+    padding: 24px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  }
 }
 
 body.dragover {

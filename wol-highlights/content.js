@@ -186,27 +186,41 @@ async function applyNow(force = false) {
     lastStatus.enabled = want;
     document.documentElement.dataset.wolHighlights = !hasBackup ? "empty" : want ? "on" : "off";
     if (article) clearMarks(article);
+
+    const docId = documentIdFromUrl();
+    lastStatus.docId = docId;
+    console.log("[WOL Highlights Content] Page inspection:", {
+      docId,
+      hasArticleElement: Boolean(article),
+      totalParagraphsInDOM: article ? article.querySelectorAll("p[data-pid]").length : 0,
+      hasBackup,
+      enabled: want,
+    });
+
     if (!article) {
       console.warn("[WOL Highlights Content] #article element not found in DOM.");
       return lastStatus;
     }
+    if (!hasBackup) {
+      console.log("[WOL Highlights Content] Skipping highlight application: No backup is stored in browser local storage.");
+      return lastStatus;
+    }
     if (!want) {
-      console.log("[WOL Highlights Content] Highlights not enabled or no backup loaded.");
+      console.log("[WOL Highlights Content] Skipping highlight application: Highlights are toggled off by user.");
       return lastStatus;
     }
 
-    const docId = documentIdFromUrl();
-    lastStatus.docId = docId;
     console.log("[WOL Highlights Content] Target document ID:", docId);
     if (docId) {
       if (index.docs && index.docs[docId]) {
-        console.log(`[WOL Highlights Content] Found ${Object.keys(index.docs[docId]).length} paragraph(s) in backup for docId=${docId}!`);
+        console.log(`[WOL Highlights Content] Found ${Object.keys(index.docs[docId]).length} paragraph(s) in backup for docId=${docId}! Paragraph IDs:`, Object.keys(index.docs[docId]));
         const result = applyDocument(article, index.docs[docId]);
         lastStatus.applied += result.applied;
         lastStatus.missing += result.missing;
         lastStatus.skipped += result.skipped;
       } else {
-        console.log(`[WOL Highlights Content] No highlights for docId=${docId} in loaded backup. Loaded doc IDs:`, Object.keys(index.docs || {}));
+        const sampleDocs = Object.keys(index.docs || {}).slice(0, 5);
+        console.log(`[WOL Highlights Content] No highlights for docId=${docId} in loaded backup. (Total documents in backup: ${Object.keys(index.docs || {}).length}. Sample doc IDs: ${sampleDocs.join(", ")})`);
       }
     }
     const bible = applyBible(article, index);

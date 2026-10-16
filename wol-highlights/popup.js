@@ -41,8 +41,31 @@ function formatWhen(iso) {
 }
 
 async function currentIndex() {
-  const stored = await ext.storage.local.get("wolMarks");
-  return stored.wolMarks && stored.wolMarks.version === 1 ? stored.wolMarks : null;
+  try {
+    const all = await ext.storage.local.get(null);
+    console.log("[WOL Highlights Popup] Storage check. Keys in storage.local:", Object.keys(all));
+    const stored = all.wolMarks;
+    if (!stored) {
+      console.log("[WOL Highlights Popup] No 'wolMarks' key found in storage.local.");
+      return null;
+    }
+    if (stored.version !== 1) {
+      console.warn("[WOL Highlights Popup] 'wolMarks' version mismatch. Expected 1, found:", stored.version);
+      return null;
+    }
+    console.log("[WOL Highlights Popup] Found valid 'wolMarks':", {
+      fileName: stored.fileName,
+      highlights: stored.highlightCount,
+      documents: stored.documentCount,
+      bibleChapters: stored.bibleChapterCount,
+      enabled: stored.enabled !== false,
+      loadedAt: stored.loadedAt,
+    });
+    return stored;
+  } catch (err) {
+    console.error("[WOL Highlights Popup] Failed to read from ext.storage.local:", err);
+    return null;
+  }
 }
 
 function renderIndex(index) {
@@ -116,54 +139,95 @@ async function refreshPage() {
 }
 
 async function handleFile(file) {
-  if (!file) return;
-  console.log("[WOL Highlights Popup] handleFile() received:", {
+  if (!file) {
+    console.warn("[WOL Highlights Popup] handleFile called with no file.");
+    return;
+  }
+  const startTime = performance.now();
+  console.log("[WOL Highlights Popup] handleFile() started:", {
     name: file.name,
     size: file.size,
     type: file.type,
-    lastModified: file.lastModified,
+    lastModified: new Date(file.lastModified).toISOString(),
   });
-  setMessage(`Reading ${file.name}…`);
+  setMessage(`Reading ${file.name} (${(file.size / 1024).toFixed(1)} KB)…`);
   try {
     const previous = await currentIndex();
     console.log("[WOL Highlights Popup] Previous stored backup:", previous ? { fileName: previous.fileName, highlights: previous.highlightCount } : "None");
     console.log("[WOL Highlights Popup] Reading array buffer...");
+    const bufferStart = performance.now();
     const bytes = new Uint8Array(await file.arrayBuffer());
-    console.log("[WOL Highlights Popup] Read buffer (" + bytes.length + " bytes). Calling parseBackup...");
+    console.log(`[WOL Highlights Popup] Read buffer (${bytes.length} bytes in ${(performance.now() - bufferStart).toFixed(1)}ms). Calling parseBackup...`);
 
     const wasmUrl = ext.runtime.getURL("lib/sql-wasm.wasm");
     console.log("[WOL Highlights Popup] Using WebAssembly URL:", wasmUrl);
-    console.log("[WOL Highlights Popup] initSqlJs available:", typeof globalThis.initSqlJs);
+    console.log("[WOL Highlights Popup] typeof globalThis.initSqlJs:", typeof globalThis.initSqlJs);
 
+    if (typeof globalThis.initSqlJs !== "function") {
+      throw new Error("sql.js library (globalThis.initSqlJs) is not loaded or not a function.");
+    }
+
+    setMessage(`Parsing ${file.name} with SQLite WebAssembly…`);
+    const parseStart = performance.now();
     const index = await parseBackup(bytes, globalThis.initSqlJs, wasmUrl);
-    console.log("[WOL Highlights Popup] Backup successfully parsed! Total highlights:", index.highlightCount);
+    console.log(`[WOL Highlights Popup] Backup successfully parsed in ${(performance.now() - parseStart).toFixed(1)}ms! Total highlights:`, index.highlightCount);
 
     index.fileName = file.name;
     index.loadedAt = new Date().toISOString();
     index.enabled = previous ? previous.enabled !== false : true;
 
-    console.log("[WOL Highlights Popup] Saving index to storage.local...");
+    console.log("[WOL Highlights Popup] Saving index to storage.local (estimated size ~" + Math.round(JSON.stringify(index).length / 1024) + " KB)...");
+    const saveStart = performance.now();
     await ext.storage.local.set({ wolMarks: index });
-    console.log("[WOL Highlights Popup] Stored wolMarks into storage.local.");
+    console.log(`[WOL Highlights Popup] Stored wolMarks into storage.local in ${(performance.now() - saveStart).toFixed(1)}ms.`);
 
     renderIndex(index);
-    setMessage(index.highlightCount ? "" : "That backup has no highlights.");
+    setMessage(index.highlightCount ? `Loaded ${index.highlightCount.toLocaleString()} highlights from ${file.name}.` : "That backup has no highlights.");
     console.log("[WOL Highlights Popup] Refreshing page highlights...");
     await refreshPage();
-    console.log("[WOL Highlights Popup] File processing complete.");
+    console.log(`[WOL Highlights Popup] Entire file processing completed in ${(performance.now() - startTime).toFixed(1)}ms.`);
   } catch (error) {
     console.error("[WOL Highlights Popup] Error reading/parsing backup file:", error);
     setMessage(error.message || "Could not read that file.", true);
   }
 }
 
+// Lifecycle and focus tracking (helps debug if popup closes on file chooser)
+window.addEventListener("focus", () => {
+  console.log("[WOL Highlights Popup] Event: window 'focus'");
+});
+window.addEventListener("blur", () => {
+  console.warn("[WOL Highlights Popup] Event: window 'blur'. (NOTE: If an OS file dialog opened, Firefox may destroy this popup!)");
+});
+window.addEventListener("pagehide", (event) => {
+  console.warn("[WOL Highlights Popup] Event: window 'pagehide' (persisted=" + event.persisted + ")");
+});
+window.addEventListener("beforeunload", () => {
+  console.warn("[WOL Highlights Popup] Event: window 'beforeunload'");
+});
+
+// File picker event monitoring
+fileInput.addEventListener("click", () => {
+  console.log("[WOL Highlights Popup] 'Load backup' button clicked. Native file picker dialog requested...");
+});
+
+fileInput.addEventListener("cancel", () => {
+  console.log("[WOL Highlights Popup] Native file picker was cancelled by user.");
+});
+
+fileInput.addEventListener("input", () => {
+  console.log("[WOL Highlights Popup] fileInput 'input' event fired. File count:", fileInput.files?.length);
+});
+
 fileInput.addEventListener("change", async () => {
+  console.log("[WOL Highlights Popup] fileInput 'change' event fired. File count:", fileInput.files?.length);
   const file = fileInput.files?.[0];
   fileInput.value = "";
   if (!file) {
     console.log("[WOL Highlights Popup] File input changed with no file selected.");
     return;
   }
+  console.log("[WOL Highlights Popup] File selected:", file.name, "(" + file.size + " bytes)");
   await handleFile(file);
 });
 
@@ -183,19 +247,26 @@ window.addEventListener("drop", async (event) => {
   event.preventDefault();
   document.body.classList.remove("dragover");
   const file = event.dataTransfer?.files?.[0];
+  console.log("[WOL Highlights Popup] Drop event received. File:", file ? `${file.name} (${file.size} bytes)` : "None");
   if (file) {
-    console.log("[WOL Highlights Popup] File dropped into popup:", file.name);
     await handleFile(file);
   }
 });
 
+function openInPermanentTab(e) {
+  if (e) e.preventDefault();
+  console.log("[WOL Highlights Popup] Opening popup in permanent browser tab...");
+  ext.tabs.create({ url: ext.runtime.getURL("popup.html") });
+}
+
 const openTabLink = document.querySelector("#open-tab");
 if (openTabLink) {
-  openTabLink.addEventListener("click", (e) => {
-    e.preventDefault();
-    console.log("[WOL Highlights Popup] Opening popup in full tab...");
-    ext.tabs.create({ url: ext.runtime.getURL("popup.html") });
-  });
+  openTabLink.addEventListener("click", openInPermanentTab);
+}
+
+const openTabBtn = document.querySelector("#open-tab-btn");
+if (openTabBtn) {
+  openTabBtn.addEventListener("click", openInPermanentTab);
 }
 
 enabledInput.addEventListener("change", async () => {

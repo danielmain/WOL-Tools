@@ -14,11 +14,14 @@
       </div>
     </header>
 
-    <label class="file">
-      <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,application/octet-stream">
-      <span>Load backup</span>
-    </label>
-    <p class="hint">Choose or drag &amp; drop a <code>.jwlibrary</code> or <code>userData.db</code> file. <a id="open-tab" href="#">Open in tab</a> if popup closes.</p>
+    <div class="actions">
+      <label class="file">
+        <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,application/octet-stream">
+        <span>Load backup</span>
+      </label>
+      <button id="open-tab-btn" type="button" class="btn-tab">⤢ Open in tab</button>
+    </div>
+    <p class="hint">On macOS, switching apps closes this popup. Click <strong><a id="open-tab" href="#">Open in tab</a></strong> to drag &amp; drop or select files in a permanent tab.</p>
 
     <section id="loaded" hidden>
       <p id="file-name"></p>

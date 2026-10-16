@@ -139,33 +139,49 @@ function indexRows(rows) {
 
 async function parseBackup(bytes, initSqlJs, wasmUrl) {
   console.log("[WOL Highlights Backup] parseBackup() starting (" + bytes.length + " bytes)...");
+  const headerPreview = Array.from(bytes.subarray(0, 16)).map((b) => b.toString(16).padStart(2, "0")).join(" ");
+  const asciiPreview = Array.from(bytes.subarray(0, 16)).map((b) => (b >= 32 && b <= 126 ? String.fromCharCode(b) : ".")).join("");
+  console.log(`[WOL Highlights Backup] First 16 bytes: [${headerPreview}] ASCII: "${asciiPreview}"`);
+
   const isZipFile = isZip(bytes);
   const isSqliteFile = isSqlite(bytes);
   console.log("[WOL Highlights Backup] Format check: isZip=" + isZipFile + ", isSqlite=" + isSqliteFile);
-  const databaseBytes = isZipFile ? await unzipDatabase(bytes) : bytes;
-  if (!isSqlite(databaseBytes)) {
-    console.error("[WOL Highlights Backup] Extracted buffer is not a valid SQLite database.");
-    throw new Error("That file is not a JW Library backup or a userData.db database.");
+
+  let databaseBytes = bytes;
+  if (isZipFile) {
+    console.log("[WOL Highlights Backup] File is a ZIP archive (e.g. .jwlibrary). Extracting userData.db...");
+    databaseBytes = await unzipDatabase(bytes);
+    console.log("[WOL Highlights Backup] Extracted database size: " + databaseBytes.length + " bytes");
   }
+
+  if (!isSqlite(databaseBytes)) {
+    console.error("[WOL Highlights Backup] Buffer is not a valid SQLite database. Expected 'SQLite format 3' header.");
+    throw new Error("That file is not a valid JW Library backup or SQLite database.");
+  }
+
   if (typeof initSqlJs !== "function") {
     console.error("[WOL Highlights Backup] initSqlJs is not a function (got " + typeof initSqlJs + "). Check sql-wasm.js loading.");
-    throw new Error("The database reader failed to start.");
+    throw new Error("The database reader (sql.js) failed to start.");
   }
-  console.log("[WOL Highlights Backup] Initializing sql.js with locateFile => " + wasmUrl);
+
+  console.log("[WOL Highlights Backup] Initializing sql.js WASM from: " + wasmUrl);
+  const sqlStart = performance.now();
   const SQL = await initSqlJs({ locateFile: () => wasmUrl });
-  console.log("[WOL Highlights Backup] Opening SQLite database (" + databaseBytes.length + " bytes)...");
+  console.log(`[WOL Highlights Backup] sql.js initialized in ${(performance.now() - sqlStart).toFixed(1)}ms. Opening SQLite database (${databaseBytes.length} bytes)...`);
+
   const database = new SQL.Database(databaseBytes);
   try {
-    console.log("[WOL Highlights Backup] Executing UserMark query...");
+    console.log("[WOL Highlights Backup] Executing UserMark query on SQLite database...");
+    const queryStart = performance.now();
     const statement = database.prepare(QUERY);
     const rows = [];
     while (statement.step()) rows.push(statement.getAsObject());
     statement.free();
-    console.log("[WOL Highlights Backup] Query finished. Found " + rows.length + " matching rows.");
+    console.log(`[WOL Highlights Backup] Query finished in ${(performance.now() - queryStart).toFixed(1)}ms. Found ${rows.length} matching rows.`);
     return indexRows(rows);
   } catch (error) {
-    console.error("[WOL Highlights Backup] Error while reading database:", error);
-    throw new Error(`Could not read highlights from this database. ${error.message}`);
+    console.error("[WOL Highlights Backup] Error while reading database tables:", error);
+    throw new Error(`Could not read highlights from this database: ${error.message}`);
   } finally {
     database.close();
   }
