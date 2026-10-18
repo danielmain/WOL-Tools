@@ -25,6 +25,7 @@ const counts = document.querySelector("#counts");
 const colors = document.querySelector("#colors");
 const enabledInput = document.querySelector("#enabled");
 const removeButton = document.querySelector("#remove");
+const exportButton = document.querySelector("#export-json");
 const pageStatus = document.querySelector("#page-status");
 const message = document.querySelector("#message");
 
@@ -99,17 +100,14 @@ function renderIndex(index) {
 
 function describePage(status) {
   if (!status) return "Open an article on wol.jw.org.";
-  if (!status.hasBackup) return "Load a backup to mark this page.";
-  if (!status.enabled) return "Highlights are hidden.";
-  if (!status.docId && !status.bibleLabel && status.applied === 0) {
-    return "This page is not an article or Bible chapter in the backup.";
+  if (!status.enabled && status.hasBackup) return "Highlights are hidden.";
+  if (status.applied > 0) {
+    const bits = [`${status.applied} highlight${status.applied === 1 ? "" : "s"} shown`];
+    if (status.missing) bits.push(`${status.missing} not on this page`);
+    if (status.skipped) bits.push(`${status.skipped} did not match the page text`);
+    return bits.join(". ") + ".";
   }
-  const bits = [];
-  if (status.applied) bits.push(`${status.applied} highlight${status.applied === 1 ? "" : "s"} shown`);
-  else bits.push("No highlights shown");
-  if (status.missing) bits.push(`${status.missing} not on this page`);
-  if (status.skipped) bits.push(`${status.skipped} did not match the page text`);
-  return bits.join(". ") + ".";
+  return "Select any text on this page to highlight it with JW Library colors.";
 }
 
 async function refreshPage() {
@@ -150,6 +148,40 @@ async function handleFile(file) {
     type: file.type,
     lastModified: new Date(file.lastModified).toISOString(),
   });
+
+  if (file.name.endsWith(".json") || file.type === "application/json") {
+    setMessage(`Reading ${file.name}…`);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed || (!parsed.docs && !parsed.bible)) {
+        throw new Error("Invalid highlights JSON file format.");
+      }
+      const previous = await currentIndex();
+      const index = {
+        version: 1,
+        fileName: file.name,
+        loadedAt: new Date().toISOString(),
+        enabled: previous ? previous.enabled !== false : true,
+        highlightCount: parsed.highlightCount || 0,
+        documentCount: parsed.documentCount || Object.keys(parsed.docs || {}).length,
+        bibleChapterCount: parsed.bibleChapterCount || Object.keys(parsed.bible || {}).length,
+        colorCounts: parsed.colorCounts || {},
+        docs: parsed.docs || {},
+        bible: parsed.bible || {},
+      };
+      await ext.storage.local.set({ wolMarks: index });
+      renderIndex(index);
+      setMessage(index.highlightCount ? `Loaded ${index.highlightCount.toLocaleString()} highlights from ${file.name}.` : "Highlights loaded.");
+      await refreshPage();
+      return;
+    } catch (err) {
+      console.error("[WOL Highlights Popup] Failed to parse JSON highlights file:", err);
+      setMessage(err.message || "Could not read that JSON file.", true);
+      return;
+    }
+  }
+
   setMessage(`Reading ${file.name} (${(file.size / 1024).toFixed(1)} KB)…`);
   try {
     const previous = await currentIndex();
@@ -289,6 +321,27 @@ removeButton.addEventListener("click", async () => {
   setMessage("Backup removed from the browser.");
   await refreshPage();
 });
+
+if (exportButton) {
+  exportButton.addEventListener("click", async () => {
+    const index = await currentIndex();
+    if (!index || !index.highlightCount) {
+      setMessage("No highlights to export.", true);
+      return;
+    }
+    const jsonStr = JSON.stringify(index, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `wol-highlights-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setMessage("Highlights exported as JSON.");
+  });
+}
 
 console.log("[WOL Highlights Popup] Initializing popup interface...");
 const initial = await currentIndex();

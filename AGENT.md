@@ -14,7 +14,7 @@ JW Library export files (`.jwlibrary`) do **not** contain publication text. Inst
 - **Word Range**: 0-based token offsets within a specific paragraph or verse.
 - **Style**: Color index (1 to 6).
 
-The **WOL Highlights** extension (`wol-highlights/`) runs entirely client-side in Firefox (Manifest V3), parses the backup archive using WebAssembly SQLite (`sql.js`), extracts and indexes highlights into `chrome.storage.local`, and dynamically paints matching text on `wol.jw.org` using an accurate Unicode tokenization and DOM TreeWalker alignment engine.
+The **WOL Highlights** extension (`wol-highlights/`) runs entirely client-side across modern browsers (Manifest V3), parses backup archives using WebAssembly SQLite (`sql.js`), indexes highlights in `chrome.storage.local`, dynamically paints matching text on `wol.jw.org`, and provides interactive in-page marker creation/editing for existing or brand-new articles and Bible chapters using JW Library's token layout rules.
 
 ---
 
@@ -141,8 +141,15 @@ When traversing text nodes in a block, the DOM `TreeWalker` **must reject** text
 2. `tokenize(text)` produces token boundary offsets `[{ start, end }]`.
 3. `slicesFor(tokens, parts, startToken, endToken)` maps the token range to character slices on specific DOM `Text` nodes.
 4. Slices are sorted in **descending document order** (`documentOrderDescending`).
-5. `wrapSlice(node, start, end, color)` uses `node.splitText()` to isolate the target slice and wraps it with `<mark class="wol-hl wol-c<color>">`. Descending order ensures earlier node offsets are never invalidated by subsequent splits.
+5. `wrapSlice(node, start, end, color, startToken, endToken)` uses `node.splitText()` to isolate the target slice and wraps it with `<mark class="wol-hl wol-c<color>">`, tagging `data-start-token`, `data-end-token`, and `data-color`. Descending order ensures earlier node offsets are never invalidated by subsequent splits.
 6. When clearing marks (`clearMarks`), all `<mark.wol-hl>` elements are unwrapped and parent nodes are cleaned up with `parent.normalize()`.
+
+### Interactive In-Browser Markers & Selection Toolbar (`content.js` & `lib/highlight.js`)
+- **Range Calculations**: `tokenRangeForBlock(roots, domRange)` translates arbitrary DOM text selections into 0-indexed token spans matching JW Library rules.
+- **Range Merging & Removal**: `addHighlightRange(ranges, [start, end, color])` merges contiguous/overlapping colors, and `removeHighlightRange(ranges, [start, end])` splits or deletes ranges cleanly without leaving gaps.
+- **Tagged Token Bounds**: `<mark class="wol-hl">` elements store `data-start-token` and `data-end-token`. When clicking or dragging to remove highlights, these exact token tags are used so imported backup markers are removed cleanly even if partial word/punctuation boundaries are selected.
+- **Bible Chapter Key Normalization**: `findBibleChapterKey(bible, langSymbol, pubSymbol, book, chapter)` unifies lookup across languages (e.g. Spanish `1` vs English `0`) and symbol aliases (`nwt` vs `nwtsty`), ensuring highlights loaded from backups can be edited and deleted seamlessly.
+- **WOL Audio Player Isolation**: WOL's native paragraph audio player attaches `#playSelectedButton` and `.jwac-textHighlight` on paragraph click. The extension isolates markers by intercepting `mousedown`, `pointerdown`, and `click` in the **capture phase** (`capture: true`), stopping event propagation so audio handlers do not cancel selection or block marker clicks. In addition, `#playSelectedButton` is hidden via CSS and pruned in `MutationObserver`.
 
 ---
 
@@ -166,8 +173,8 @@ When traversing text nodes in a block, the DOM `TreeWalker` **must reject** text
   ```
   `wasm-unsafe-eval` is required for `sql.js` WebAssembly execution inside the popup.
 
-### Backup Parsing (`lib/backup.js`)
-- Supports `.jwlibrary` (Zip) and uncompressed SQLite files.
+### Backup Parsing & Storage (`lib/backup.js`)
+- Supports `.jwlibrary` (Zip), uncompressed SQLite `userData.db`, and portable JSON exports.
 - Uses `DecompressionStream("deflate-raw")` to stream and decompress `userData.db` directly in memory without third-party zip libraries.
 - Index format stored in `chrome.storage.local["wolMarks"]`:
   ```typescript

@@ -126,12 +126,39 @@ code {
   border: 1px solid rgba(0, 0, 0, 0.12);
 }
 
-.toggle { gap: 8px; margin: 4px 0 8px; cursor: pointer; }
+.toggle { gap: 8px; margin: 4px 0 10px; cursor: pointer; }
 
-#remove {
-  padding: 4px 8px;
-  color: #555;
+.loaded-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-top: 6px;
+}
+
+.btn-secondary, #remove {
+  padding: 5px 10px;
+  border: 1px solid #c8c8c8;
+  border-radius: 6px;
+  background: #f6f6f6;
+  color: #444;
   font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.1s ease;
+}
+
+.btn-secondary:hover, #remove:hover {
+  background: #ebebeb;
+}
+
+.btn-secondary {
+  color: #0b57d0;
+  background: #f4f8ff;
+  border-color: #bad3f8;
+}
+
+.btn-secondary:hover {
+  background: #e3effe;
 }
 
 #page {

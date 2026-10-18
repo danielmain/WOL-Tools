@@ -6,6 +6,12 @@ mark.wol-hl {
   padding: 0 1px;
   box-decoration-break: clone;
   -webkit-box-decoration-break: clone;
+  cursor: pointer;
+  transition: filter 0.12s ease;
+}
+
+mark.wol-hl:hover {
+  filter: brightness(0.92);
 }
 
 mark.wol-c1 { background-color: #ffe36b; }
@@ -15,3 +21,109 @@ mark.wol-c4 { background-color: #f7b4c4; }
 mark.wol-c5 { background-color: #ffc48a; }
 mark.wol-c6 { background-color: #d8c0f8; }
 mark.wol-c0 { background-color: #e6e6e6; }
+
+/* Floating selection toolbar for creating/editing highlights */
+.wol-hl-toolbar {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 10px;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.22), 0 1px 3px rgba(0, 0, 0, 0.12);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  z-index: 2147483647;
+  pointer-events: auto;
+  transform: translate(-50%, -100%);
+  margin-top: -10px;
+  user-select: none;
+  -webkit-user-select: none;
+  opacity: 1;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.wol-hl-toolbar[hidden] {
+  display: none !important;
+}
+
+.wol-hl-btn {
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  padding: 0;
+  box-sizing: border-box;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+  outline: none;
+}
+
+.wol-hl-btn:hover {
+  transform: scale(1.25);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+.wol-hl-btn:active {
+  transform: scale(0.95);
+}
+
+.wol-hl-btn-1 { background-color: #ffe36b; }
+.wol-hl-btn-2 { background-color: #b6e89a; }
+.wol-hl-btn-3 { background-color: #a9d4fb; }
+.wol-hl-btn-4 { background-color: #f7b4c4; }
+.wol-hl-btn-5 { background-color: #ffc48a; }
+.wol-hl-btn-6 { background-color: #d8c0f8; }
+
+.wol-hl-divider {
+  width: 1px;
+  height: 16px;
+  background: rgba(0, 0, 0, 0.15);
+  margin: 0 2px;
+}
+
+.wol-hl-btn-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f4f4f4;
+  color: #666;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.wol-hl-btn-remove:hover {
+  background: #ff5252;
+  color: #ffffff;
+  border-color: #ff5252;
+  transform: scale(1.2);
+  box-shadow: 0 2px 6px rgba(255, 82, 82, 0.35);
+}
+
+/* Disable WOL native paragraph audio selection & play button */
+#playSelectedButton,
+.playSelectedButton,
+.playButton,
+.jwacBtn {
+  display: none !important;
+  pointer-events: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  width: 0 !important;
+  height: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border: none !important;
+  position: absolute !important;
+  left: -9999px !important;
+}
+
+.jwac-textHighlight {
+  background: transparent !important;
+  background-color: transparent !important;
+  box-shadow: none !important;
+  color: inherit !important;
+  outline: none !important;
+}
+
+

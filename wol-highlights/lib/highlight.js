@@ -1,4 +1,4 @@
-const SKIP_ANCESTOR = ".parNum, .pageNum, .fn, rt, rp, mark.wol-hl";
+const SKIP_ANCESTOR = ".parNum, .pageNum, .fn, rt, rp";
 
 function acceptText(node) {
   if (!node.nodeValue) return NodeFilter.FILTER_REJECT;
@@ -74,13 +74,16 @@ function documentOrderDescending(left, right) {
   return 0;
 }
 
-function wrapSlice(node, start, end, color) {
+function wrapSlice(node, start, end, color, startToken, endToken) {
   let target = node;
   if (end < target.nodeValue.length) target.splitText(end);
   const marked = start > 0 ? target.splitText(start) : target;
   const mark = marked.ownerDocument.createElement("mark");
   const safeColor = color >= 1 && color <= 6 ? color : 0;
   mark.className = `wol-hl wol-c${safeColor}`;
+  if (startToken !== undefined) mark.dataset.startToken = String(startToken);
+  if (endToken !== undefined) mark.dataset.endToken = String(endToken);
+  mark.dataset.color = String(safeColor);
   marked.parentNode.insertBefore(mark, marked);
   mark.appendChild(marked);
 }
@@ -109,9 +112,167 @@ function highlightBlock(roots, ranges) {
       continue;
     }
     applied += 1;
-    slices.push(...pieces.map((piece) => ({ ...piece, color })));
+    slices.push(...pieces.map((piece) => ({ ...piece, color, startToken, endToken })));
   }
   slices.sort(documentOrderDescending);
-  for (const piece of slices) wrapSlice(piece.node, piece.start, piece.end, piece.color);
+  for (const piece of slices) wrapSlice(piece.node, piece.start, piece.end, piece.color, piece.startToken, piece.endToken);
   return { applied, skipped };
+}
+
+function getCharOffsetInParts(parts, container, offset) {
+  if (!parts || !parts.length) return 0;
+  if (container.nodeType === Node.TEXT_NODE) {
+    for (const part of parts) {
+      if (part.node === container) {
+        return part.stringStart + Math.min(Math.max(0, offset), part.node.nodeValue.length);
+      }
+    }
+  }
+  if (container.nodeType === Node.ELEMENT_NODE) {
+    if (offset >= 0 && offset < container.childNodes.length) {
+      const child = container.childNodes[offset];
+      for (const part of parts) {
+        if (child === part.node || child.contains(part.node)) {
+          return part.stringStart;
+        }
+        if (child.compareDocumentPosition(part.node) & Node.DOCUMENT_POSITION_FOLLOWING) {
+          return part.stringStart;
+        }
+      }
+    } else if (offset >= container.childNodes.length && container.childNodes.length > 0) {
+      const lastChild = container.childNodes[container.childNodes.length - 1];
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const part = parts[i];
+        if (lastChild === part.node || lastChild.contains(part.node)) {
+          return part.stringEnd;
+        }
+        if (lastChild.compareDocumentPosition(part.node) & Node.DOCUMENT_POSITION_PRECEDING) {
+          return part.stringEnd;
+        }
+      }
+    }
+  }
+  for (const part of parts) {
+    if (container.compareDocumentPosition(part.node) & Node.DOCUMENT_POSITION_FOLLOWING) {
+      return part.stringStart;
+    }
+  }
+  return parts[parts.length - 1].stringEnd;
+}
+
+function rangeIntersectsNode(range, node) {
+  if (!range || !node) return false;
+  if (typeof range.intersectsNode === "function") {
+    try {
+      return range.intersectsNode(node);
+    } catch {
+      // Fall through to fallback
+    }
+  }
+  return (
+    node.contains(range.startContainer) ||
+    node.contains(range.endContainer) ||
+    range.commonAncestorContainer === node ||
+    Boolean(range.commonAncestorContainer && node.contains(range.commonAncestorContainer))
+  );
+}
+
+function tokenRangeForBlock(roots, domRange) {
+  const list = (Array.isArray(roots) ? roots : [roots]).filter(Boolean);
+  if (!list.length || !domRange || domRange.collapsed) return null;
+
+  const collected = collectText(list);
+  if (!collected.text || !collected.parts.length) return null;
+
+  const tokens = tokenize(collected.text);
+  if (!tokens.length) return null;
+
+  let charStart = 0;
+  let charEnd = collected.text.length;
+
+  const firstRoot = list[0];
+  const lastRoot = list[list.length - 1];
+
+  const startsInside = list.some((r) => r.contains(domRange.startContainer));
+  if (startsInside) {
+    charStart = getCharOffsetInParts(collected.parts, domRange.startContainer, domRange.startOffset);
+  } else {
+    const pos = firstRoot.compareDocumentPosition(domRange.startContainer);
+    if (pos & Node.DOCUMENT_POSITION_FOLLOWING) return null;
+    charStart = 0;
+  }
+
+  const endsInside = list.some((r) => r.contains(domRange.endContainer));
+  if (endsInside) {
+    charEnd = getCharOffsetInParts(collected.parts, domRange.endContainer, domRange.endOffset);
+  } else {
+    const pos = lastRoot.compareDocumentPosition(domRange.endContainer);
+    if (pos & Node.DOCUMENT_POSITION_PRECEDING) return null;
+    charEnd = collected.text.length;
+  }
+
+  if (charStart >= charEnd) return null;
+
+  let startToken = -1;
+  let endToken = -1;
+
+  for (let i = 0; i < tokens.length; i++) {
+    const t = tokens[i];
+    if (Math.max(t.start, charStart) < Math.min(t.end, charEnd)) {
+      if (startToken === -1) {
+        startToken = i;
+      }
+      endToken = i;
+    }
+  }
+
+  if (startToken === -1 || endToken === -1 || startToken > endToken) {
+    return null;
+  }
+
+  return { startToken, endToken };
+}
+
+function addHighlightRange(ranges, [newStart, newEnd, newColor]) {
+  const result = [];
+  let s = newStart;
+  let e = newEnd;
+  for (const [start, end, color] of ranges) {
+    if (end < s || start > e) {
+      result.push([start, end, color]);
+      continue;
+    }
+    if (color === newColor) {
+      s = Math.min(s, start);
+      e = Math.max(e, end);
+      continue;
+    }
+    if (start < s) {
+      result.push([start, s - 1, color]);
+    }
+    if (end > e) {
+      result.push([e + 1, end, color]);
+    }
+  }
+  result.push([s, e, newColor]);
+  result.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  return result;
+}
+
+function removeHighlightRange(ranges, [remStart, remEnd]) {
+  const result = [];
+  for (const [start, end, color] of ranges) {
+    if (end < remStart || start > remEnd) {
+      result.push([start, end, color]);
+      continue;
+    }
+    if (start < remStart) {
+      result.push([start, remStart - 1, color]);
+    }
+    if (end > remEnd) {
+      result.push([remEnd + 1, end, color]);
+    }
+  }
+  result.sort((a, b) => a[0] - b[0] || a[1] - b[1]);
+  return result;
 }

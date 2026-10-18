@@ -30,9 +30,10 @@ Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **B
 JW Library backup files (`.jwlibrary`) do not store publication text. Instead, they store lightweight relational entries consisting of color identifiers and token-based word offsets pointing at publications, paragraphs, or Bible verses.
 
 1. **100% Client-Side SQLite Parsing**: Uses WebAssembly SQLite (`sql.js`) to parse `.jwlibrary` (Zip) or `userData.db` directly in your browser.
-2. **Deterministic Unicode Tokenization**: Precise tokenization engine matching JW Library's word/punctuation boundaries and skipping non-counting annotations (paragraph numbers, footnote letters, cross-references).
-3. **Reactive Content Script**: Dynamically detects client-side page transitions on `wol.jw.org` using `MutationObserver` and paints matching text using native JW Library colors.
-4. **Zero Network Telemetry**: 100% offline; your personal study backups are never uploaded anywhere.
+2. **Interactive In-Browser Marker Creation**: Select any text on `wol.jw.org` (across existing or brand-new articles and Bible chapters) to create, change, or remove highlights using JW Library's 6 colors with a floating selection toolbar.
+3. **Deterministic Unicode Tokenization**: Precise tokenization engine matching JW Library's word/punctuation boundaries and skipping non-counting annotations (paragraph numbers, footnote letters, cross-references).
+4. **Reactive Content Script**: Dynamically detects client-side page transitions on `wol.jw.org` using `MutationObserver` and paints matching text using native JW Library colors.
+5. **Zero Network Telemetry**: 100% offline; your personal study backups and highlights are stored locally in the browser and never uploaded anywhere.
 
 ---
 
@@ -104,14 +105,23 @@ nix run .#deploy
 
 ## Usage Guide
 
-1. Export a backup from your JW Library app (*Settings &rarr; Backup and Restore*).
-2. Click the **WOL Highlights** icon in your browser toolbar.
-3. Click **Load backup** and choose your `.jwlibrary` file (or `userData.db`).
+1. **Importing Highlights**:
+   - Export a backup from your JW Library app (*Settings &rarr; Backup and Restore*).
+   - Click the **WOL Highlights** icon in your browser toolbar.
+   - Click **Load backup** and choose your `.jwlibrary` file, `userData.db`, or a previously exported `.json` highlights file.
    - *Tip:* Click **Open in permanent tab** in the popup header if you prefer managing backups in a full tab.
-4. The popup confirms the loaded file name, total highlight count, affected articles, Bible chapters, and color breakdown.
-5. Open any matching study article or Bible chapter on [wol.jw.org](https://wol.jw.org).
-6. Highlights appear automatically matching your JW Library colors.
-7. Use the **Show highlights** toggle in the popup to show or hide highlights at any time.
+   - The popup displays the loaded file name, total highlight count, affected articles, Bible chapters, and color breakdown.
+2. **Reading & Viewing**:
+   - Open any matching study article or Bible chapter on [wol.jw.org](https://wol.jw.org).
+   - Highlights appear automatically matching your JW Library colors.
+   - Use the **Show highlights** toggle in the popup to show or hide highlights at any time.
+3. **Creating & Removing Highlights**:
+   - Select text on any article or Bible chapter (both existing from backup or brand-new) to open the floating toolbar.
+   - Click any of the 6 color buttons to highlight the selection.
+   - Click on any existing highlight (from backup or newly created) or select it to open the toolbar, then click the **Remove** button (✕) to delete it.
+4. **Exporting Highlights**:
+   - In the popup, click **Export highlights (JSON)** to save your current highlights and markers as a portable JSON file.
+
 
 ---
 
