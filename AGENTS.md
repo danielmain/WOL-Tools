@@ -156,3 +156,5 @@ interface StoredIndex {
   - Check `wol-highlights/test/run.html` if tokenization or highlight placement changed.
 - **After editing `wol-desktop/`**:
   - Run `npm run desktop:test` (`cargo test --manifest-path wol-desktop/Cargo.toml`).
+- **Git commits & pushes**:
+  - When asked to commit and push, always stage and commit **all** modified and untracked files in the working tree (`git add -A`) and push to **both** remotes (`git push github master:main` and `git push origin master`).
