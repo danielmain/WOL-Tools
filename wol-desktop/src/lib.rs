@@ -3,6 +3,7 @@ pub mod cache;
 pub mod commands;
 pub mod crawler;
 pub mod handler;
+pub mod jwlibrary_export;
 pub mod languages;
 pub mod rewrite;
 pub mod state;
@@ -76,12 +77,14 @@ pub fn run_app() {
     ));
 
     let builder = tauri::Builder::default()
+        .plugin(tauri_plugin_dialog::init())
         .manage(state_mgr.clone())
         .manage(cache)
         .manage(crawler)
         .invoke_handler(tauri::generate_handler![
             commands::get_marks,
             commands::set_marks,
+            commands::export_marks_to_file,
             commands::get_cookies,
             commands::set_cookie,
             commands::dispatch_tab_message,
@@ -168,7 +171,7 @@ pub fn run_app() {
 
             app.on_menu_event(|app, event| {
                 if event.id() == "manage_highlights" {
-                    let _ = commands::open_manager_window(app.clone());
+                    let _ = commands::open_manager_window(app.clone(), None);
                 } else if event.id() == "nav_back" {
                     if let Some(win) = app.get_webview_window("main") {
                         let _ = win.eval("window.history.back()");

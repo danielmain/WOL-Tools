@@ -107,7 +107,12 @@ nix run .#deploy
 
 ### Option D: OfflineWOL Desktop App (Tauri 2)
 
-Requires Rust (`cargo`) and Tauri 2 prerequisites:
+Prebuilt installers and binaries for **OfflineWOL** are published on GitHub Releases (triggered by `v*` tags or manual dispatch via `.github/workflows/release.yml`) for:
+- **macOS**: Apple Silicon (`aarch64-apple-darwin`) and Intel (`x86_64-apple-darwin`)
+- **Linux**: `x86_64` (`x86_64-unknown-linux-gnu`) and ARM64 (`aarch64-unknown-linux-gnu`)
+- **Windows**: `x86_64` (`x86_64-pc-windows-msvc`) and ARM64 (`aarch64-pc-windows-msvc`)
+
+To build or run from source, Rust (`cargo`) and Tauri 2 prerequisites are required:
 
 ```bash
 npm run desktop:dev   # Launch in development mode
@@ -197,6 +202,7 @@ Highlights replicate native JW Library colors:
 
 ```text
 .
+├── .github/workflows/       # CI/CD workflows (release.yml for OfflineWOL desktop builds)
 ├── .gitignore               # Ignored build outputs, local test databases, and secrets
 ├── AGENTS.md                # Unified technical guide and operational rules for AI agents
 ├── README.md                # Project documentation (this file)

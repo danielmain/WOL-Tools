@@ -6,11 +6,13 @@
     <link rel="stylesheet" href="manager.css">
   </head>
   <body>
-    <header>
-      <img src="icons/icon-48.png" alt="" width="28" height="28">
-      <div>
-        <h1>OfflineWOL</h1>
-        <p>Offline reader &amp; study highlights</p>
+    <header class="app-header">
+      <div class="brand">
+        <img src="icons/icon-48.png" alt="" width="32" height="32">
+        <div>
+          <h1>OfflineWOL</h1>
+          <p>Offline reader, study backups &amp; settings</p>
+        </div>
       </div>
       <div class="offline-status">
         <span id="network-dot" class="status-dot"></span>
@@ -18,80 +20,105 @@
       </div>
     </header>
 
-    <nav class="tabs">
-      <button class="tab-btn active" data-tab="tab-highlights">Highlights</button>
-      <button class="tab-btn" data-tab="tab-settings">Settings</button>
-      <button class="tab-btn" data-tab="tab-cache">Cache Inspector</button>
+    <nav class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="tab-highlights" role="tab">Highlights &amp; Backups</button>
+      <button class="tab-btn" data-tab="tab-settings" role="tab">Settings</button>
+      <button class="tab-btn" data-tab="tab-cache" role="tab">Cache Inspector</button>
     </nav>
 
     <!-- HIGHLIGHTS TAB -->
     <main id="tab-highlights" class="tab-pane active">
-      <div class="actions">
-        <label class="file">
-          <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,.json,application/octet-stream,application/json">
-          <span>📂 Load backup</span>
-        </label>
-      </div>
-      <p class="hint">Select a backup file (<code>.jwlibrary</code> or <code>.json</code>), or drag and drop it anywhere on this page.</p>
+      <section class="card backup-card">
+        <div class="card-header">
+          <div>
+            <h2>Study Backup</h2>
+            <p class="card-subtitle">Import a JW Library backup or export your highlights and notes as a <code>.jwlibrary</code> file.</p>
+          </div>
+        </div>
 
-      <section id="loaded" hidden>
-        <p id="file-name"></p>
+        <div class="backup-actions">
+          <label class="file">
+            <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,.json,application/octet-stream,application/json">
+            <span>📂 Load Backup…</span>
+          </label>
+          <button id="export-json" type="button" class="btn-export" disabled title="Load or create highlights first to export">
+            💾 Export Backup…
+          </button>
+          <button id="reset-all" type="button" class="btn-reset" disabled title="Clear all highlights and comments to start fresh">
+            🗑 Reset All…
+          </button>
+        </div>
+        <p class="drop-hint">Supports <code>.jwlibrary</code>, <code>.db</code>, <code>.sqlite</code>, and <code>.json</code> — or drag &amp; drop a file anywhere in this window.</p>
+      </section>
+
+      <section id="loaded" class="card" hidden>
+        <div class="loaded-header">
+          <div>
+            <h2>Active Highlights</h2>
+            <p id="file-name"></p>
+          </div>
+          <button id="remove" type="button" class="btn-danger-outline">Remove</button>
+        </div>
         <p id="counts"></p>
         <ul id="colors"></ul>
-        <label class="toggle">
-          <input id="enabled" type="checkbox">
-          <span>Show highlights</span>
-        </label>
-        <div class="loaded-actions">
-          <button id="export-json" type="button" class="btn-secondary">Export highlights</button>
-          <button id="remove" type="button">Remove highlights</button>
+        <div class="loaded-footer">
+          <label class="toggle">
+            <input id="enabled" type="checkbox">
+            <span>Show highlights on WOL pages</span>
+          </label>
         </div>
       </section>
 
-      <section id="page">
-        <h2>This page</h2>
+      <section id="page" class="card card-compact">
+        <h2>Main Window</h2>
         <p id="page-status">Open an article in the main window.</p>
       </section>
     </main>
 
     <!-- SETTINGS TAB -->
     <main id="tab-settings" class="tab-pane">
-      <div class="form-group">
-        <label for="setting-lang">Primary Language</label>
-        <select id="setting-lang" class="form-control">
-          <!-- Populated from scraped languages -->
-        </select>
-        <p class="hint">Select the default study language. WOL Home will navigate to this library.</p>
-      </div>
+      <section class="card">
+        <h2>Library &amp; Language</h2>
+        <div class="form-group">
+          <label for="setting-lang">Primary Language</label>
+          <select id="setting-lang" class="form-control">
+            <!-- Populated from scraped languages -->
+          </select>
+          <p class="hint">Select your default study language. Home navigates to this library.</p>
+        </div>
 
-      <div class="form-group">
-        <label for="setting-home">Home URL</label>
-        <input id="setting-home" type="text" class="form-control" readonly>
-      </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="setting-home">Home URL</label>
+          <input id="setting-home" type="text" class="form-control" readonly>
+        </div>
+      </section>
 
-      <div class="form-group">
-        <label for="setting-theme">Appearance (Dark Reader)</label>
-        <select id="setting-theme" class="form-control">
-          <option value="system">System (Automatic)</option>
-          <option value="light">Light</option>
-          <option value="dark">Dark</option>
-        </select>
-        <p class="hint">Uses Dark Reader on WOL pages and matches the Settings window theme.</p>
-      </div>
+      <section class="card">
+        <h2>Appearance &amp; Storage</h2>
+        <div class="form-group">
+          <label for="setting-theme">Appearance (Dark Reader)</label>
+          <select id="setting-theme" class="form-control">
+            <option value="system">System (Automatic)</option>
+            <option value="light">Light</option>
+            <option value="dark">Dark</option>
+          </select>
+          <p class="hint">Applies Dark Reader to WOL pages and matches this window's theme.</p>
+        </div>
 
-      <div class="form-group">
-        <label for="setting-cap">Cache Cap (MB)</label>
-        <select id="setting-cap" class="form-control">
-          <option value="524288000">500 MB</option>
-          <option value="1073741824">1 GB</option>
-          <option value="2147483648" selected>2 GB (Default)</option>
-          <option value="5368709120">5 GB</option>
-          <option value="10737418240">10 GB</option>
-        </select>
-        <p class="hint">Oldest visited pages are evicted when disk usage exceeds this limit.</p>
-      </div>
+        <div class="form-group" style="margin-bottom: 0;">
+          <label for="setting-cap">Offline Cache Cap</label>
+          <select id="setting-cap" class="form-control">
+            <option value="524288000">500 MB</option>
+            <option value="1073741824">1 GB</option>
+            <option value="2147483648" selected>2 GB (Default)</option>
+            <option value="5368709120">5 GB</option>
+            <option value="10737418240">10 GB</option>
+          </select>
+          <p class="hint">Oldest visited pages are evicted when disk usage exceeds this limit.</p>
+        </div>
+      </section>
 
-      <div style="margin-top: 24px; display: flex; gap: 12px;">
+      <div class="settings-actions">
         <button id="btn-save-settings" class="btn-primary" type="button">Save Settings</button>
         <button id="btn-navigate-home" class="btn-secondary" type="button">Go to Home Page</button>
       </div>
@@ -114,7 +141,7 @@
         </div>
       </div>
 
-      <div class="actions" style="margin-bottom: 16px; flex-wrap: wrap;">
+      <div class="actions" style="margin-bottom: 14px; flex-wrap: wrap;">
         <button id="btn-crawl-current" type="button" class="btn-primary">💾 Save Current Page Offline</button>
         <button id="btn-clear-older" type="button" class="btn-secondary">Clean Older Than 30 Days</button>
         <button id="btn-clear-all" type="button" class="btn-secondary btn-danger">Clear Cache</button>
@@ -141,7 +168,7 @@
       </div>
     </main>
 
-    <p id="message" role="status" style="margin-top: 16px;"></p>
+    <p id="message" role="status"></p>
 
     <script src="lib/sql-wasm.js"></script>
     <script src="lib/backup.js"></script>

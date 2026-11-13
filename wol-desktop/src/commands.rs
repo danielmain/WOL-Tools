@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri_plugin_dialog::DialogExt;
 
 use crate::cache::{CacheEntry, DiskCache};
 use crate::crawler::{
@@ -54,6 +55,90 @@ pub fn set_marks(
     }
 
     Ok(())
+}
+
+fn marks_has_exportable_data(marks: &Value) -> bool {
+    let hl = marks
+        .get("highlightCount")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0);
+    let notes = marks
+        .get("noteCount")
+        .and_then(|v| v.as_u64())
+        .unwrap_or(0);
+    if hl > 0 || notes > 0 {
+        return true;
+    }
+    let has_docs = marks
+        .get("docs")
+        .and_then(|v| v.as_object())
+        .is_some_and(|m| !m.is_empty());
+    let has_bible = marks
+        .get("bible")
+        .and_then(|v| v.as_object())
+        .is_some_and(|m| !m.is_empty());
+    has_docs || has_bible
+}
+
+#[tauri::command]
+pub async fn export_marks_to_file(
+    app: AppHandle,
+    default_name: Option<String>,
+    state_mgr: State<'_, StateManager>,
+) -> Result<Option<String>, String> {
+    let marks = state_mgr
+        .get_marks()
+        .map_err(|e| e.to_string())?
+        .ok_or_else(|| "No highlights or notes to export.".to_string())?;
+
+    if !marks_has_exportable_data(&marks) {
+        return Err("No highlights or notes to export.".to_string());
+    }
+
+    let default_meps_lang = state_mgr
+        .get_settings()
+        .ok()
+        .and_then(|s| {
+            languages::find_by_locale(&s.language)
+                .or_else(|| languages::find_by_symbol(&s.language))
+        })
+        .map(|lang| match lang.symbol.as_str() {
+            "E" => 0,
+            "S" => 1,
+            _ => 0,
+        })
+        .unwrap_or(0);
+
+    let file_name = default_name
+        .map(|s| s.trim().to_string())
+        .filter(|s| !s.is_empty())
+        .unwrap_or_else(|| "UserdataBackup_OfflineWOL.jwlibrary".to_string());
+
+    let (tx, rx) = tokio::sync::oneshot::channel();
+    app.dialog()
+        .file()
+        .set_title("Export JW Library Backup")
+        .set_file_name(&file_name)
+        .add_filter("JW Library Backup", &["jwlibrary"])
+        .save_file(move |file_path| {
+            let _ = tx.send(file_path);
+        });
+
+    let chosen = rx.await.map_err(|_| "Export dialog closed unexpectedly.".to_string())?;
+    let Some(file_path) = chosen else {
+        return Ok(None);
+    };
+
+    let mut path = file_path
+        .into_path()
+        .map_err(|e| format!("Invalid destination path: {e}"))?;
+    if path.extension().and_then(|e| e.to_str()) != Some("jwlibrary") {
+        path.set_extension("jwlibrary");
+    }
+
+    crate::jwlibrary_export::export_marks_to_jwlibrary(&marks, &path, default_meps_lang)?;
+
+    Ok(Some(path.display().to_string()))
 }
 
 #[tauri::command]
@@ -421,19 +506,39 @@ pub fn cancel_library_offline(crawler: State<'_, Crawler>) -> Result<(), String>
     Ok(())
 }
 
+fn normalize_manager_tab(tab: Option<&str>) -> Option<&'static str> {
+    match tab.map(str::trim) {
+        Some("highlights" | "tab-highlights") => Some("tab-highlights"),
+        Some("settings" | "tab-settings") => Some("tab-settings"),
+        Some("cache" | "tab-cache") => Some("tab-cache"),
+        _ => None,
+    }
+}
+
 #[tauri::command]
-pub fn open_manager_window(app: AppHandle) -> Result<(), String> {
+pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), String> {
+    let target_tab = normalize_manager_tab(tab.as_deref());
     if let Some(win) = app.get_webview_window("manager") {
         let _ = win.show();
         let _ = win.set_focus();
+        if let Some(tab_id) = target_tab {
+            let _ = win.eval(&format!(
+                "if (window.__wolSelectTab) {{ window.__wolSelectTab({tab_id:?}); }}"
+            ));
+        }
     } else {
         let tauri_theme = app
             .try_state::<StateManager>()
             .and_then(|s| s.get_settings().ok())
             .and_then(|s| s.theme.to_tauri_theme());
-        let _win = WebviewWindowBuilder::new(&app, "manager", WebviewUrl::App("index.html".into()))
+        let app_url = match target_tab {
+            Some(tab_id) => format!("index.html#{tab_id}"),
+            None => "index.html".to_string(),
+        };
+        let _win = WebviewWindowBuilder::new(&app, "manager", WebviewUrl::App(app_url.into()))
             .title("OfflineWOL — Highlights & Settings")
-            .inner_size(700.0, 800.0)
+            .inner_size(740.0, 820.0)
+            .min_inner_size(520.0, 560.0)
             .theme(tauri_theme)
             .build()
             .map_err(|e| e.to_string())?;

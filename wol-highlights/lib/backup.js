@@ -4,7 +4,9 @@ SELECT
   l.BookNumber AS bookNumber,
   l.ChapterNumber AS chapterNumber,
   l.KeySymbol AS keySymbol,
+  l.IssueTagNumber AS issueTagNumber,
   l.MepsLanguage AS mepsLanguage,
+  l.Title AS title,
   b.BlockType AS blockType,
   b.Identifier AS identifier,
   b.StartToken AS startToken,
@@ -87,8 +89,61 @@ async function inflateRaw(data) {
   return new Uint8Array(await new Response(stream).arrayBuffer());
 }
 
+async function extractZipEntry(bytes, name, method, dataStart, compressedSize) {
+  if (dataStart < 0 || dataStart + compressedSize > bytes.length) {
+    throw new Error("The backup file is truncated.");
+  }
+  console.log("[WOL Highlights Backup] Found " + name + " in ZIP (method=" + method + ", compressed=" + compressedSize + " bytes)");
+  const compressed = bytes.subarray(dataStart, dataStart + compressedSize);
+  if (method === 0) return new Uint8Array(compressed);
+  if (method === 8) return inflateRaw(compressed);
+  throw new Error(`userData.db is compressed with method ${method}, which this add-on cannot read.`);
+}
+
+function findEocdOffset(bytes) {
+  const minOffset = Math.max(0, bytes.length - 65557);
+  for (let offset = bytes.length - 22; offset >= minOffset; offset -= 1) {
+    if (readU32(bytes, offset) === 0x06054b50) {
+      const commentLength = readU16(bytes, offset + 20);
+      if (offset + 22 + commentLength === bytes.length) return offset;
+    }
+  }
+  return -1;
+}
+
 async function unzipDatabase(bytes) {
   console.log("[WOL Highlights Backup] Inspecting ZIP archive (" + bytes.length + " bytes)...");
+  const decoder = new TextDecoder("utf-8");
+
+  // Prefer the Central Directory so ZIPs with data descriptors (e.g. Android ZipOutputStream)
+  // where the local file header has compressedSize=0 are read accurately.
+  const eocdOffset = findEocdOffset(bytes);
+  if (eocdOffset >= 0) {
+    const totalEntries = readU16(bytes, eocdOffset + 10);
+    const cdOffset = readU32(bytes, eocdOffset + 16);
+    let pos = cdOffset;
+    for (let i = 0; i < totalEntries && pos + 46 <= bytes.length; i += 1) {
+      if (readU32(bytes, pos) !== 0x02014b50) break;
+      const method = readU16(bytes, pos + 10);
+      const compressedSize = readU32(bytes, pos + 20);
+      const nameLength = readU16(bytes, pos + 28);
+      const extraLength = readU16(bytes, pos + 30);
+      const commentLength = readU16(bytes, pos + 32);
+      const localHeaderOffset = readU32(bytes, pos + 42);
+      const name = decoder.decode(bytes.subarray(pos + 46, pos + 46 + nameLength));
+      if (/(^|\/)userData\.db$/i.test(name)) {
+        if (localHeaderOffset + 30 > bytes.length || readU32(bytes, localHeaderOffset) !== 0x04034b50) {
+          throw new Error("The backup file is truncated.");
+        }
+        const localNameLength = readU16(bytes, localHeaderOffset + 26);
+        const localExtraLength = readU16(bytes, localHeaderOffset + 28);
+        const dataStart = localHeaderOffset + 30 + localNameLength + localExtraLength;
+        return extractZipEntry(bytes, name, method, dataStart, compressedSize);
+      }
+      pos += 46 + nameLength + extraLength + commentLength;
+    }
+  }
+
   let offset = 0;
   while (offset + 30 <= bytes.length) {
     const signature = readU32(bytes, offset);
@@ -100,19 +155,15 @@ async function unzipDatabase(bytes) {
     const nameLength = readU16(bytes, offset + 26);
     const extraLength = readU16(bytes, offset + 28);
     const nameStart = offset + 30;
-    const name = new TextDecoder("utf-8").decode(bytes.subarray(nameStart, nameStart + nameLength));
+    const name = decoder.decode(bytes.subarray(nameStart, nameStart + nameLength));
     const dataStart = nameStart + nameLength + extraLength;
     if ((flags & 0x8) && compressedSize === 0) {
       throw new Error("This backup uses a zip layout the add-on cannot read. Load userData.db instead.");
     }
-    if (dataStart + compressedSize > bytes.length) throw new Error("The backup file is truncated.");
     if (/(^|\/)userData\.db$/i.test(name)) {
-      console.log("[WOL Highlights Backup] Found " + name + " in ZIP (method=" + method + ", compressed=" + compressedSize + " bytes)");
-      const compressed = bytes.subarray(dataStart, dataStart + compressedSize);
-      if (method === 0) return new Uint8Array(compressed);
-      if (method === 8) return inflateRaw(compressed);
-      throw new Error(`userData.db is compressed with method ${method}, which this add-on cannot read.`);
+      return extractZipEntry(bytes, name, method, dataStart, compressedSize);
     }
+    if (dataStart + compressedSize > bytes.length) throw new Error("The backup file is truncated.");
     offset = dataStart + compressedSize;
   }
   throw new Error("No userData.db inside this backup.");
@@ -122,6 +173,7 @@ function indexRows(rows, noteRows = [], inputFieldRows = []) {
   console.log("[WOL Highlights Backup] Indexing " + rows.length + " highlight rows, " + noteRows.length + " note rows, and " + inputFieldRows.length + " input fields...");
   const docs = {};
   const bible = {};
+  const docMeta = {};
   const colorCounts = {};
   let highlightCount = 0;
   let ignored = 0;
@@ -137,6 +189,14 @@ function indexRows(rows, noteRows = [], inputFieldRows = []) {
       const paragraphs = docs[row.documentId] || (docs[row.documentId] = {});
       const list = paragraphs[row.identifier] || (paragraphs[row.identifier] = []);
       list.push(span);
+      if (!docMeta[row.documentId]) {
+        docMeta[row.documentId] = {
+          keySymbol: row.keySymbol || null,
+          issueTagNumber: row.issueTagNumber || 0,
+          mepsLanguage: row.mepsLanguage ?? null,
+          title: row.title || null,
+        };
+      }
       highlightCount += 1;
       colorCounts[row.colorIndex] = (colorCounts[row.colorIndex] || 0) + 1;
     } else if (row.blockType === 2 && row.bookNumber && row.chapterNumber && row.keySymbol) {
@@ -226,6 +286,7 @@ function indexRows(rows, noteRows = [], inputFieldRows = []) {
     colorCounts,
     docs,
     bible,
+    docMeta,
     notes,
     inputFields,
   };

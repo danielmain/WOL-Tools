@@ -100,6 +100,7 @@ const colors = document.querySelector("#colors");
 const enabledInput = document.querySelector("#enabled");
 const removeButton = document.querySelector("#remove");
 const exportButton = document.querySelector("#export-json");
+const resetAllButton = document.querySelector("#reset-all");
 const pageStatus = document.querySelector("#page-status");
 const message = document.querySelector("#message");
 
@@ -177,19 +178,30 @@ function formatWhen(iso) {
 // ----------------------------------------------------
 // TAB SWITCHING
 // ----------------------------------------------------
-document.querySelectorAll(".tab-btn").forEach((btn) => {
-  btn.addEventListener("click", () => {
-    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
-    document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
-    btn.classList.add("active");
-    const pane = document.getElementById(btn.dataset.tab);
-    if (pane) pane.classList.add("active");
+function selectTab(tabId) {
+  const targetBtn = document.querySelector(`.tab-btn[data-tab="${tabId}"]`);
+  const targetPane = document.getElementById(tabId);
+  if (!targetBtn || !targetPane) return;
 
-    if (btn.dataset.tab === "tab-cache") {
-      refreshCacheInspector();
-    }
-  });
+  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+  targetBtn.classList.add("active");
+  targetPane.classList.add("active");
+
+  if (tabId === "tab-cache") {
+    refreshCacheInspector();
+  }
+}
+
+window.__wolSelectTab = selectTab;
+
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => selectTab(btn.dataset.tab));
 });
+
+if (window.location.hash && window.location.hash.length > 1) {
+  selectTab(window.location.hash.slice(1));
+}
 
 // ----------------------------------------------------
 // NETWORK STATUS
@@ -219,6 +231,17 @@ async function currentIndex() {
 }
 
 function renderIndex(index) {
+  const hasExportable = Boolean(index && (index.highlightCount || index.noteCount));
+  if (exportButton) {
+    exportButton.disabled = !hasExportable;
+    exportButton.title = hasExportable
+      ? "Choose where to save a .jwlibrary backup file"
+      : "Load or create highlights first to export";
+  }
+  if (resetAllButton) {
+    resetAllButton.disabled = !hasExportable;
+  }
+
   if (!index) {
     loadedSection.hidden = true;
     return;
@@ -383,6 +406,18 @@ removeButton.addEventListener("click", async () => {
   await refreshPage();
 });
 
+if (resetAllButton) {
+  resetAllButton.addEventListener("click", async () => {
+    const index = await currentIndex();
+    if (!index) return;
+    if (!window.confirm("Reset all highlights and comments? This will clear all markers and notes so you can start fresh.")) return;
+    await ext.storage.local.remove("wolMarks");
+    renderIndex(null);
+    setMessage("All highlights and comments have been reset.");
+    await refreshPage();
+  });
+}
+
 if (exportButton) {
   exportButton.addEventListener("click", async () => {
     const index = await currentIndex();
@@ -390,12 +425,31 @@ if (exportButton) {
       setMessage("No highlights or notes to export.", true);
       return;
     }
+    const dateStr = new Date().toISOString().slice(0, 10);
+    if (tauriInvoke) {
+      const defaultName = `UserdataBackup_${dateStr}_OfflineWOL.jwlibrary`;
+      try {
+        const savedPath = await tauriInvoke("export_marks_to_file", { defaultName });
+        if (savedPath) {
+          setMessage(`JW Library backup exported to ${savedPath}.`);
+        } else {
+          setMessage("Export cancelled.");
+        }
+      } catch (err) {
+        console.error("[Manager] Export failed:", err);
+        setMessage(typeof err === "string" ? err : (err?.message || "Export failed."), true);
+      }
+      return;
+    }
+
+    const defaultName = `wol-study-backup-${dateStr}.json`;
+
     const jsonStr = JSON.stringify(index, null, 2);
     const blob = new Blob([jsonStr], { type: "application/json" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `wol-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = defaultName;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);

@@ -31,6 +31,7 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 
 ```text
 .
+├── .github/workflows/       # GitHub Actions (release.yml: OfflineWOL builds for macOS/Linux/Windows x86_64 & aarch64)
 ├── AGENTS.md                # Unified AI agent & developer reference (this file)
 ├── README.md                # User-facing documentation
 ├── TODO.md                  # Tauri desktop migration plan & verified WOL research

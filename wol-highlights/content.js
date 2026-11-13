@@ -56,6 +56,48 @@ function symbolFromArticle(article, index) {
   return null;
 }
 
+function pageIssueTagNumber() {
+  const el = document.getElementById("issue");
+  const raw = el ? String(el.value || "").trim() : "";
+  if (!/^\d{6,8}$/.test(raw)) return 0;
+  const padded = raw.length === 6 ? `${raw}00` : raw;
+  const num = Number.parseInt(padded, 10);
+  return Number.isFinite(num) && num > 0 ? num : 0;
+}
+
+function recordDocMeta(marks, docId, article) {
+  if (!marks || !docId || !article) return;
+  if (!marks.docMeta) marks.docMeta = {};
+  const existing = marks.docMeta[docId] || {};
+
+  let keySymbol = existing.keySymbol || null;
+  if (!keySymbol) {
+    for (const className of article.classList) {
+      if (className.startsWith("pub-") && className.length > 4) {
+        keySymbol = className.slice(4);
+        break;
+      }
+    }
+  }
+
+  let mepsLanguage = existing.mepsLanguage ?? null;
+  if (mepsLanguage === null) {
+    const langSym = pageLanguage(article);
+    const parsedLang = languageId(langSym);
+    if (parsedLang !== null) mepsLanguage = parsedLang;
+  }
+
+  const title = existing.title || (document.title ? document.title.trim() : null) || null;
+  const issueTagNumber = existing.issueTagNumber || pageIssueTagNumber();
+
+  marks.docMeta[docId] = {
+    keySymbol,
+    issueTagNumber,
+    mepsLanguage,
+    title,
+  };
+}
+
 function findBibleChapterKey(bible, langSymbol, pubSymbol, book, chapter) {
   if (!bible) return null;
   const symbol = String(pubSymbol || "").toLowerCase();
@@ -221,7 +263,10 @@ async function applyNow(force = false) {
     lastStatus.hasBackup = hasBackup;
     lastStatus.enabled = want;
     document.documentElement.dataset.wolHighlights = !hasBackup ? "empty" : want ? "on" : "off";
-    if (article) clearMarks(article);
+    if (article) {
+      clearMarks(article);
+      clearNoteCards(article);
+    }
 
     const docId = documentIdFromUrl();
     lastStatus.docId = docId;
@@ -242,6 +287,9 @@ async function applyNow(force = false) {
     const textareaResult = enableAndBindTextareas(article, want ? index : null, docId);
     lastStatus.textareasEnabled = textareaResult.enabledCount;
     lastStatus.notesApplied = textareaResult.notesApplied;
+    if (want) {
+      lastStatus.notesApplied += renderBlockNotes(article, index, docId, textareaResult.consumedNotePids);
+    }
 
     if (!hasBackup) {
       console.log("[WOL Highlights Content] Skipping highlight application: No backup is stored in browser local storage.");
@@ -494,12 +542,14 @@ async function getOrInitMarks() {
       colorCounts: {},
       docs: {},
       bible: {},
+      docMeta: {},
       notes: { docs: {}, bible: {} },
       inputFields: { docs: {}, bible: {} },
     };
   }
   if (!marks.docs) marks.docs = {};
   if (!marks.bible) marks.bible = {};
+  if (!marks.docMeta) marks.docMeta = {};
   if (!marks.notes) marks.notes = { docs: {}, bible: {} };
   if (!marks.inputFields) marks.inputFields = { docs: {}, bible: {} };
   if (!marks.colorCounts) marks.colorCounts = {};
@@ -689,11 +739,78 @@ function getCandidatePidsForTextarea(textarea, article) {
 
 const noteSaveTimers = new WeakMap();
 
+function clearNoteCards(article) {
+  if (!article) return;
+  for (const el of article.querySelectorAll(".wol-note-card")) {
+    el.remove();
+  }
+}
+
+function createNoteCardElement(notes) {
+  const items = (Array.isArray(notes) ? notes : [notes]).filter((n) => n && (n.title?.trim() || n.content?.trim()));
+  if (!items.length) return null;
+  const card = document.createElement("div");
+  card.className = "wol-note-card";
+  for (const note of items) {
+    if (note.title && note.title.trim()) {
+      const titleEl = document.createElement("div");
+      titleEl.className = "wol-note-card-title";
+      titleEl.textContent = note.title.trim();
+      card.appendChild(titleEl);
+    }
+    if (note.content && note.content.trim()) {
+      const bodyEl = document.createElement("div");
+      bodyEl.className = "wol-note-card-body";
+      bodyEl.textContent = note.content.trim();
+      card.appendChild(bodyEl);
+    }
+  }
+  return card;
+}
+
+function renderBlockNotes(article, index, docId, consumedNotePids) {
+  if (!article || !index?.notes) return 0;
+  let rendered = 0;
+
+  if (docId && index.notes.docs?.[docId]) {
+    for (const [pid, notes] of Object.entries(index.notes.docs[docId])) {
+      if (consumedNotePids?.has(String(pid))) continue;
+      const target = article.querySelector(`[data-pid="${CSS.escape(String(pid))}"]`);
+      if (!target) continue;
+      const card = createNoteCardElement(notes);
+      if (card) {
+        target.insertAdjacentElement("afterend", card);
+        rendered += 1;
+      }
+    }
+  }
+
+  const ref = bibleReferenceFromUrl();
+  if (ref && index.notes.bible) {
+    const key = findBibleChapterKey(index.notes.bible, pageLanguage(article), ref.pub, ref.book, ref.chapter);
+    if (key && index.notes.bible[key]) {
+      for (const [verse, notes] of Object.entries(index.notes.bible[key])) {
+        const spans = article.querySelectorAll(`span.v[id^="v${ref.book}-${ref.chapter}-${verse}-"]`);
+        const target = spans.length ? spans[spans.length - 1] : null;
+        if (!target) continue;
+        const card = createNoteCardElement(notes);
+        if (card) {
+          target.insertAdjacentElement("afterend", card);
+          rendered += 1;
+        }
+      }
+    }
+  }
+
+  return rendered;
+}
+
 function enableAndBindTextareas(article, index, docId) {
-  if (!article) return { enabledCount: 0, notesApplied: 0 };
+  if (!article) return { enabledCount: 0, notesApplied: 0, consumedNotePids: new Set() };
   const textareas = article.querySelectorAll("textarea");
   let enabledCount = 0;
   let notesApplied = 0;
+  const consumedNotePids = new Set();
 
   const docNotes = (index?.notes?.docs && docId) ? index.notes.docs[docId] : null;
 
@@ -763,6 +880,7 @@ function enableAndBindTextareas(article, index, docId) {
       textarea.dataset.wolPid = matchedPid || candidatePids[0] || "";
       if (foundText.trim()) {
         notesApplied++;
+        if (matchedPid) consumedNotePids.add(String(matchedPid));
         console.log(`[WOL Highlights Content] Populated textarea#${textarea.id} (docId=${docId}, pid=${textarea.dataset.wolPid}) with text: "${foundText.slice(0, 30)}${foundText.length > 30 ? "..." : ""}"`);
       }
       adjustTextareaHeight(textarea);
@@ -806,7 +924,7 @@ function enableAndBindTextareas(article, index, docId) {
     }
   }
 
-  return { enabledCount, notesApplied };
+  return { enabledCount, notesApplied, consumedNotePids };
 }
 
 async function saveTextareaNote(textarea, candidatePids, questionTitle) {
@@ -814,6 +932,7 @@ async function saveTextareaNote(textarea, candidatePids, questionTitle) {
   if (!docId) return;
 
   const marks = await getOrInitMarks();
+  recordDocMeta(marks, docId, document.querySelector("#article"));
   if (!marks.notes) marks.notes = { docs: {}, bible: {} };
   if (!marks.notes.docs) marks.notes.docs = {};
   if (!marks.notes.docs[docId]) marks.notes.docs[docId] = {};
@@ -822,64 +941,67 @@ async function saveTextareaNote(textarea, candidatePids, questionTitle) {
   if (!marks.inputFields.docs[docId]) marks.inputFields.docs[docId] = {};
 
   const text = textarea.value;
+  let targetPid = textarea.dataset.wolPid;
 
-  // 1. Save in inputFields by textarea.id
+  // 1. Save in inputFields by textarea.id (matches JW Library's InputField table; do not duplicate as Note)
   if (textarea.id) {
     if (text.trim()) {
       marks.inputFields.docs[docId][textarea.id] = text;
+      textarea.classList.add("wol-has-note");
     } else {
       delete marks.inputFields.docs[docId][textarea.id];
       if (Object.keys(marks.inputFields.docs[docId]).length === 0) {
         delete marks.inputFields.docs[docId];
       }
-    }
-  }
-
-  // 2. Also save in notes by candidate pid
-  const docMap = marks.notes.docs[docId];
-  let targetPid = textarea.dataset.wolPid;
-  if (!targetPid || !candidatePids.includes(targetPid)) {
-    targetPid = candidatePids.find((p) => docMap[p]) || candidatePids[0];
-  }
-
-  if (targetPid) {
-    if (!text.trim()) {
-      delete docMap[targetPid];
-      if (Object.keys(docMap).length === 0) {
-        delete marks.notes.docs[docId];
-      }
       textarea.classList.remove("wol-has-note");
       delete textarea.dataset.userEdited;
-    } else {
-      let noteList = docMap[targetPid];
-      if (Array.isArray(noteList) && noteList.length > 0) {
-        noteList[0].content = text;
-        noteList[0].lastModified = new Date().toISOString();
-        if (!noteList[0].title && questionTitle) {
-          noteList[0].title = questionTitle.slice(0, 255);
+    }
+  } else {
+    // 2. Fallback for textareas without an id: save as a Note by candidate pid
+    const docMap = marks.notes.docs[docId];
+    if (!targetPid || !candidatePids.includes(targetPid)) {
+      targetPid = candidatePids.find((p) => docMap[p]) || candidatePids[0];
+    }
+
+    if (targetPid) {
+      if (!text.trim()) {
+        delete docMap[targetPid];
+        if (Object.keys(docMap).length === 0) {
+          delete marks.notes.docs[docId];
         }
-      } else if (noteList && typeof noteList === "object" && !Array.isArray(noteList)) {
-        noteList.content = text;
-        noteList.lastModified = new Date().toISOString();
-        if (!noteList.title && questionTitle) {
-          noteList.title = questionTitle.slice(0, 255);
-        }
+        textarea.classList.remove("wol-has-note");
+        delete textarea.dataset.userEdited;
       } else {
-        const newNote = {
-          guid: generateUUID(),
-          title: questionTitle ? questionTitle.slice(0, 255) : null,
-          content: text,
-          created: new Date().toISOString(),
-          lastModified: new Date().toISOString(),
-          blockType: 1,
-          blockIdentifier: parseInt(targetPid, 10) || targetPid,
-          userMarkId: null,
-          locationId: null,
-        };
-        docMap[targetPid] = [newNote];
+        let noteList = docMap[targetPid];
+        if (Array.isArray(noteList) && noteList.length > 0) {
+          noteList[0].content = text;
+          noteList[0].lastModified = new Date().toISOString();
+          if (!noteList[0].title && questionTitle) {
+            noteList[0].title = questionTitle.slice(0, 255);
+          }
+        } else if (noteList && typeof noteList === "object" && !Array.isArray(noteList)) {
+          noteList.content = text;
+          noteList.lastModified = new Date().toISOString();
+          if (!noteList.title && questionTitle) {
+            noteList.title = questionTitle.slice(0, 255);
+          }
+        } else {
+          const newNote = {
+            guid: generateUUID(),
+            title: questionTitle ? questionTitle.slice(0, 255) : null,
+            content: text,
+            created: new Date().toISOString(),
+            lastModified: new Date().toISOString(),
+            blockType: 1,
+            blockIdentifier: parseInt(targetPid, 10) || targetPid,
+            userMarkId: null,
+            locationId: null,
+          };
+          docMap[targetPid] = [newNote];
+        }
+        textarea.dataset.wolPid = targetPid;
+        textarea.classList.add("wol-has-note");
       }
-      textarea.dataset.wolPid = targetPid;
-      textarea.classList.add("wol-has-note");
     }
   }
 
@@ -906,6 +1028,7 @@ async function applyColorToActiveSelection(colorIndex) {
 
   const docId = documentIdFromUrl();
   const marks = await getOrInitMarks();
+  if (docId) recordDocMeta(marks, docId, article);
 
   // 1. Direct color change if an existing mark was clicked
   if (targetMark) {
