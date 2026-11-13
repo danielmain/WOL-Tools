@@ -17,6 +17,8 @@ function emptyStatus() {
     docId: null,
     bibleLabel: null,
     applied: 0,
+    notesApplied: 0,
+    textareasEnabled: 0,
     missing: 0,
     skipped: 0,
   };
@@ -235,6 +237,12 @@ async function applyNow(force = false) {
       console.warn("[WOL Highlights Content] #article element not found in DOM.");
       return lastStatus;
     }
+
+    // Always unlock and bind paragraph/study question textareas
+    const textareaResult = enableAndBindTextareas(article, want ? index : null, docId);
+    lastStatus.textareasEnabled = textareaResult.enabledCount;
+    lastStatus.notesApplied = textareaResult.notesApplied;
+
     if (!hasBackup) {
       console.log("[WOL Highlights Content] Skipping highlight application: No backup is stored in browser local storage.");
       return lastStatus;
@@ -319,9 +327,16 @@ function observe() {
               needsApply = true;
             }
           }
-        } else if (m.type === "attributes" && m.attributeName === "class") {
-          if (m.target instanceof Element && m.target.classList.contains("jwac-textHighlight")) {
-            m.target.classList.remove("jwac-textHighlight");
+        } else if (m.type === "attributes") {
+          if (m.attributeName === "class") {
+            if (m.target instanceof Element && m.target.classList.contains("jwac-textHighlight")) {
+              m.target.classList.remove("jwac-textHighlight");
+            }
+          } else if (m.attributeName === "disabled") {
+            if (m.target instanceof HTMLTextAreaElement && m.target.disabled) {
+              m.target.removeAttribute("disabled");
+              m.target.disabled = false;
+            }
           }
         }
       }
@@ -332,7 +347,7 @@ function observe() {
     childList: true,
     subtree: true,
     attributes: true,
-    attributeFilter: ["class"],
+    attributeFilter: ["class", "disabled"],
   });
 }
 
@@ -473,15 +488,20 @@ async function getOrInitMarks() {
       fileName: "My Highlights",
       loadedAt: new Date().toISOString(),
       highlightCount: 0,
+      noteCount: 0,
       documentCount: 0,
       bibleChapterCount: 0,
       colorCounts: {},
       docs: {},
       bible: {},
+      notes: { docs: {}, bible: {} },
+      inputFields: { docs: {}, bible: {} },
     };
   }
   if (!marks.docs) marks.docs = {};
   if (!marks.bible) marks.bible = {};
+  if (!marks.notes) marks.notes = { docs: {}, bible: {} };
+  if (!marks.inputFields) marks.inputFields = { docs: {}, bible: {} };
   if (!marks.colorCounts) marks.colorCounts = {};
   marks.enabled = true;
   return marks;
@@ -491,6 +511,7 @@ function recalculateMetadata(marks) {
   if (!marks) return;
   if (!marks.docs) marks.docs = {};
   if (!marks.bible) marks.bible = {};
+  if (!marks.notes) marks.notes = { docs: {}, bible: {} };
   if (!marks.colorCounts) marks.colorCounts = {};
 
   let highlightCount = 0;
@@ -532,11 +553,339 @@ function recalculateMetadata(marks) {
     else delete marks.bible[key];
   }
 
+  let noteCount = 0;
+  if (marks.notes?.docs) {
+    for (const [docId, pids] of Object.entries(marks.notes.docs)) {
+      let docHasNotes = false;
+      for (const [pid, list] of Object.entries(pids)) {
+        if (Array.isArray(list) ? list.length > 0 : Boolean(list)) {
+          docHasNotes = true;
+          noteCount += Array.isArray(list) ? list.length : 1;
+        } else {
+          delete pids[pid];
+        }
+      }
+      if (!docHasNotes) delete marks.notes.docs[docId];
+    }
+  }
+
+  if (marks.notes?.bible) {
+    for (const [chKey, verses] of Object.entries(marks.notes.bible)) {
+      let chHasNotes = false;
+      for (const [v, list] of Object.entries(verses)) {
+        if (Array.isArray(list) ? list.length > 0 : Boolean(list)) {
+          chHasNotes = true;
+          noteCount += Array.isArray(list) ? list.length : 1;
+        } else {
+          delete verses[v];
+        }
+      }
+      if (!chHasNotes) delete marks.notes.bible[chKey];
+    }
+  }
+
+  if (marks.inputFields?.docs) {
+    for (const [docId, fields] of Object.entries(marks.inputFields.docs)) {
+      let docHasFields = false;
+      for (const [tag, val] of Object.entries(fields)) {
+        if (val && String(val).trim()) {
+          docHasFields = true;
+          noteCount++;
+        } else {
+          delete fields[tag];
+        }
+      }
+      if (!docHasFields) delete marks.inputFields.docs[docId];
+    }
+  }
+
+  if (marks.inputFields?.bible) {
+    for (const [chKey, fields] of Object.entries(marks.inputFields.bible)) {
+      let chHasFields = false;
+      for (const [tag, val] of Object.entries(fields)) {
+        if (val && String(val).trim()) {
+          chHasFields = true;
+          noteCount++;
+        } else {
+          delete fields[tag];
+        }
+      }
+      if (!chHasFields) delete marks.inputFields.bible[chKey];
+    }
+  }
+
   marks.highlightCount = highlightCount;
+  marks.noteCount = noteCount;
   marks.documentCount = documentCount;
   marks.bibleChapterCount = bibleChapterCount;
   marks.colorCounts = colorCounts;
   if (!marks.fileName) marks.fileName = "My Highlights";
+}
+
+function generateUUID() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID().toUpperCase();
+  }
+  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, (c) => {
+    const r = (Math.random() * 16) | 0;
+    const v = c === "x" ? r : (r & 0x3) | 0x8;
+    return v.toString(16).toUpperCase();
+  });
+}
+
+function adjustTextareaHeight(textarea) {
+  if (!textarea) return;
+  textarea.style.height = "auto";
+  const newHeight = Math.max(52, textarea.scrollHeight);
+  textarea.style.height = `${newHeight}px`;
+}
+
+function getCandidatePidsForTextarea(textarea, article) {
+  const fieldContainer = textarea.closest(".gen-field, [data-pid]");
+  const fieldPid = fieldContainer?.dataset.pid;
+
+  // 1. Find preceding question or prompt paragraph
+  let prevEl = fieldContainer?.previousElementSibling || textarea.previousElementSibling;
+  while (prevEl && !prevEl.dataset?.pid && prevEl.previousElementSibling) {
+    prevEl = prevEl.previousElementSibling;
+  }
+  const questionP = prevEl?.dataset?.pid ? prevEl : null;
+  const questionPid = questionP?.dataset.pid;
+
+  // 2. Find body paragraphs answering this question (linked via data-rel-pid)
+  const bodyPids = [];
+  if (questionPid) {
+    const relParagraphs = article.querySelectorAll(`p[data-rel-pid*="${CSS.escape(questionPid)}"]`);
+    for (const p of relParagraphs) {
+      const relAttr = p.dataset.relPid;
+      try {
+        const list = JSON.parse(relAttr);
+        if (Array.isArray(list) && list.map(String).includes(String(questionPid))) {
+          if (p.dataset.pid) bodyPids.push(p.dataset.pid);
+        }
+      } catch {
+        if (new RegExp(`(^|[\\[,\\s])${questionPid}([\\]\\s,]|$)`).test(relAttr)) {
+          if (p.dataset.pid) bodyPids.push(p.dataset.pid);
+        }
+      }
+    }
+  }
+
+  // 3. Fallback: check next element sibling if no body paragraphs found
+  let nextEl = fieldContainer?.nextElementSibling || textarea.nextElementSibling;
+  while (nextEl && !nextEl.dataset?.pid && nextEl.nextElementSibling) {
+    nextEl = nextEl.nextElementSibling;
+  }
+  const nextPid = nextEl?.dataset?.pid;
+
+  // Priority order: body paragraphs, question pid, field container pid, next pid
+  const candidatePids = [...bodyPids];
+  if (questionPid && !candidatePids.includes(questionPid)) candidatePids.push(questionPid);
+  if (fieldPid && !candidatePids.includes(fieldPid)) candidatePids.push(fieldPid);
+  if (nextPid && !candidatePids.includes(nextPid)) candidatePids.push(nextPid);
+
+  return { candidatePids, questionTitle: questionP?.textContent?.trim() || "" };
+}
+
+const noteSaveTimers = new WeakMap();
+
+function enableAndBindTextareas(article, index, docId) {
+  if (!article) return { enabledCount: 0, notesApplied: 0 };
+  const textareas = article.querySelectorAll("textarea");
+  let enabledCount = 0;
+  let notesApplied = 0;
+
+  const docNotes = (index?.notes?.docs && docId) ? index.notes.docs[docId] : null;
+
+  for (const textarea of textareas) {
+    // 1. Enable textarea unconditionally
+    if (textarea.hasAttribute("disabled") || textarea.disabled) {
+      textarea.removeAttribute("disabled");
+      textarea.disabled = false;
+    }
+    textarea.classList.add("wol-note-field");
+    enabledCount++;
+
+    const { candidatePids, questionTitle } = getCandidatePidsForTextarea(textarea, article);
+
+    // 2. Look for existing text in backup
+    let foundText = null;
+    let matchedPid = null;
+
+    // 2a. Direct match in InputField table by textarea.id (e.g. tt47, tt55, etc.)
+    if (textarea.id && index?.inputFields?.docs?.[docId]) {
+      const val = index.inputFields.docs[docId][textarea.id];
+      if (typeof val === "string" && val.trim()) {
+        foundText = val;
+      }
+    }
+
+    // 2b. Fallback: match in Note table by candidate PIDs
+    if (!foundText && docNotes) {
+      for (const pid of candidatePids) {
+        const entry = docNotes[pid];
+        if (entry) {
+          if (Array.isArray(entry) && entry.length > 0) {
+            const withContent = entry.find((n) => (n.content && n.content.trim()) || (n.title && n.title.trim())) || entry[0];
+            const title = withContent?.title?.trim() || "";
+            const content = withContent?.content?.trim() || "";
+            if (title && content && title !== content) {
+              foundText = `${title}\n\n${content}`;
+            } else if (content || title) {
+              foundText = content || title;
+            }
+            if (foundText) {
+              matchedPid = pid;
+              break;
+            }
+          } else if (typeof entry === "object" && (entry.content || entry.title)) {
+            const title = entry.title?.trim() || "";
+            const content = entry.content?.trim() || "";
+            if (title && content && title !== content) {
+              foundText = `${title}\n\n${content}`;
+            } else if (content || title) {
+              foundText = content || title;
+            }
+            if (foundText) {
+              matchedPid = pid;
+              break;
+            }
+          }
+        }
+      }
+    }
+
+    if (foundText !== null) {
+      if (document.activeElement !== textarea && textarea.value !== foundText) {
+        textarea.value = foundText;
+      }
+      textarea.classList.toggle("wol-has-note", Boolean(foundText.trim()));
+      textarea.dataset.wolPid = matchedPid || candidatePids[0] || "";
+      if (foundText.trim()) {
+        notesApplied++;
+        console.log(`[WOL Highlights Content] Populated textarea#${textarea.id} (docId=${docId}, pid=${textarea.dataset.wolPid}) with text: "${foundText.slice(0, 30)}${foundText.length > 30 ? "..." : ""}"`);
+      }
+      adjustTextareaHeight(textarea);
+    } else {
+      if (document.activeElement !== textarea && !textarea.dataset.userEdited) {
+        textarea.value = "";
+        textarea.classList.remove("wol-has-note");
+      }
+      textarea.dataset.wolPid = candidatePids[0] || "";
+      adjustTextareaHeight(textarea);
+    }
+
+    // 3. Attach listeners (only once per textarea)
+    if (!textarea.dataset.wolBound) {
+      textarea.dataset.wolBound = "true";
+
+      const commitSave = () => {
+        const timer = noteSaveTimers.get(textarea);
+        if (timer) {
+          clearTimeout(timer);
+          noteSaveTimers.delete(textarea);
+        }
+        saveTextareaNote(textarea, candidatePids, questionTitle).catch((err) => {
+          console.error("[WOL Highlights Content] Error saving note:", err);
+        });
+      };
+
+      textarea.addEventListener("input", () => {
+        textarea.dataset.userEdited = "true";
+        adjustTextareaHeight(textarea);
+        textarea.classList.toggle("wol-has-note", Boolean(textarea.value.trim()));
+
+        const existingTimer = noteSaveTimers.get(textarea);
+        if (existingTimer) clearTimeout(existingTimer);
+        const newTimer = setTimeout(commitSave, 350);
+        noteSaveTimers.set(textarea, newTimer);
+      });
+
+      textarea.addEventListener("blur", commitSave);
+      textarea.addEventListener("change", commitSave);
+    }
+  }
+
+  return { enabledCount, notesApplied };
+}
+
+async function saveTextareaNote(textarea, candidatePids, questionTitle) {
+  const docId = documentIdFromUrl();
+  if (!docId) return;
+
+  const marks = await getOrInitMarks();
+  if (!marks.notes) marks.notes = { docs: {}, bible: {} };
+  if (!marks.notes.docs) marks.notes.docs = {};
+  if (!marks.notes.docs[docId]) marks.notes.docs[docId] = {};
+  if (!marks.inputFields) marks.inputFields = { docs: {}, bible: {} };
+  if (!marks.inputFields.docs) marks.inputFields.docs = {};
+  if (!marks.inputFields.docs[docId]) marks.inputFields.docs[docId] = {};
+
+  const text = textarea.value;
+
+  // 1. Save in inputFields by textarea.id
+  if (textarea.id) {
+    if (text.trim()) {
+      marks.inputFields.docs[docId][textarea.id] = text;
+    } else {
+      delete marks.inputFields.docs[docId][textarea.id];
+      if (Object.keys(marks.inputFields.docs[docId]).length === 0) {
+        delete marks.inputFields.docs[docId];
+      }
+    }
+  }
+
+  // 2. Also save in notes by candidate pid
+  const docMap = marks.notes.docs[docId];
+  let targetPid = textarea.dataset.wolPid;
+  if (!targetPid || !candidatePids.includes(targetPid)) {
+    targetPid = candidatePids.find((p) => docMap[p]) || candidatePids[0];
+  }
+
+  if (targetPid) {
+    if (!text.trim()) {
+      delete docMap[targetPid];
+      if (Object.keys(docMap).length === 0) {
+        delete marks.notes.docs[docId];
+      }
+      textarea.classList.remove("wol-has-note");
+      delete textarea.dataset.userEdited;
+    } else {
+      let noteList = docMap[targetPid];
+      if (Array.isArray(noteList) && noteList.length > 0) {
+        noteList[0].content = text;
+        noteList[0].lastModified = new Date().toISOString();
+        if (!noteList[0].title && questionTitle) {
+          noteList[0].title = questionTitle.slice(0, 255);
+        }
+      } else if (noteList && typeof noteList === "object" && !Array.isArray(noteList)) {
+        noteList.content = text;
+        noteList.lastModified = new Date().toISOString();
+        if (!noteList.title && questionTitle) {
+          noteList.title = questionTitle.slice(0, 255);
+        }
+      } else {
+        const newNote = {
+          guid: generateUUID(),
+          title: questionTitle ? questionTitle.slice(0, 255) : null,
+          content: text,
+          created: new Date().toISOString(),
+          lastModified: new Date().toISOString(),
+          blockType: 1,
+          blockIdentifier: parseInt(targetPid, 10) || targetPid,
+          userMarkId: null,
+          locationId: null,
+        };
+        docMap[targetPid] = [newNote];
+      }
+      textarea.dataset.wolPid = targetPid;
+      textarea.classList.add("wol-has-note");
+    }
+  }
+
+  recalculateMetadata(marks);
+  await ext.storage.local.set({ wolMarks: marks });
+  console.log(`[WOL Highlights Content] Successfully saved note/input for docId=${docId}, id=${textarea.id}, pid=${targetPid}. Total items: ${marks.noteCount}`);
 }
 
 async function applyColorToActiveSelection(colorIndex) {
@@ -808,6 +1157,7 @@ function setupSelectionListeners() {
     (event) => {
       const el = event.target instanceof Element ? event.target : event.target?.parentElement;
       if (toolbarElement && toolbarElement.contains(el)) return;
+      if (el?.closest("textarea, .gen-field")) return;
       if (el?.closest("mark.wol-hl")) {
         event.stopPropagation();
         suppressAudioSelection();
@@ -822,6 +1172,7 @@ function setupSelectionListeners() {
     (event) => {
       const el = event.target instanceof Element ? event.target : event.target?.parentElement;
       if (toolbarElement && toolbarElement.contains(el)) return;
+      if (el?.closest("textarea, .gen-field")) return;
       if (el?.closest("mark.wol-hl")) {
         event.stopPropagation();
         suppressAudioSelection();
@@ -836,6 +1187,7 @@ function setupSelectionListeners() {
     (event) => {
       const el = event.target instanceof Element ? event.target : event.target?.parentElement;
       if (toolbarElement && toolbarElement.contains(el)) return;
+      if (el?.closest("textarea, .gen-field")) return;
 
       const mark = el?.closest("mark.wol-hl");
       if (mark) {
@@ -868,6 +1220,10 @@ function setupSelectionListeners() {
   document.addEventListener("mouseup", (event) => {
     const el = event.target instanceof Element ? event.target : event.target?.parentElement;
     if (toolbarElement && toolbarElement.contains(el)) return;
+    if (el?.closest("textarea, .gen-field")) {
+      hideToolbar();
+      return;
+    }
 
     setTimeout(() => {
       suppressAudioSelection();
@@ -897,6 +1253,10 @@ function setupSelectionListeners() {
 
   document.addEventListener("keyup", (event) => {
     if (event.key === "Escape") {
+      hideToolbar();
+      return;
+    }
+    if (event.target instanceof HTMLTextAreaElement || event.target?.closest?.("textarea, .gen-field")) {
       hideToolbar();
       return;
     }

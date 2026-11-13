@@ -84,7 +84,8 @@ function renderIndex(index) {
   if (index.bibleChapterCount) {
     places.push(`${index.bibleChapterCount} Bible chapter${index.bibleChapterCount === 1 ? "" : "s"}`);
   }
-  counts.textContent = `${index.highlightCount.toLocaleString()} highlight${index.highlightCount === 1 ? "" : "s"}`
+  const noteInfo = index.noteCount ? ` · ${index.noteCount.toLocaleString()} note${index.noteCount === 1 ? "" : "s"}` : "";
+  counts.textContent = `${index.highlightCount.toLocaleString()} highlight${index.highlightCount === 1 ? "" : "s"}${noteInfo}`
     + (places.length ? ` in ${places.join(" and ")}` : "");
   colors.replaceChildren();
   for (const [color, count] of Object.entries(index.colorCounts || {})) {
@@ -100,39 +101,60 @@ function renderIndex(index) {
 
 function describePage(status) {
   if (!status) return "Open an article on wol.jw.org.";
-  if (!status.enabled && status.hasBackup) return "Highlights are hidden.";
+  if (!status.enabled && status.hasBackup) return "Highlights and notes are hidden.";
+  const bits = [];
   if (status.applied > 0) {
-    const bits = [`${status.applied} highlight${status.applied === 1 ? "" : "s"} shown`];
-    if (status.missing) bits.push(`${status.missing} not on this page`);
-    if (status.skipped) bits.push(`${status.skipped} did not match the page text`);
-    return bits.join(". ") + ".";
+    bits.push(`${status.applied} highlight${status.applied === 1 ? "" : "s"} shown`);
   }
-  return "Select any text on this page to highlight it with JW Library colors.";
+  if (status.notesApplied > 0) {
+    bits.push(`${status.notesApplied} note${status.notesApplied === 1 ? "" : "s"} shown`);
+  }
+  if (status.textareasEnabled > 0 && status.notesApplied === 0) {
+    bits.push(`${status.textareasEnabled} note field${status.textareasEnabled === 1 ? "" : "s"} enabled`);
+  }
+  if (status.missing) bits.push(`${status.missing} not on this page`);
+  if (status.skipped) bits.push(`${status.skipped} did not match the page text`);
+  if (bits.length) return bits.join(". ") + ".";
+  return "Select text to highlight, or type personal notes in paragraph textareas.";
 }
 
 async function refreshPage() {
-  console.log("[WOL Highlights Popup] refreshPage() querying active tab...");
+  console.log("[WOL Highlights Manager] refreshPage() querying wol.jw.org tabs...");
   let tabs = [];
   try {
-    tabs = await ext.tabs.query({ active: true, currentWindow: true });
+    tabs = await ext.tabs.query({ url: "https://wol.jw.org/*" });
   } catch (err) {
-    console.error("[WOL Highlights Popup] Failed to query active tabs:", err);
+    console.error("[WOL Highlights Manager] Failed to query wol.jw.org tabs:", err);
   }
-  const tab = tabs[0];
-  console.log("[WOL Highlights Popup] Active tab:", tab ? { id: tab.id, url: tab.url, title: tab.title } : "No active tab");
-  if (!tab?.id || !tab.url || !tab.url.startsWith("https://wol.jw.org/")) {
-    pageStatus.textContent = "Open an article on wol.jw.org.";
-    console.log("[WOL Highlights Popup] Tab is not on wol.jw.org.");
+
+  if (!tabs || tabs.length === 0) {
+    pageStatus.textContent = "No open article on wol.jw.org detected.";
+    console.log("[WOL Highlights Manager] No tabs open on wol.jw.org.");
     return;
   }
-  try {
-    console.log("[WOL Highlights Popup] Sending 'wol-reapply' message to tab ID " + tab.id + " (" + tab.url + ")...");
-    const status = await ext.tabs.sendMessage(tab.id, { type: "wol-reapply" });
-    console.log("[WOL Highlights Popup] Received status from content script:", status);
-    pageStatus.textContent = describePage(status);
-  } catch (err) {
-    console.warn("[WOL Highlights Popup] Could not communicate with content script on tab " + tab.id + " (reload the article tab if it was opened before the extension was loaded):", err);
-    pageStatus.textContent = "Reload the article tab, then open this popup again.";
+
+  // Broadcast reapply to all open wol.jw.org tabs
+  let primaryStatus = null;
+  let activeWOLTab = tabs.find((t) => t.active) || tabs[0];
+
+  for (const tab of tabs) {
+    if (!tab?.id) continue;
+    try {
+      console.log("[WOL Highlights Manager] Sending 'wol-reapply' to tab ID " + tab.id + " (" + tab.url + ")...");
+      const status = await ext.tabs.sendMessage(tab.id, { type: "wol-reapply" });
+      if (tab.id === activeWOLTab.id) {
+        primaryStatus = status;
+      }
+    } catch (err) {
+      console.warn("[WOL Highlights Manager] Could not communicate with content script on tab " + tab.id + ":", err);
+    }
+  }
+
+  if (primaryStatus) {
+    const countInfo = tabs.length > 1 ? ` (${tabs.length} tabs updated)` : "";
+    pageStatus.textContent = describePage(primaryStatus) + countInfo;
+  } else {
+    pageStatus.textContent = `Found ${tabs.length} open wol.jw.org tab${tabs.length > 1 ? "s" : ""}. Reload the article tab if highlights do not appear immediately.`;
   }
 }
 
@@ -154,25 +176,60 @@ async function handleFile(file) {
     try {
       const text = await file.text();
       const parsed = JSON.parse(text);
-      if (!parsed || (!parsed.docs && !parsed.bible)) {
+      if (!parsed || (!parsed.docs && !parsed.bible && !parsed.notes)) {
         throw new Error("Invalid highlights JSON file format.");
       }
       const previous = await currentIndex();
+      const notes = parsed.notes || { docs: {}, bible: {} };
+      const inputFields = parsed.inputFields || { docs: {}, bible: {} };
+      let noteCount = parsed.noteCount || 0;
+      if (!noteCount) {
+        if (notes) {
+          for (const doc of Object.values(notes.docs || {})) {
+            for (const list of Object.values(doc)) {
+              noteCount += Array.isArray(list) ? list.length : 1;
+            }
+          }
+          for (const ch of Object.values(notes.bible || {})) {
+            for (const list of Object.values(ch)) {
+              noteCount += Array.isArray(list) ? list.length : 1;
+            }
+          }
+        }
+        if (inputFields) {
+          for (const doc of Object.values(inputFields.docs || {})) {
+            for (const val of Object.values(doc)) {
+              if (val && String(val).trim()) noteCount++;
+            }
+          }
+          for (const ch of Object.values(inputFields.bible || {})) {
+            for (const val of Object.values(ch)) {
+              if (val && String(val).trim()) noteCount++;
+            }
+          }
+        }
+      }
       const index = {
         version: 1,
         fileName: file.name,
         loadedAt: new Date().toISOString(),
         enabled: previous ? previous.enabled !== false : true,
         highlightCount: parsed.highlightCount || 0,
+        noteCount,
         documentCount: parsed.documentCount || Object.keys(parsed.docs || {}).length,
         bibleChapterCount: parsed.bibleChapterCount || Object.keys(parsed.bible || {}).length,
         colorCounts: parsed.colorCounts || {},
         docs: parsed.docs || {},
         bible: parsed.bible || {},
+        notes,
+        inputFields,
       };
       await ext.storage.local.set({ wolMarks: index });
       renderIndex(index);
-      setMessage(index.highlightCount ? `Loaded ${index.highlightCount.toLocaleString()} highlights from ${file.name}.` : "Highlights loaded.");
+      const summaryParts = [];
+      if (index.highlightCount) summaryParts.push(`${index.highlightCount.toLocaleString()} highlights`);
+      if (index.noteCount) summaryParts.push(`${index.noteCount.toLocaleString()} notes`);
+      setMessage(summaryParts.length ? `Loaded ${summaryParts.join(" and ")} from ${file.name}.` : "Data loaded.");
       await refreshPage();
       return;
     } catch (err) {
@@ -214,7 +271,10 @@ async function handleFile(file) {
     console.log(`[WOL Highlights Popup] Stored wolMarks into storage.local in ${(performance.now() - saveStart).toFixed(1)}ms.`);
 
     renderIndex(index);
-    setMessage(index.highlightCount ? `Loaded ${index.highlightCount.toLocaleString()} highlights from ${file.name}.` : "That backup has no highlights.");
+    const summaryParts = [];
+    if (index.highlightCount) summaryParts.push(`${index.highlightCount.toLocaleString()} highlight${index.highlightCount === 1 ? "" : "s"}`);
+    if (index.noteCount) summaryParts.push(`${index.noteCount.toLocaleString()} note${index.noteCount === 1 ? "" : "s"}`);
+    setMessage(summaryParts.length ? `Loaded ${summaryParts.join(" and ")} from ${file.name}.` : "That backup has no highlights or notes.");
     console.log("[WOL Highlights Popup] Refreshing page highlights...");
     await refreshPage();
     console.log(`[WOL Highlights Popup] Entire file processing completed in ${(performance.now() - startTime).toFixed(1)}ms.`);
@@ -285,21 +345,6 @@ window.addEventListener("drop", async (event) => {
   }
 });
 
-function openInPermanentTab(e) {
-  if (e) e.preventDefault();
-  console.log("[WOL Highlights Popup] Opening popup in permanent browser tab...");
-  ext.tabs.create({ url: ext.runtime.getURL("popup.html") });
-}
-
-const openTabLink = document.querySelector("#open-tab");
-if (openTabLink) {
-  openTabLink.addEventListener("click", openInPermanentTab);
-}
-
-const openTabBtn = document.querySelector("#open-tab-btn");
-if (openTabBtn) {
-  openTabBtn.addEventListener("click", openInPermanentTab);
-}
 
 enabledInput.addEventListener("change", async () => {
   const index = await currentIndex();
@@ -325,8 +370,8 @@ removeButton.addEventListener("click", async () => {
 if (exportButton) {
   exportButton.addEventListener("click", async () => {
     const index = await currentIndex();
-    if (!index || !index.highlightCount) {
-      setMessage("No highlights to export.", true);
+    if (!index || (!index.highlightCount && !index.noteCount)) {
+      setMessage("No highlights or notes to export.", true);
       return;
     }
     const jsonStr = JSON.stringify(index, null, 2);
@@ -334,12 +379,12 @@ if (exportButton) {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `wol-highlights-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `wol-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-    setMessage("Highlights exported as JSON.");
+    setMessage("Backup exported as JSON.");
   });
 }
 

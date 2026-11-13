@@ -1,8 +1,9 @@
-# WOL Highlights & JW Library UserMark Tools
+# WOL Highlights & OfflineWOL
 
-A privacy-first, cross-browser WebExtension and reverse-engineering toolkit that renders your personal **JW Library** study highlights directly on **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**.
+A privacy-first **cross-browser WebExtension** and **Rust/Tauri desktop app (`OfflineWOL`)** that render your personal **JW Library** study highlights and notes directly on **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**.
 
-Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, and **Apple Safari (macOS & iOS)**.
+- **Browser Extension (`wol-highlights/`)**: Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, and **Apple Safari (macOS & iOS)**.
+- **Desktop App (`wol-desktop/`)**: Native **OfflineWOL** desktop reader built with Rust + Tauri 2 that automatically caches visited pages as you browse for offline reading, with built-in highlight/note sync and dark mode.
 
 ---
 
@@ -60,6 +61,9 @@ nix run .#deploy
 
 | Command | Action |
 |---|---|
+| `npm run desktop` | Runs the OfflineWOL Tauri desktop app (`cargo run`) |
+| `npm run desktop:dev` | Runs OfflineWOL in Tauri dev mode (`cargo tauri dev`) |
+| `npm run desktop:test` | Runs the Rust/Tauri test suite (`cargo test`) |
 | `npm start` | Launches Firefox with extension pre-loaded, live-reloading, and opened to `wol.jw.org` |
 | `npm run start:chrome` | Launches Chrome/Chromium with extension pre-loaded and live-reloading |
 | `npm run build` | Builds packages for Chrome/Chromium, Firefox (`dist/*.xpi`), and Safari macOS |
@@ -100,6 +104,18 @@ nix run .#deploy
 2. In Safari, open **Settings &rarr; Advanced** and check **Show features for web developers**.
 3. In Safari's **Developer** menu, enable **Allow Unsigned Extensions**.
 4. Open **Settings &rarr; Extensions** and enable **WOL Highlights**.
+
+### Option D: OfflineWOL Desktop App (Tauri 2)
+
+Requires Rust (`cargo`) and Tauri 2 prerequisites:
+
+```bash
+npm run desktop:dev   # Launch in development mode
+npm run desktop       # Run directly via Cargo
+npm run desktop:test  # Run Rust unit & integration tests
+```
+
+OfflineWOL intercepts `wol.jw.org` navigation via a custom `wol://` protocol, caches visited pages and subresources on disk (stale-while-revalidate with LRU eviction and a Cache Inspector UI), and shares the same `wolMarks` JSON format as the browser extension.
 
 ---
 
@@ -182,10 +198,11 @@ Highlights replicate native JW Library colors:
 ```text
 .
 ├── .gitignore               # Ignored build outputs, local test databases, and secrets
-├── AGENT.md                 # Technical guide and operational rules for AI agents
+├── AGENTS.md                # Unified technical guide and operational rules for AI agents
 ├── README.md                # Project documentation (this file)
+├── TODO.md                  # Tauri desktop migration plan and WOL research notes
 ├── flake.nix                # Nix Flake devShell & AMO deployment app
-├── package.json             # Build, lint, dev runner, bump, and multi-store publish scripts
+├── package.json             # Build, lint, dev runner, desktop, bump, and publish scripts
 ├── usermark.md              # Deep dive into UserMark schema, tokens, and WOL DOM mapping
 ├── scripts/                 # Cross-browser build & automated store publishing tools
 │   ├── bump-version.js      # Version bumper across manifest, package.json, and Safari
@@ -197,8 +214,15 @@ Highlights replicate native JW Library colors:
 │   └── auth-chrome.js       # Interactive OAuth2 generator for Chrome Web Store
 ├── safari/                  # Native Safari Web Extension Xcode project (macOS & iOS)
 │   └── WOL Highlights/      # Xcode project referencing wol-highlights/ assets
+├── wol-desktop/             # Rust + Tauri 2 OfflineWOL desktop app
+│   ├── Cargo.toml           # Rust crate manifest
+│   ├── tauri.conf.json      # Tauri configuration
+│   ├── src/                 # Protocol handler, disk cache, URL rewriter, crawler, bridge
+│   ├── tests/               # Acceptance & integration tests
+│   └── ui/                  # Manager & setup UI + reused wol-highlights/lib/* assets
 └── wol-highlights/          # Cross-browser WebExtension source (Manifest V3)
     ├── manifest.json        # Extension manifest
+    ├── background.js        # MV3 background script / service worker
     ├── popup.html           # Toolbar popup interface
     ├── popup.css            # Toolbar popup styling
     ├── popup.js             # Backup loader, storage manager, and popup controller

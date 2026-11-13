@@ -1,0 +1,587 @@
+// Bridge setup for Tauri environment
+const tauriInvoke = window.__TAURI_INTERNALS__?.invoke;
+
+export const bridge = {
+  storage: {
+    local: {
+      get: async function(keys) {
+        let currentMarks = null;
+        try {
+          if (tauriInvoke) {
+            currentMarks = await tauriInvoke("get_marks");
+          }
+        } catch (e) {
+          console.warn("[Bridge] invoke get_marks failed:", e);
+        }
+        if (keys === "wolMarks" || keys === null || keys === undefined) {
+          return { wolMarks: currentMarks };
+        }
+        if (Array.isArray(keys)) {
+          const out = {};
+          if (keys.includes("wolMarks")) out.wolMarks = currentMarks;
+          return out;
+        }
+        return { wolMarks: currentMarks };
+      },
+      set: async function(items) {
+        if (items && items.wolMarks !== undefined) {
+          try {
+            if (tauriInvoke) {
+              await tauriInvoke("set_marks", { marks: items.wolMarks });
+            }
+          } catch (e) {
+            console.warn("[Bridge] invoke set_marks failed:", e);
+          }
+        }
+      },
+      remove: async function(key) {
+        if (key === "wolMarks") {
+          try {
+            if (tauriInvoke) {
+              await tauriInvoke("set_marks", { marks: null });
+            }
+          } catch (e) {
+            console.warn("[Bridge] invoke set_marks failed:", e);
+          }
+        }
+      }
+    }
+  },
+  runtime: {
+    getURL: function(path) {
+      return path;
+    },
+    onMessage: {
+      addListener: function() {}
+    }
+  },
+  tabs: {
+    query: async function() {
+      return [{ id: "main", url: "wol://main" }];
+    },
+    sendMessage: async function(_tabId, message) {
+      if (tauriInvoke) {
+        return await tauriInvoke("dispatch_tab_message", { message });
+      }
+      return { applied: 1, hasBackup: true, enabled: true };
+    }
+  }
+};
+
+window.chrome = bridge;
+window.browser = bridge;
+const ext = bridge;
+
+// Constants
+const COLOR_NAMES = {
+  1: "Yellow",
+  2: "Green",
+  3: "Blue",
+  4: "Red",
+  5: "Orange",
+  6: "Purple",
+};
+
+const COLOR_CSS = {
+  1: "#ffe36b",
+  2: "#b6e89a",
+  3: "#a9d4fb",
+  4: "#f7b4c4",
+  5: "#ffc48a",
+  6: "#d8c0f8",
+};
+
+// DOM Elements - Highlights
+const fileInput = document.querySelector("#file");
+const loadedSection = document.querySelector("#loaded");
+const fileName = document.querySelector("#file-name");
+const counts = document.querySelector("#counts");
+const colors = document.querySelector("#colors");
+const enabledInput = document.querySelector("#enabled");
+const removeButton = document.querySelector("#remove");
+const exportButton = document.querySelector("#export-json");
+const pageStatus = document.querySelector("#page-status");
+const message = document.querySelector("#message");
+
+// DOM Elements - Settings
+const settingLang = document.querySelector("#setting-lang");
+const settingHome = document.querySelector("#setting-home");
+const settingTheme = document.querySelector("#setting-theme");
+const settingCap = document.querySelector("#setting-cap");
+const btnSaveSettings = document.querySelector("#btn-save-settings");
+const btnNavigateHome = document.querySelector("#btn-navigate-home");
+
+// DOM Elements - Cache Inspector
+const statTotalSize = document.querySelector("#stat-total-size");
+const statEntryCount = document.querySelector("#stat-entry-count");
+const statCapSize = document.querySelector("#stat-cap-size");
+const btnCrawlCurrent = document.querySelector("#btn-crawl-current");
+const btnClearOlder = document.querySelector("#btn-clear-older");
+const btnClearAll = document.querySelector("#btn-clear-all");
+const cacheSearch = document.querySelector("#cache-search");
+const cacheEntriesBody = document.querySelector("#cache-entries-body");
+
+// DOM Elements - Network Status
+const networkDot = document.querySelector("#network-dot");
+const networkText = document.querySelector("#network-text");
+
+let languagesList = [];
+let currentSettings = null;
+
+// ----------------------------------------------------
+// THEME
+// ----------------------------------------------------
+const managerDarkQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+let currentThemeMode = "system";
+
+function applyManagerTheme(mode) {
+  currentThemeMode = mode || "system";
+  const isDark =
+    currentThemeMode === "dark" ||
+    (currentThemeMode === "system" && Boolean(managerDarkQuery && managerDarkQuery.matches));
+  document.documentElement.setAttribute("data-theme", isDark ? "dark" : "light");
+}
+
+window.__wolApplyManagerTheme = applyManagerTheme;
+if (managerDarkQuery && typeof managerDarkQuery.addEventListener === "function") {
+  managerDarkQuery.addEventListener("change", () => {
+    if (currentThemeMode === "system") {
+      applyManagerTheme("system");
+    }
+  });
+}
+applyManagerTheme("system");
+
+// Helper: Format bytes
+function formatBytes(bytes) {
+  if (bytes === 0) return "0 B";
+  const k = 1024;
+  const sizes = ["B", "KB", "MB", "GB", "TB"];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+}
+
+function setMessage(text, isError = false) {
+  if (!message) return;
+  message.textContent = text || "";
+  message.classList.toggle("error", Boolean(isError));
+}
+
+function formatWhen(iso) {
+  if (!iso) return "";
+  const date = new Date(iso);
+  if (Number.isNaN(date.getTime())) return "";
+  return date.toLocaleString();
+}
+
+// ----------------------------------------------------
+// TAB SWITCHING
+// ----------------------------------------------------
+document.querySelectorAll(".tab-btn").forEach((btn) => {
+  btn.addEventListener("click", () => {
+    document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+    document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
+    btn.classList.add("active");
+    const pane = document.getElementById(btn.dataset.tab);
+    if (pane) pane.classList.add("active");
+
+    if (btn.dataset.tab === "tab-cache") {
+      refreshCacheInspector();
+    }
+  });
+});
+
+// ----------------------------------------------------
+// NETWORK STATUS
+// ----------------------------------------------------
+function updateNetworkStatus() {
+  const online = navigator.onLine;
+  if (networkDot) networkDot.classList.toggle("offline", !online);
+  if (networkText) networkText.textContent = online ? "Online" : "Offline";
+}
+window.addEventListener("online", updateNetworkStatus);
+window.addEventListener("offline", updateNetworkStatus);
+updateNetworkStatus();
+
+// ----------------------------------------------------
+// HIGHLIGHTS MANAGER
+// ----------------------------------------------------
+async function currentIndex() {
+  try {
+    const all = await ext.storage.local.get(null);
+    const stored = all.wolMarks;
+    if (!stored || stored.version !== 1) return null;
+    return stored;
+  } catch (err) {
+    console.error("[Manager] Failed to read from ext.storage.local:", err);
+    return null;
+  }
+}
+
+function renderIndex(index) {
+  if (!index) {
+    loadedSection.hidden = true;
+    return;
+  }
+  loadedSection.hidden = false;
+  const when = formatWhen(index.loadedAt);
+  fileName.textContent = when ? `${index.fileName} · ${when}` : index.fileName;
+  const places = [];
+  if (index.documentCount) {
+    places.push(`${index.documentCount} article${index.documentCount === 1 ? "" : "s"}`);
+  }
+  if (index.bibleChapterCount) {
+    places.push(`${index.bibleChapterCount} Bible chapter${index.bibleChapterCount === 1 ? "" : "s"}`);
+  }
+  const noteInfo = index.noteCount ? ` · ${index.noteCount.toLocaleString()} note${index.noteCount === 1 ? "" : "s"}` : "";
+  counts.textContent = `${index.highlightCount.toLocaleString()} highlight${index.highlightCount === 1 ? "" : "s"}${noteInfo}`
+    + (places.length ? ` in ${places.join(" and ")}` : "");
+
+  colors.replaceChildren();
+  for (const [color, count] of Object.entries(index.colorCounts || {})) {
+    const item = document.createElement("li");
+    const swatch = document.createElement("span");
+    swatch.className = "swatch";
+    swatch.style.background = COLOR_CSS[color] || "#e6e6e6";
+    item.append(swatch, `${COLOR_NAMES[color] || "Other"} ${count}`);
+    colors.append(item);
+  }
+  enabledInput.checked = index.enabled !== false;
+}
+
+async function refreshPage() {
+  try {
+    const tabs = await ext.tabs.query();
+    if (!tabs || !tabs.length) {
+      pageStatus.textContent = "Open an article in the main window.";
+      return;
+    }
+    const res = await ext.tabs.sendMessage("main", { type: "wol-reapply" });
+    if (res && res.applied !== undefined) {
+      pageStatus.textContent = `Highlights active. Updates applied.`;
+    } else {
+      pageStatus.textContent = `Main window updated.`;
+    }
+  } catch (err) {
+    console.warn("[Manager] refreshPage error:", err);
+  }
+}
+
+async function handleFile(file) {
+  if (!file) return;
+  const startTime = performance.now();
+
+  if (file.name.endsWith(".json") || file.type === "application/json") {
+    setMessage(`Reading ${file.name}…`);
+    try {
+      const text = await file.text();
+      const parsed = JSON.parse(text);
+      if (!parsed || (!parsed.docs && !parsed.bible && !parsed.notes)) {
+        throw new Error("Invalid highlights JSON file format.");
+      }
+      const previous = await currentIndex();
+      const notes = parsed.notes || { docs: {}, bible: {} };
+      const inputFields = parsed.inputFields || { docs: {}, bible: {} };
+      let noteCount = parsed.noteCount || 0;
+
+      const index = {
+        version: 1,
+        fileName: file.name,
+        loadedAt: new Date().toISOString(),
+        enabled: previous ? previous.enabled !== false : true,
+        highlightCount: parsed.highlightCount || 0,
+        noteCount,
+        documentCount: parsed.documentCount || Object.keys(parsed.docs || {}).length,
+        bibleChapterCount: parsed.bibleChapterCount || Object.keys(parsed.bible || {}).length,
+        colorCounts: parsed.colorCounts || {},
+        docs: parsed.docs || {},
+        bible: parsed.bible || {},
+        notes,
+        inputFields,
+      };
+      await ext.storage.local.set({ wolMarks: index });
+      renderIndex(index);
+      setMessage(`Loaded highlights and notes from ${file.name}.`);
+      await refreshPage();
+      return;
+    } catch (err) {
+      console.error("[Manager] Failed to parse JSON file:", err);
+      setMessage(err.message || "Could not read that JSON file.", true);
+      return;
+    }
+  }
+
+  // Handle .jwlibrary, .db, .sqlite
+  setMessage(`Reading ${file.name} (${(file.size / 1024).toFixed(1)} KB)…`);
+  try {
+    const previous = await currentIndex();
+    const bytes = new Uint8Array(await file.arrayBuffer());
+    const wasmUrl = ext.runtime.getURL("lib/sql-wasm.wasm");
+
+    if (typeof globalThis.initSqlJs !== "function") {
+      throw new Error("sql.js library (globalThis.initSqlJs) is not loaded.");
+    }
+
+    setMessage(`Parsing ${file.name} with SQLite WebAssembly…`);
+    const index = await parseBackup(bytes, globalThis.initSqlJs, wasmUrl);
+
+    index.fileName = file.name;
+    index.loadedAt = new Date().toISOString();
+    index.enabled = previous ? previous.enabled !== false : true;
+
+    await ext.storage.local.set({ wolMarks: index });
+    renderIndex(index);
+    setMessage(`Loaded ${index.highlightCount} highlights from ${file.name}.`);
+    await refreshPage();
+    console.log(`[Manager] Processed ${file.name} in ${(performance.now() - startTime).toFixed(1)}ms.`);
+  } catch (error) {
+    console.error("[Manager] Error parsing backup:", error);
+    setMessage(error.message || "Could not read that file.", true);
+  }
+}
+
+// File chooser & drag-and-drop
+fileInput.addEventListener("change", async () => {
+  const file = fileInput.files?.[0];
+  fileInput.value = "";
+  if (file) await handleFile(file);
+});
+
+window.addEventListener("dragover", (event) => {
+  event.preventDefault();
+  document.body.classList.add("dragover");
+});
+
+window.addEventListener("dragleave", (event) => {
+  if (event.relatedTarget === null) {
+    document.body.classList.remove("dragover");
+  }
+});
+
+window.addEventListener("drop", async (event) => {
+  event.preventDefault();
+  document.body.classList.remove("dragover");
+  const file = event.dataTransfer?.files?.[0];
+  if (file) await handleFile(file);
+});
+
+enabledInput.addEventListener("change", async () => {
+  const index = await currentIndex();
+  if (!index) return;
+  index.enabled = enabledInput.checked;
+  await ext.storage.local.set({ wolMarks: index });
+  await refreshPage();
+});
+
+removeButton.addEventListener("click", async () => {
+  const index = await currentIndex();
+  if (!index) return;
+  if (!window.confirm(`Remove highlights loaded from ${index.fileName}?`)) return;
+  await ext.storage.local.remove("wolMarks");
+  renderIndex(null);
+  setMessage("Backup removed.");
+  await refreshPage();
+});
+
+if (exportButton) {
+  exportButton.addEventListener("click", async () => {
+    const index = await currentIndex();
+    if (!index || (!index.highlightCount && !index.noteCount)) {
+      setMessage("No highlights or notes to export.", true);
+      return;
+    }
+    const jsonStr = JSON.stringify(index, null, 2);
+    const blob = new Blob([jsonStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `wol-study-backup-${new Date().toISOString().slice(0, 10)}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    setMessage("Backup exported as JSON.");
+  });
+}
+
+// ----------------------------------------------------
+// SETTINGS
+// ----------------------------------------------------
+async function initSettings() {
+  if (!tauriInvoke) return;
+  try {
+    languagesList = await tauriInvoke("get_languages");
+    currentSettings = await tauriInvoke("get_settings");
+
+    let activeBaseHost = currentSettings.baseHost || "";
+    if (!activeBaseHost && currentSettings.home) {
+      try {
+        activeBaseHost = new URL(currentSettings.home).host;
+      } catch {}
+    }
+
+    // Populate language dropdown
+    settingLang.innerHTML = "";
+    for (const lang of languagesList) {
+      const opt = document.createElement("option");
+      opt.value = lang.locale;
+      opt.dataset.region = lang.region;
+      opt.dataset.symbol = lang.symbol;
+      opt.dataset.home = activeBaseHost && lang.home.startsWith("/")
+        ? `https://${activeBaseHost}${lang.home}`
+        : lang.home;
+      opt.textContent = `${lang.name} (${lang.symbol}) - ${lang.locale}`;
+      if (lang.locale === currentSettings.language || lang.symbol === currentSettings.language) {
+        opt.selected = true;
+      }
+      settingLang.appendChild(opt);
+    }
+
+    settingHome.value = currentSettings.home;
+    if (settingTheme) {
+      settingTheme.value = currentSettings.theme || "system";
+    }
+    applyManagerTheme(currentSettings.theme || "system");
+    settingCap.value = String(currentSettings.cacheCapBytes);
+
+    settingLang.addEventListener("change", () => {
+      const selected = settingLang.selectedOptions[0];
+      if (selected?.dataset.home) {
+        settingHome.value = selected.dataset.home;
+      }
+    });
+
+    btnSaveSettings.addEventListener("click", async () => {
+      const selected = settingLang.selectedOptions[0];
+      let baseHost = currentSettings.baseHost || activeBaseHost || null;
+      if (!baseHost && settingHome.value) {
+        try {
+          baseHost = new URL(settingHome.value).host || null;
+        } catch {}
+      }
+      const updated = {
+        baseHost,
+        language: settingLang.value,
+        region: parseInt(selected?.dataset.region || "4", 10),
+        home: settingHome.value,
+        cacheCapBytes: parseInt(settingCap.value, 10),
+        theme: settingTheme ? settingTheme.value : "system",
+      };
+      await tauriInvoke("save_settings", { settings: updated });
+      currentSettings = updated;
+      applyManagerTheme(updated.theme);
+      setMessage("Settings saved successfully.");
+    });
+
+    btnNavigateHome.addEventListener("click", async () => {
+      await tauriInvoke("navigate_home");
+      setMessage("Navigating main window to Home…");
+    });
+  } catch (err) {
+    console.error("[Manager] Failed to init settings:", err);
+  }
+}
+
+// ----------------------------------------------------
+// CACHE INSPECTOR
+// ----------------------------------------------------
+async function refreshCacheInspector() {
+  if (!tauriInvoke) return;
+  try {
+    const stats = await tauriInvoke("get_cache_stats");
+    statTotalSize.textContent = formatBytes(stats.total_size);
+    statEntryCount.textContent = stats.entry_count.toLocaleString();
+    statCapSize.textContent = formatBytes(stats.cap_bytes);
+
+    await loadCacheEntries();
+  } catch (err) {
+    console.error("[Manager] refreshCacheInspector error:", err);
+  }
+}
+
+async function loadCacheEntries(filter = "") {
+  if (!tauriInvoke) return;
+  try {
+    const entries = await tauriInvoke("list_cache_entries", {
+      filter: filter || null,
+      limit: 100,
+      offset: 0,
+    });
+
+    cacheEntriesBody.innerHTML = "";
+    if (!entries || entries.length === 0) {
+      cacheEntriesBody.innerHTML = "<tr><td colspan='4' style='text-align: center; color: #94a3b8;'>No cached entries found.</td></tr>";
+      return;
+    }
+
+    for (const item of entries) {
+      const tr = document.createElement("tr");
+
+      let badgeClass = "badge-other";
+      let typeLabel = "FILE";
+      const ct = (item.content_type || "").toLowerCase();
+      if (ct.includes("html")) { badgeClass = "badge-html"; typeLabel = "HTML"; }
+      else if (ct.includes("css")) { badgeClass = "badge-css"; typeLabel = "CSS"; }
+      else if (ct.includes("javascript")) { badgeClass = "badge-js"; typeLabel = "JS"; }
+      else if (ct.includes("image") || ct.includes("audio") || ct.includes("video")) { badgeClass = "badge-media"; typeLabel = "MEDIA"; }
+
+      const lastUsed = new Date(item.last_used_at * 1000).toLocaleDateString();
+
+      tr.innerHTML = `
+        <td><span class="badge ${badgeClass}">${typeLabel}</span></td>
+        <td title="${item.url}">${item.url}</td>
+        <td>${formatBytes(item.size)}</td>
+        <td>${lastUsed}</td>
+      `;
+      cacheEntriesBody.appendChild(tr);
+    }
+  } catch (err) {
+    console.error("[Manager] loadCacheEntries error:", err);
+  }
+}
+
+let searchDebounce = null;
+cacheSearch.addEventListener("input", () => {
+  clearTimeout(searchDebounce);
+  searchDebounce = setTimeout(() => {
+    loadCacheEntries(cacheSearch.value.trim());
+  }, 250);
+});
+
+btnClearOlder.addEventListener("click", async () => {
+  if (!tauriInvoke) return;
+  if (!window.confirm("Clean cache entries older than 30 days?")) return;
+  const count = await tauriInvoke("clear_cache_older_than", { days: 30 });
+  setMessage(`Removed ${count} older cached resources.`);
+  await refreshCacheInspector();
+});
+
+btnClearAll.addEventListener("click", async () => {
+  if (!tauriInvoke) return;
+  if (!window.confirm("Are you sure you want to clear the entire disk cache?")) return;
+  await tauriInvoke("clear_cache");
+  setMessage("Disk cache cleared.");
+  await refreshCacheInspector();
+});
+
+btnCrawlCurrent.addEventListener("click", async () => {
+  if (!tauriInvoke) return;
+  const url = prompt("Enter article or page URL to save offline (defaults to current Home):", currentSettings?.home || "");
+  if (!url) return;
+
+  setMessage(`Downloading and caching ${url} + all subresources…`);
+  try {
+    const res = await tauriInvoke("save_page_offline", { url });
+    setMessage(`Successfully saved page offline! Downloaded ${res.downloaded_count} assets (${formatBytes(res.bytes_total)}).`);
+    await refreshCacheInspector();
+  } catch (err) {
+    setMessage(`Save offline failed: ${err}`, true);
+  }
+});
+
+// Initialization
+console.log("[Manager] Initializing manager window...");
+const initial = await currentIndex();
+renderIndex(initial);
+await refreshPage();
+await initSettings();

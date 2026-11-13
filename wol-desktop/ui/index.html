@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>OfflineWOL — Highlights &amp; Settings</title>
+    <link rel="stylesheet" href="manager.css">
+  </head>
+  <body>
+    <header>
+      <img src="icons/icon-48.png" alt="" width="28" height="28">
+      <div>
+        <h1>OfflineWOL</h1>
+        <p>Offline reader &amp; study highlights</p>
+      </div>
+      <div class="offline-status">
+        <span id="network-dot" class="status-dot"></span>
+        <span id="network-text">Online</span>
+      </div>
+    </header>
+
+    <nav class="tabs">
+      <button class="tab-btn active" data-tab="tab-highlights">Highlights</button>
+      <button class="tab-btn" data-tab="tab-settings">Settings</button>
+      <button class="tab-btn" data-tab="tab-cache">Cache Inspector</button>
+    </nav>
+
+    <!-- HIGHLIGHTS TAB -->
+    <main id="tab-highlights" class="tab-pane active">
+      <div class="actions">
+        <label class="file">
+          <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,.json,application/octet-stream,application/json">
+          <span>📂 Load backup</span>
+        </label>
+      </div>
+      <p class="hint">Select a backup file (<code>.jwlibrary</code> or <code>.json</code>), or drag and drop it anywhere on this page.</p>
+
+      <section id="loaded" hidden>
+        <p id="file-name"></p>
+        <p id="counts"></p>
+        <ul id="colors"></ul>
+        <label class="toggle">
+          <input id="enabled" type="checkbox">
+          <span>Show highlights</span>
+        </label>
+        <div class="loaded-actions">
+          <button id="export-json" type="button" class="btn-secondary">Export highlights</button>
+          <button id="remove" type="button">Remove highlights</button>
+        </div>
+      </section>
+
+      <section id="page">
+        <h2>This page</h2>
+        <p id="page-status">Open an article in the main window.</p>
+      </section>
+    </main>
+
+    <!-- SETTINGS TAB -->
+    <main id="tab-settings" class="tab-pane">
+      <div class="form-group">
+        <label for="setting-lang">Primary Language</label>
+        <select id="setting-lang" class="form-control">
+          <!-- Populated from scraped languages -->
+        </select>
+        <p class="hint">Select the default study language. WOL Home will navigate to this library.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="setting-home">Home URL</label>
+        <input id="setting-home" type="text" class="form-control" readonly>
+      </div>
+
+      <div class="form-group">
+        <label for="setting-theme">Appearance (Dark Reader)</label>
+        <select id="setting-theme" class="form-control">
+          <option value="system">System (Automatic)</option>
+          <option value="light">Light</option>
+          <option value="dark">Dark</option>
+        </select>
+        <p class="hint">Uses Dark Reader on WOL pages and matches the Settings window theme.</p>
+      </div>
+
+      <div class="form-group">
+        <label for="setting-cap">Cache Cap (MB)</label>
+        <select id="setting-cap" class="form-control">
+          <option value="524288000">500 MB</option>
+          <option value="1073741824">1 GB</option>
+          <option value="2147483648" selected>2 GB (Default)</option>
+          <option value="5368709120">5 GB</option>
+          <option value="10737418240">10 GB</option>
+        </select>
+        <p class="hint">Oldest visited pages are evicted when disk usage exceeds this limit.</p>
+      </div>
+
+      <div style="margin-top: 24px; display: flex; gap: 12px;">
+        <button id="btn-save-settings" class="btn-primary" type="button">Save Settings</button>
+        <button id="btn-navigate-home" class="btn-secondary" type="button">Go to Home Page</button>
+      </div>
+    </main>
+
+    <!-- CACHE INSPECTOR TAB -->
+    <main id="tab-cache" class="tab-pane">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div id="stat-total-size" class="stat-num">0 MB</div>
+          <div class="stat-label">Cache Size</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-entry-count" class="stat-num">0</div>
+          <div class="stat-label">Cached Entries</div>
+        </div>
+        <div class="stat-card">
+          <div id="stat-cap-size" class="stat-num">2 GB</div>
+          <div class="stat-label">Storage Cap</div>
+        </div>
+      </div>
+
+      <div class="actions" style="margin-bottom: 16px; flex-wrap: wrap;">
+        <button id="btn-crawl-current" type="button" class="btn-primary">💾 Save Current Page Offline</button>
+        <button id="btn-clear-older" type="button" class="btn-secondary">Clean Older Than 30 Days</button>
+        <button id="btn-clear-all" type="button" class="btn-secondary btn-danger">Clear Cache</button>
+      </div>
+
+      <div class="form-group" style="margin-bottom: 8px;">
+        <input id="cache-search" type="text" class="form-control" placeholder="Search cached URLs (e.g. assets, es/wol, css)...">
+      </div>
+
+      <div class="cache-table-wrapper">
+        <table class="cache-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>URL</th>
+              <th>Size</th>
+              <th>Last Used</th>
+            </tr>
+          </thead>
+          <tbody id="cache-entries-body">
+            <!-- Rows populated dynamically -->
+          </tbody>
+        </table>
+      </div>
+    </main>
+
+    <p id="message" role="status" style="margin-top: 16px;"></p>
+
+    <script src="lib/sql-wasm.js"></script>
+    <script src="lib/backup.js"></script>
+    <script type="module" src="manager.js"></script>
+  </body>
+</html>

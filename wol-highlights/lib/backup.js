@@ -18,6 +18,46 @@ WHERE l.Type = 0
   AND b.EndToken IS NOT NULL
 `;
 
+const NOTE_QUERY = `
+SELECT
+  n.NoteId AS noteId,
+  n.Guid AS guid,
+  n.UserMarkId AS userMarkId,
+  n.LocationId AS locationId,
+  n.Title AS title,
+  n.Content AS content,
+  n.LastModified AS lastModified,
+  n.Created AS created,
+  n.BlockType AS blockType,
+  n.BlockIdentifier AS blockIdentifier,
+  l.DocumentId AS documentId,
+  l.BookNumber AS bookNumber,
+  l.ChapterNumber AS chapterNumber,
+  l.KeySymbol AS keySymbol,
+  l.MepsLanguage AS mepsLanguage
+FROM Note n
+LEFT JOIN Location l ON l.LocationId = n.LocationId
+WHERE (n.BlockType = 1 AND l.DocumentId IS NOT NULL)
+   OR (n.BlockType = 2 AND l.BookNumber IS NOT NULL AND l.ChapterNumber IS NOT NULL)
+   OR (l.DocumentId IS NOT NULL AND n.BlockIdentifier IS NOT NULL)
+`;
+
+const INPUT_FIELD_QUERY = `
+SELECT
+  i.LocationId AS locationId,
+  i.TextTag AS textTag,
+  i.Value AS value,
+  l.DocumentId AS documentId,
+  l.BookNumber AS bookNumber,
+  l.ChapterNumber AS chapterNumber,
+  l.KeySymbol AS keySymbol,
+  l.MepsLanguage AS mepsLanguage
+FROM InputField i
+LEFT JOIN Location l ON l.LocationId = i.LocationId
+WHERE l.DocumentId IS NOT NULL
+   OR (l.BookNumber IS NOT NULL AND l.ChapterNumber IS NOT NULL)
+`;
+
 function readU16(bytes, offset) {
   return bytes[offset] | (bytes[offset + 1] << 8);
 }
@@ -78,8 +118,8 @@ async function unzipDatabase(bytes) {
   throw new Error("No userData.db inside this backup.");
 }
 
-function indexRows(rows) {
-  console.log("[WOL Highlights Backup] Indexing " + rows.length + " rows from query result...");
+function indexRows(rows, noteRows = [], inputFieldRows = []) {
+  console.log("[WOL Highlights Backup] Indexing " + rows.length + " highlight rows, " + noteRows.length + " note rows, and " + inputFieldRows.length + " input fields...");
   const docs = {};
   const bible = {};
   const colorCounts = {};
@@ -117,18 +157,82 @@ function indexRows(rows) {
       }
     }
   }
+
+  const notes = {
+    docs: {},
+    bible: {},
+  };
+  let noteCount = 0;
+  for (const row of noteRows) {
+    const item = {
+      noteId: row.noteId,
+      guid: row.guid,
+      userMarkId: row.userMarkId,
+      locationId: row.locationId,
+      title: row.title || null,
+      content: row.content || "",
+      lastModified: row.lastModified || null,
+      created: row.created || null,
+      blockType: row.blockType,
+      blockIdentifier: row.blockIdentifier,
+    };
+
+    if ((row.blockType === 1 || row.blockIdentifier != null) && row.documentId) {
+      const docId = String(row.documentId);
+      const pid = String(row.blockIdentifier);
+      const paragraphs = notes.docs[docId] || (notes.docs[docId] = {});
+      const list = paragraphs[pid] || (paragraphs[pid] = []);
+      list.push(item);
+      noteCount += 1;
+    } else if (row.blockType === 2 && row.bookNumber && row.chapterNumber && row.keySymbol && row.blockIdentifier != null) {
+      const key = `${row.mepsLanguage}|${String(row.keySymbol).toLowerCase()}|${row.bookNumber}|${row.chapterNumber}`;
+      const v = String(row.blockIdentifier);
+      const verses = notes.bible[key] || (notes.bible[key] = {});
+      const list = verses[v] || (verses[v] = []);
+      list.push(item);
+      noteCount += 1;
+    }
+  }
+
+  const inputFields = {
+    docs: {},
+    bible: {},
+  };
+  let inputFieldCount = 0;
+  for (const row of inputFieldRows) {
+    if (row.documentId && row.textTag) {
+      const docId = String(row.documentId);
+      const tag = String(row.textTag);
+      const docFields = inputFields.docs[docId] || (inputFields.docs[docId] = {});
+      docFields[tag] = row.value || "";
+      if (row.value && row.value.trim()) inputFieldCount++;
+    } else if (row.bookNumber && row.chapterNumber && row.keySymbol && row.textTag) {
+      const key = `${row.mepsLanguage}|${String(row.keySymbol).toLowerCase()}|${row.bookNumber}|${row.chapterNumber}`;
+      const tag = String(row.textTag);
+      const chFields = inputFields.bible[key] || (inputFields.bible[key] = {});
+      chFields[tag] = row.value || "";
+      if (row.value && row.value.trim()) inputFieldCount++;
+    }
+  }
+
+  const totalNotes = noteCount + inputFieldCount;
   const result = {
     version: 1,
     highlightCount,
+    noteCount: totalNotes,
     ignored,
     documentCount: Object.keys(docs).length,
     bibleChapterCount: Object.keys(bible).length,
     colorCounts,
     docs,
     bible,
+    notes,
+    inputFields,
   };
   console.log("[WOL Highlights Backup] Index built successfully:", {
     totalHighlights: highlightCount,
+    totalNotes: totalNotes,
+    inputFields: inputFieldCount,
     documents: result.documentCount,
     bibleChapters: result.bibleChapterCount,
     ignoredRows: ignored,
@@ -177,8 +281,43 @@ async function parseBackup(bytes, initSqlJs, wasmUrl) {
     const rows = [];
     while (statement.step()) rows.push(statement.getAsObject());
     statement.free();
-    console.log(`[WOL Highlights Backup] Query finished in ${(performance.now() - queryStart).toFixed(1)}ms. Found ${rows.length} matching rows.`);
-    return indexRows(rows);
+    console.log(`[WOL Highlights Backup] UserMark query finished in ${(performance.now() - queryStart).toFixed(1)}ms. Found ${rows.length} matching rows.`);
+
+    const noteRows = [];
+    try {
+      const checkTable = database.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='Note'");
+      const hasNoteTable = checkTable.step();
+      checkTable.free();
+
+      if (hasNoteTable) {
+        console.log("[WOL Highlights Backup] Executing Note query on SQLite database...");
+        const noteStmt = database.prepare(NOTE_QUERY);
+        while (noteStmt.step()) noteRows.push(noteStmt.getAsObject());
+        noteStmt.free();
+        console.log(`[WOL Highlights Backup] Found ${noteRows.length} matching notes.`);
+      }
+    } catch (noteErr) {
+      console.warn("[WOL Highlights Backup] Could not query Note table:", noteErr);
+    }
+
+    const inputFieldRows = [];
+    try {
+      const checkInput = database.prepare("SELECT name FROM sqlite_master WHERE type='table' AND name='InputField'");
+      const hasInputTable = checkInput.step();
+      checkInput.free();
+
+      if (hasInputTable) {
+        console.log("[WOL Highlights Backup] Executing InputField query on SQLite database...");
+        const inputStmt = database.prepare(INPUT_FIELD_QUERY);
+        while (inputStmt.step()) inputFieldRows.push(inputStmt.getAsObject());
+        inputStmt.free();
+        console.log(`[WOL Highlights Backup] Found ${inputFieldRows.length} matching input fields.`);
+      }
+    } catch (inputErr) {
+      console.warn("[WOL Highlights Backup] Could not query InputField table:", inputErr);
+    }
+
+    return indexRows(rows, noteRows, inputFieldRows);
   } catch (error) {
     console.error("[WOL Highlights Backup] Error while reading database tables:", error);
     throw new Error(`Could not read highlights from this database: ${error.message}`);

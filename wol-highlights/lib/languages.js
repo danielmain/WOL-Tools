@@ -8,6 +8,24 @@
 const MEPS_BY_SYMBOL = {
   E: 0,
   S: 1,
+  F: 2,
+  X: 3,
+  I: 4,
+  T: 5,
+  J: 6,
+  O: 7,
+  Z: 8,
+  D: 9,
+  FI: 10,
+  N: 11,
+  G: 12,
+  P: 13,
+  H: 14,
+  U: 15,
+  B: 16,
+  TG: 17,
+  CV: 18,
+  IL: 19,
 };
 
 function languageId(symbol) {

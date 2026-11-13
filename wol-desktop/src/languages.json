@@ -1,0 +1,8930 @@
+[
+  {
+    "symbol": "HO",
+    "lib": "ho",
+    "locale": "aji",
+    "name": "A'jië",
+    "region": 786,
+    "mepsId": null,
+    "home": "/aji/wol/h/r786/lp-ho"
+  },
+  {
+    "symbol": "XV",
+    "lib": "xv",
+    "locale": "xav",
+    "name": "A'uwẽ mreme",
+    "region": 511,
+    "mepsId": null,
+    "home": "/xav/wol/h/r511/lp-xv"
+  },
+  {
+    "symbol": "ABN",
+    "lib": "abn",
+    "locale": "abx",
+    "name": "Abaknon",
+    "region": 592,
+    "mepsId": null,
+    "home": "/abx/wol/h/r592/lp-abn"
+  },
+  {
+    "symbol": "AU",
+    "lib": "au",
+    "locale": "abn",
+    "name": "Abua",
+    "region": 619,
+    "mepsId": null,
+    "home": "/abn/wol/h/r619/lp-au"
+  },
+  {
+    "symbol": "ABB",
+    "lib": "abb",
+    "locale": "aba",
+    "name": "Abɛ",
+    "region": 293,
+    "mepsId": null,
+    "home": "/aba/wol/h/r293/lp-abb"
+  },
+  {
+    "symbol": "ACH",
+    "lib": "ach",
+    "locale": "acr",
+    "name": "achi",
+    "region": 289,
+    "mepsId": null,
+    "home": "/acr/wol/h/r289/lp-ach"
+  },
+  {
+    "symbol": "AC",
+    "lib": "ac",
+    "locale": "ach",
+    "name": "Acholi",
+    "region": 142,
+    "mepsId": null,
+    "home": "/ach/wol/h/r142/lp-ac"
+  },
+  {
+    "symbol": "AHW",
+    "lib": "ahw",
+    "locale": "acu",
+    "name": "achuar-shiwiar",
+    "region": 1269,
+    "mepsId": null,
+    "home": "/acu/wol/h/r1269/lp-ahw"
+  },
+  {
+    "symbol": "ACC",
+    "lib": "acc",
+    "locale": "acr-x-acc",
+    "name": "achí de cubulco",
+    "region": 1327,
+    "mepsId": null,
+    "home": "/acr-x-acc/wol/h/r1327/lp-acc"
+  },
+  {
+    "symbol": "ACR",
+    "lib": "acr",
+    "locale": "acr-x-acr",
+    "name": "achí de rabinal",
+    "region": 1328,
+    "mepsId": null,
+    "home": "/acr-x-acr/wol/h/r1328/lp-acr"
+  },
+  {
+    "symbol": "OA",
+    "lib": "oa",
+    "locale": "om",
+    "name": "Afaan Oromoo",
+    "region": 112,
+    "mepsId": null,
+    "home": "/om/wol/h/r112/lp-oa"
+  },
+  {
+    "symbol": "AF",
+    "lib": "af",
+    "locale": "af",
+    "name": "Afrikaans",
+    "region": 52,
+    "mepsId": null,
+    "home": "/af/wol/h/r52/lp-af"
+  },
+  {
+    "symbol": "AJG",
+    "lib": "ajg",
+    "locale": "ajg",
+    "name": "Aja",
+    "region": 544,
+    "mepsId": null,
+    "home": "/ajg/wol/h/r544/lp-ajg"
+  },
+  {
+    "symbol": "KAN",
+    "lib": "kan",
+    "locale": "knj",
+    "name": "akateko",
+    "region": 328,
+    "mepsId": null,
+    "home": "/knj/wol/h/r328/lp-kan"
+  },
+  {
+    "symbol": "AKA",
+    "lib": "aka",
+    "locale": "ahk",
+    "name": "Akha",
+    "region": 604,
+    "mepsId": null,
+    "home": "/ahk/wol/h/r604/lp-aka"
+  },
+  {
+    "symbol": "ATI",
+    "lib": "ati",
+    "locale": "ati",
+    "name": "Akie",
+    "region": 195,
+    "mepsId": null,
+    "home": "/ati/wol/h/r195/lp-ati"
+  },
+  {
+    "symbol": "ABU",
+    "lib": "abu",
+    "locale": "abz",
+    "name": "Alor Abui",
+    "region": 278,
+    "mepsId": null,
+    "home": "/abz/wol/h/r278/lp-abu"
+  },
+  {
+    "symbol": "ALU",
+    "lib": "alu",
+    "locale": "alz",
+    "name": "Alur",
+    "region": 229,
+    "mepsId": null,
+    "home": "/alz/wol/h/r229/lp-alu"
+  },
+  {
+    "symbol": "ABE",
+    "lib": "abe",
+    "locale": "omb",
+    "name": "Ambae (East)",
+    "region": 590,
+    "mepsId": null,
+    "home": "/omb/wol/h/r590/lp-abe"
+  },
+  {
+    "symbol": "ASL",
+    "lib": "asl",
+    "locale": "ase",
+    "name": "American Sign Language",
+    "region": 266,
+    "mepsId": null,
+    "home": "/ase/wol/h/r266/lp-asl"
+  },
+  {
+    "symbol": "ANM",
+    "lib": "anm",
+    "locale": "anm",
+    "name": "Anal",
+    "region": 1316,
+    "mepsId": null,
+    "home": "/anm/wol/h/r1316/lp-anm"
+  },
+  {
+    "symbol": "NOR",
+    "lib": "nor",
+    "locale": "ojb-x-nor",
+    "name": "Anishinaabemowin",
+    "region": 335,
+    "mepsId": null,
+    "home": "/ojb-x-nor/wol/h/r335/lp-nor"
+  },
+  {
+    "symbol": "ALQ",
+    "lib": "alq",
+    "locale": "alq",
+    "name": "Anishinàbemowin",
+    "region": 608,
+    "mepsId": null,
+    "home": "/alq/wol/h/r608/lp-alq"
+  },
+  {
+    "symbol": "AYI",
+    "lib": "ayi",
+    "locale": "any-CI",
+    "name": "Anyin (Indenie)",
+    "region": 623,
+    "mepsId": null,
+    "home": "/any-CI/wol/h/r623/lp-ayi"
+  },
+  {
+    "symbol": "APM",
+    "lib": "apm",
+    "locale": "app",
+    "name": "Apma",
+    "region": 611,
+    "mepsId": null,
+    "home": "/app/wol/h/r611/lp-apm"
+  },
+  {
+    "symbol": "JU",
+    "lib": "ju",
+    "locale": "pga",
+    "name": "Arabi Juba",
+    "region": 819,
+    "mepsId": null,
+    "home": "/pga/wol/h/r819/lp-ju"
+  },
+  {
+    "symbol": "ARH",
+    "lib": "arh",
+    "locale": "arh",
+    "name": "Arhuaco",
+    "region": 452,
+    "mepsId": null,
+    "home": "/arh/wol/h/r452/lp-arh"
+  },
+  {
+    "symbol": "ARO",
+    "lib": "aro",
+    "locale": "aia",
+    "name": "Arosi",
+    "region": 613,
+    "mepsId": null,
+    "home": "/aia/wol/h/r613/lp-aro"
+  },
+  {
+    "symbol": "AHK",
+    "lib": "ahk",
+    "locale": "cni",
+    "name": "ashaninka",
+    "region": 601,
+    "mepsId": null,
+    "home": "/cni/wol/h/r601/lp-ahk"
+  },
+  {
+    "symbol": "IE",
+    "lib": "ie",
+    "locale": "teo",
+    "name": "Ateso",
+    "region": 799,
+    "mepsId": null,
+    "home": "/teo/wol/h/r799/lp-ie"
+  },
+  {
+    "symbol": "AUS",
+    "lib": "aus",
+    "locale": "asf",
+    "name": "Auslan (Australian Sign Language)",
+    "region": 428,
+    "mepsId": null,
+    "home": "/asf/wol/h/r428/lp-aus"
+  },
+  {
+    "symbol": "AWD",
+    "lib": "awd",
+    "locale": "awa",
+    "name": "Awadhi",
+    "region": 1312,
+    "mepsId": null,
+    "home": "/awa/wol/h/r1312/lp-awd"
+  },
+  {
+    "symbol": "AGR",
+    "lib": "agr",
+    "locale": "agr",
+    "name": "awajun",
+    "region": 600,
+    "mepsId": null,
+    "home": "/agr/wol/h/r600/lp-agr"
+  },
+  {
+    "symbol": "AWA",
+    "lib": "awa",
+    "locale": "kwi",
+    "name": "awapit",
+    "region": 1354,
+    "mepsId": null,
+    "home": "/kwi/wol/h/r1354/lp-awa"
+  },
+  {
+    "symbol": "AWN",
+    "lib": "awn",
+    "locale": "azo",
+    "name": "Awing",
+    "region": 427,
+    "mepsId": null,
+    "home": "/azo/wol/h/r427/lp-awn"
+  },
+  {
+    "symbol": "AYW",
+    "lib": "ayw",
+    "locale": "nfl",
+    "name": "Ayiwo",
+    "region": 625,
+    "mepsId": null,
+    "home": "/nfl/wol/h/r625/lp-ayw"
+  },
+  {
+    "symbol": "AP",
+    "lib": "ap",
+    "locale": "ay",
+    "name": "Aymara",
+    "region": 58,
+    "mepsId": null,
+    "home": "/ay/wol/h/r58/lp-ap"
+  },
+  {
+    "symbol": "APS",
+    "lib": "aps",
+    "locale": "ayc",
+    "name": "Aymara (Southern)",
+    "region": 1376,
+    "mepsId": null,
+    "home": "/ayc/wol/h/r1376/lp-aps"
+  },
+  {
+    "symbol": "MX",
+    "lib": "mx",
+    "locale": "mco",
+    "name": "ayuk",
+    "region": 106,
+    "mepsId": null,
+    "home": "/mco/wol/h/r106/lp-mx"
+  },
+  {
+    "symbol": "AJR",
+    "lib": "ajr",
+    "locale": "az",
+    "name": "Azərbaycan",
+    "region": 81,
+    "mepsId": null,
+    "home": "/az/wol/h/r81/lp-ajr"
+  },
+  {
+    "symbol": "AHN",
+    "lib": "ahn",
+    "locale": "aha",
+    "name": "Aɣɩnda",
+    "region": 481,
+    "mepsId": null,
+    "home": "/aha/wol/h/r481/lp-ahn"
+  },
+  {
+    "symbol": "AJ",
+    "lib": "aj",
+    "locale": "az-Cyrl",
+    "name": "Aзәрбајҹан (кирил әлифбасы)",
+    "region": 235,
+    "mepsId": null,
+    "home": "/az-Cyrl/wol/h/r235/lp-aj"
+  },
+  {
+    "symbol": "FNB",
+    "lib": "fnb",
+    "locale": "wyy-x-fnb",
+    "name": "Ba",
+    "region": 748,
+    "mepsId": null,
+    "home": "/wyy-x-fnb/wol/h/r748/lp-fnb"
+  },
+  {
+    "symbol": "BB",
+    "lib": "bb",
+    "locale": "bba",
+    "name": "Baatɔnum",
+    "region": 628,
+    "mepsId": null,
+    "home": "/bba/wol/h/r628/lp-bb"
+  },
+  {
+    "symbol": "NML",
+    "lib": "nml",
+    "locale": "nla",
+    "name": "Babadjou",
+    "region": 359,
+    "mepsId": null,
+    "home": "/nla/wol/h/r359/lp-nml"
+  },
+  {
+    "symbol": "BCM",
+    "lib": "bcm",
+    "locale": "bcy",
+    "name": "Bacama",
+    "region": 1355,
+    "mepsId": null,
+    "home": "/bcy/wol/h/r1355/lp-bcm"
+  },
+  {
+    "symbol": "FFE",
+    "lib": "ffe",
+    "locale": "fmp",
+    "name": "Bafang",
+    "region": 409,
+    "mepsId": null,
+    "home": "/fmp/wol/h/r409/lp-ffe"
+  },
+  {
+    "symbol": "BFI",
+    "lib": "bfi",
+    "locale": "ksf",
+    "name": "bafia (rikpag)",
+    "region": 351,
+    "mepsId": null,
+    "home": "/ksf/wol/h/r351/lp-bfi"
+  },
+  {
+    "symbol": "INI",
+    "lib": "ini",
+    "locale": "inl",
+    "name": "Bahasa Isyarat Indonesia",
+    "region": 419,
+    "mepsId": null,
+    "home": "/inl/wol/h/r419/lp-ini"
+  },
+  {
+    "symbol": "BIM",
+    "lib": "bim",
+    "locale": "xml",
+    "name": "Bahasa Isyarat Malaysia",
+    "region": 423,
+    "mepsId": null,
+    "home": "/xml/wol/h/r423/lp-bim"
+  },
+  {
+    "symbol": "BKK",
+    "lib": "bkk",
+    "locale": "bkh",
+    "name": "Bakoko",
+    "region": 540,
+    "mepsId": null,
+    "home": "/bkh/wol/h/r540/lp-bkk"
+  },
+  {
+    "symbol": "LND",
+    "lib": "lnd",
+    "locale": "led",
+    "name": "Baledha",
+    "region": 911,
+    "mepsId": null,
+    "home": "/led/wol/h/r911/lp-lnd"
+  },
+  {
+    "symbol": "BLN",
+    "lib": "bln",
+    "locale": "ban",
+    "name": "Bali",
+    "region": 277,
+    "mepsId": null,
+    "home": "/ban/wol/h/r277/lp-bln"
+  },
+  {
+    "symbol": "AR",
+    "lib": "ar",
+    "locale": "bm",
+    "name": "Bamanankan",
+    "region": 612,
+    "mepsId": null,
+    "home": "/bm/wol/h/r612/lp-ar"
+  },
+  {
+    "symbol": "BNM",
+    "lib": "bnm",
+    "locale": "bjo",
+    "name": "Banda (Mid-Southern)",
+    "region": 1347,
+    "mepsId": null,
+    "home": "/bjo/wol/h/r1347/lp-bnm"
+  },
+  {
+    "symbol": "GHM",
+    "lib": "ghm",
+    "locale": "bbj",
+    "name": "Bandjoun-Baham",
+    "region": 313,
+    "mepsId": null,
+    "home": "/bbj/wol/h/r313/lp-ghm"
+  },
+  {
+    "symbol": "TNN",
+    "lib": "tnn",
+    "locale": "tvu",
+    "name": "Banen",
+    "region": 1194,
+    "mepsId": null,
+    "home": "/tvu/wol/h/r1194/lp-tnn"
+  },
+  {
+    "symbol": "DU",
+    "lib": "du",
+    "locale": "byv",
+    "name": "Bangangté",
+    "region": 322,
+    "mepsId": null,
+    "home": "/byv/wol/h/r322/lp-du"
+  },
+  {
+    "symbol": "BGS",
+    "lib": "bgs",
+    "locale": "sgn-BD",
+    "name": "Bangla Sign Language",
+    "region": 1374,
+    "mepsId": null,
+    "home": "/sgn-BD/wol/h/r1374/lp-bgs"
+  },
+  {
+    "symbol": "BNW",
+    "lib": "bnw",
+    "locale": "bwi",
+    "name": "Baniua",
+    "region": 649,
+    "mepsId": null,
+    "home": "/bwi/wol/h/r649/lp-bnw"
+  },
+  {
+    "symbol": "BNJ",
+    "lib": "bnj",
+    "locale": "bjn",
+    "name": "Banjar",
+    "region": 304,
+    "mepsId": null,
+    "home": "/bjn/wol/h/r304/lp-bnj"
+  },
+  {
+    "symbol": "BH",
+    "lib": "bh",
+    "locale": "bfa",
+    "name": "Bari",
+    "region": 638,
+    "mepsId": null,
+    "home": "/bfa/wol/h/r638/lp-bh"
+  },
+  {
+    "symbol": "BRW",
+    "lib": "brw",
+    "locale": "bwg",
+    "name": "Barwe",
+    "region": 1365,
+    "mepsId": null,
+    "home": "/bwg/wol/h/r1365/lp-brw"
+  },
+  {
+    "symbol": "BS",
+    "lib": "bs",
+    "locale": "bas",
+    "name": "Basaa (Kamerun)",
+    "region": 181,
+    "mepsId": null,
+    "home": "/bas/wol/h/r181/lp-bs"
+  },
+  {
+    "symbol": "BTK",
+    "lib": "btk",
+    "locale": "bts",
+    "name": "Batak (Simalungun)",
+    "region": 290,
+    "mepsId": null,
+    "home": "/bts/wol/h/r290/lp-btk"
+  },
+  {
+    "symbol": "AK",
+    "lib": "ak",
+    "locale": "btx",
+    "name": "Batak Karo",
+    "region": 272,
+    "mepsId": null,
+    "home": "/btx/wol/h/r272/lp-ak"
+  },
+  {
+    "symbol": "BT",
+    "lib": "bt",
+    "locale": "bbc",
+    "name": "Batak Toba",
+    "region": 256,
+    "mepsId": null,
+    "home": "/bbc/wol/h/r256/lp-bt"
+  },
+  {
+    "symbol": "BAU",
+    "lib": "bau",
+    "locale": "bxa",
+    "name": "Bauro",
+    "region": 627,
+    "mepsId": null,
+    "home": "/bxa/wol/h/r627/lp-bau"
+  },
+  {
+    "symbol": "BEA",
+    "lib": "bea",
+    "locale": "ron-x-bea",
+    "name": "Beas",
+    "region": 634,
+    "mepsId": null,
+    "home": "/ron-x-bea/wol/h/r634/lp-bea"
+  },
+  {
+    "symbol": "BNL",
+    "lib": "bnl",
+    "locale": "sgn-BJ",
+    "name": "Benin Sign Language",
+    "region": 1372,
+    "mepsId": null,
+    "home": "/sgn-BJ/wol/h/r1372/lp-bnl"
+  },
+  {
+    "symbol": "BRM",
+    "lib": "brm",
+    "locale": "bom",
+    "name": "Berom",
+    "region": 651,
+    "mepsId": null,
+    "home": "/bom/wol/h/r651/lp-brm"
+  },
+  {
+    "symbol": "BTO",
+    "lib": "bto",
+    "locale": "plt-x-bto",
+    "name": "Betsileo",
+    "region": 1363,
+    "mepsId": null,
+    "home": "/plt-x-bto/wol/h/r1363/lp-bto"
+  },
+  {
+    "symbol": "BTA",
+    "lib": "bta",
+    "locale": "bzc",
+    "name": "Betsimisaraka Atsimo",
+    "region": 654,
+    "mepsId": null,
+    "home": "/bzc/wol/h/r654/lp-bta"
+  },
+  {
+    "symbol": "BTS",
+    "lib": "bts",
+    "locale": "bmm",
+    "name": "Betsimisaraka Avaratra",
+    "region": 656,
+    "mepsId": null,
+    "home": "/bmm/wol/h/r656/lp-bts"
+  },
+  {
+    "symbol": "BHM",
+    "lib": "bhm",
+    "locale": "bho-MU",
+    "name": "Bhojpuri (Mauritius)",
+    "region": 1271,
+    "mepsId": null,
+    "home": "/bho-MU/wol/h/r1271/lp-bhm"
+  },
+  {
+    "symbol": "IK",
+    "lib": "ik",
+    "locale": "bhw",
+    "name": "Biak",
+    "region": 282,
+    "mepsId": null,
+    "home": "/bhw/wol/h/r282/lp-ik"
+  },
+  {
+    "symbol": "BI",
+    "lib": "bi",
+    "locale": "bcl",
+    "name": "Bicol",
+    "region": 104,
+    "mepsId": null,
+    "home": "/bcl/wol/h/r104/lp-bi"
+  },
+  {
+    "symbol": "BDY",
+    "lib": "bdy",
+    "locale": "sdo",
+    "name": "Bidayuh (Bukar)",
+    "region": 586,
+    "mepsId": null,
+    "home": "/sdo/wol/h/r586/lp-bdy"
+  },
+  {
+    "symbol": "BZK",
+    "lib": "bzk",
+    "locale": "bzj",
+    "name": "Bileez Kriol",
+    "region": 326,
+    "mepsId": null,
+    "home": "/bzj/wol/h/r326/lp-bzk"
+  },
+  {
+    "symbol": "LM",
+    "lib": "lm",
+    "locale": "bi",
+    "name": "Bislama",
+    "region": 135,
+    "mepsId": null,
+    "home": "/bi/wol/h/r135/lp-lm"
+  },
+  {
+    "symbol": "BNS",
+    "lib": "bns",
+    "locale": "bps",
+    "name": "Blaan (Sarangani)",
+    "region": 1272,
+    "mepsId": null,
+    "home": "/bps/wol/h/r1272/lp-bns"
+  },
+  {
+    "symbol": "BSN",
+    "lib": "bsn",
+    "locale": "bs",
+    "name": "bosanski",
+    "region": 177,
+    "mepsId": null,
+    "home": "/bs/wol/h/r177/lp-bsn"
+  },
+  {
+    "symbol": "WSL",
+    "lib": "wsl",
+    "locale": "sgn-bw",
+    "name": "Botswana Sign Language",
+    "region": 1242,
+    "mepsId": null,
+    "home": "/sgn-bw/wol/h/r1242/lp-wsl"
+  },
+  {
+    "symbol": "BRI",
+    "lib": "bri",
+    "locale": "bzd",
+    "name": "bribri",
+    "region": 650,
+    "mepsId": null,
+    "home": "/bzd/wol/h/r650/lp-bri"
+  },
+  {
+    "symbol": "BSL",
+    "lib": "bsl",
+    "locale": "bfi",
+    "name": "British Sign Language",
+    "region": 399,
+    "mepsId": null,
+    "home": "/bfi/wol/h/r399/lp-bsl"
+  },
+  {
+    "symbol": "LK",
+    "lib": "lk",
+    "locale": "bxk",
+    "name": "Bukusu",
+    "region": 904,
+    "mepsId": null,
+    "home": "/bxk/wol/h/r904/lp-lk"
+  },
+  {
+    "symbol": "BO",
+    "lib": "bo",
+    "locale": "bum",
+    "name": "Bulu",
+    "region": 180,
+    "mepsId": null,
+    "home": "/bum/wol/h/r180/lp-bo"
+  },
+  {
+    "symbol": "MNC",
+    "lib": "mnc",
+    "locale": "cmo",
+    "name": "Bunong",
+    "region": 514,
+    "mepsId": null,
+    "home": "/cmo/wol/h/r514/lp-mnc"
+  },
+  {
+    "symbol": "BUR",
+    "lib": "bur",
+    "locale": "bwr",
+    "name": "Bura",
+    "region": 657,
+    "mepsId": null,
+    "home": "/bwr/wol/h/r657/lp-bur"
+  },
+  {
+    "symbol": "BFL",
+    "lib": "bfl",
+    "locale": "sgn-BF",
+    "name": "Burkina Faso Sign Language",
+    "region": 1371,
+    "mepsId": null,
+    "home": "/sgn-BF/wol/h/r1371/lp-bfl"
+  },
+  {
+    "symbol": "BHL",
+    "lib": "bhl",
+    "locale": "lel",
+    "name": "Bushilele",
+    "region": 1325,
+    "mepsId": null,
+    "home": "/lel/wol/h/r1325/lp-bhl"
+  },
+  {
+    "symbol": "CAB",
+    "lib": "cab",
+    "locale": "cjp",
+    "name": "cabécar",
+    "region": 659,
+    "mepsId": null,
+    "home": "/cjp/wol/h/r659/lp-cab"
+  },
+  {
+    "symbol": "AN",
+    "lib": "an",
+    "locale": "cat",
+    "name": "català",
+    "region": 55,
+    "mepsId": null,
+    "home": "/cat/wol/h/r55/lp-an"
+  },
+  {
+    "symbol": "CV",
+    "lib": "cv",
+    "locale": "ceb",
+    "name": "Cebuano",
+    "region": 101,
+    "mepsId": 18,
+    "home": "/ceb/wol/h/r101/lp-cv"
+  },
+  {
+    "symbol": "YU",
+    "lib": "yu",
+    "locale": "esu",
+    "name": "Central Alaskan Yupik",
+    "region": 252,
+    "mepsId": null,
+    "home": "/esu/wol/h/r252/lp-yu"
+  },
+  {
+    "symbol": "CHL",
+    "lib": "chl",
+    "locale": "ctu",
+    "name": "ch'ol",
+    "region": 193,
+    "mepsId": null,
+    "home": "/ctu/wol/h/r193/lp-chl"
+  },
+  {
+    "symbol": "CPL",
+    "lib": "cpl",
+    "locale": "cbi",
+    "name": "cha'palaa",
+    "region": 695,
+    "mepsId": null,
+    "home": "/cbi/wol/h/r695/lp-cpl"
+  },
+  {
+    "symbol": "CC",
+    "lib": "cc",
+    "locale": "cbk",
+    "name": "Chavacano",
+    "region": 661,
+    "mepsId": null,
+    "home": "/cbk/wol/h/r661/lp-cc"
+  },
+  {
+    "symbol": "PHN",
+    "lib": "phn",
+    "locale": "arn-x-phn",
+    "name": "chedungun (pewenche)",
+    "region": 1071,
+    "mepsId": null,
+    "home": "/arn-x-phn/wol/h/r1071/lp-phn"
+  },
+  {
+    "symbol": "CDG",
+    "lib": "cdg",
+    "locale": "arn-x-cdg",
+    "name": "Chedungun labquenche",
+    "region": 665,
+    "mepsId": null,
+    "home": "/arn-x-cdg/wol/h/r665/lp-cdg"
+  },
+  {
+    "symbol": "CN",
+    "lib": "cn",
+    "locale": "ny",
+    "name": "Chichewa",
+    "region": 107,
+    "mepsId": null,
+    "home": "/ny/wol/h/r107/lp-cn"
+  },
+  {
+    "symbol": "LMB",
+    "lib": "lmb",
+    "locale": "lai",
+    "name": "Chilambya",
+    "region": 908,
+    "mepsId": null,
+    "home": "/lai/wol/h/r908/lp-lmb"
+  },
+  {
+    "symbol": "FLM",
+    "lib": "flm",
+    "locale": "cfm",
+    "name": "Chin (Falam)",
+    "region": 746,
+    "mepsId": null,
+    "home": "/cfm/wol/h/r746/lp-flm"
+  },
+  {
+    "symbol": "HK",
+    "lib": "hk",
+    "locale": "cnh",
+    "name": "Chin (Hakha)",
+    "region": 542,
+    "mepsId": null,
+    "home": "/cnh/wol/h/r542/lp-hk"
+  },
+  {
+    "symbol": "KUK",
+    "lib": "kuk",
+    "locale": "tcz",
+    "name": "Chin (Kuki)",
+    "region": 522,
+    "mepsId": null,
+    "home": "/tcz/wol/h/r522/lp-kuk"
+  },
+  {
+    "symbol": "MAA",
+    "lib": "maa",
+    "locale": "mrh",
+    "name": "Chin (Mara)",
+    "region": 924,
+    "mepsId": null,
+    "home": "/mrh/wol/h/r924/lp-maa"
+  },
+  {
+    "symbol": "CI",
+    "lib": "ci",
+    "locale": "ctd",
+    "name": "Chin (Tedim)",
+    "region": 537,
+    "mepsId": null,
+    "home": "/ctd/wol/h/r537/lp-ci"
+  },
+  {
+    "symbol": "ZO",
+    "lib": "zo",
+    "locale": "czt",
+    "name": "Chin (Zotung)",
+    "region": 1259,
+    "mepsId": null,
+    "home": "/czt/wol/h/r1259/lp-zo"
+  },
+  {
+    "symbol": "MSL",
+    "lib": "msl",
+    "locale": "sgn-MW",
+    "name": "Chinenero Chamanja cha ku Malawi",
+    "region": 394,
+    "mepsId": null,
+    "home": "/sgn-MW/wol/h/r394/lp-msl"
+  },
+  {
+    "symbol": "NSM",
+    "lib": "nsm",
+    "locale": "nse-mz",
+    "name": "Chinsenga (Mozambique)",
+    "region": 1042,
+    "mepsId": null,
+    "home": "/nse-mz/wol/h/r1042/lp-nsm"
+  },
+  {
+    "symbol": "PHM",
+    "lib": "phm",
+    "locale": "phm",
+    "name": "Chiphimbi",
+    "region": 1070,
+    "mepsId": null,
+    "home": "/phm/wol/h/r1070/lp-phm"
+  },
+  {
+    "symbol": "CG",
+    "lib": "cg",
+    "locale": "toi",
+    "name": "Chitonga",
+    "region": 70,
+    "mepsId": null,
+    "home": "/toi/wol/h/r70/lp-cg"
+  },
+  {
+    "symbol": "CT",
+    "lib": "ct",
+    "locale": "tog",
+    "name": "Chitonga (Malawi)",
+    "region": 200,
+    "mepsId": null,
+    "home": "/tog/wol/h/r200/lp-ct"
+  },
+  {
+    "symbol": "CGW",
+    "lib": "cgw",
+    "locale": "toi-zw",
+    "name": "Chitonga (Zimbabwe)",
+    "region": 334,
+    "mepsId": null,
+    "home": "/toi-zw/wol/h/r334/lp-cgw"
+  },
+  {
+    "symbol": "TB",
+    "lib": "tb",
+    "locale": "tum",
+    "name": "Chitumbuka",
+    "region": 191,
+    "mepsId": null,
+    "home": "/tum/wol/h/r191/lp-tb"
+  },
+  {
+    "symbol": "YA",
+    "lib": "ya",
+    "locale": "yao",
+    "name": "Chiyao",
+    "region": 172,
+    "mepsId": null,
+    "home": "/yao/wol/h/r172/lp-ya"
+  },
+  {
+    "symbol": "CTW",
+    "lib": "ctw",
+    "locale": "cho",
+    "name": "Choctaw",
+    "region": 709,
+    "mepsId": null,
+    "home": "/cho/wol/h/r709/lp-ctw"
+  },
+  {
+    "symbol": "CK",
+    "lib": "ck",
+    "locale": "cjk",
+    "name": "Chokwe",
+    "region": 461,
+    "mepsId": null,
+    "home": "/cjk/wol/h/r461/lp-ck"
+  },
+  {
+    "symbol": "CTI",
+    "lib": "cti",
+    "locale": "crt",
+    "name": "chorote (iyojwa'ja)",
+    "region": 707,
+    "mepsId": null,
+    "home": "/crt/wol/h/r707/lp-cti"
+  },
+  {
+    "symbol": "CHJ",
+    "lib": "chj",
+    "locale": "cac",
+    "name": "chuj",
+    "region": 449,
+    "mepsId": null,
+    "home": "/cac/wol/h/r449/lp-chj"
+  },
+  {
+    "symbol": "TE",
+    "lib": "te",
+    "locale": "chk",
+    "name": "Chuuk",
+    "region": 303,
+    "mepsId": null,
+    "home": "/chk/wol/h/r303/lp-te"
+  },
+  {
+    "symbol": "CW",
+    "lib": "cw",
+    "locale": "bem",
+    "name": "Cibemba",
+    "region": 61,
+    "mepsId": null,
+    "home": "/bem/wol/h/r61/lp-cw"
+  },
+  {
+    "symbol": "GG",
+    "lib": "gg",
+    "locale": "gog",
+    "name": "Cigogo",
+    "region": 760,
+    "mepsId": null,
+    "home": "/gog/wol/h/r760/lp-gg"
+  },
+  {
+    "symbol": "KYK",
+    "lib": "kyk",
+    "locale": "kny",
+    "name": "Ciin-kanyok",
+    "region": 887,
+    "mepsId": null,
+    "home": "/kny/wol/h/r887/lp-kyk"
+  },
+  {
+    "symbol": "LJ",
+    "lib": "lj",
+    "locale": "leh",
+    "name": "Cilenje",
+    "region": 903,
+    "mepsId": null,
+    "home": "/leh/wol/h/r903/lp-lj"
+  },
+  {
+    "symbol": "MWL",
+    "lib": "mwl",
+    "locale": "mgr",
+    "name": "Cimambwe-Lungu",
+    "region": 356,
+    "mepsId": null,
+    "home": "/mgr/wol/h/r356/lp-mwl"
+  },
+  {
+    "symbol": "HKI",
+    "lib": "hki",
+    "locale": "hak-ID",
+    "name": "Cina Khek (Indonesia)",
+    "region": 783,
+    "mepsId": null,
+    "home": "/hak-ID/wol/h/r783/lp-hki"
+  },
+  {
+    "symbol": "NM",
+    "lib": "nm",
+    "locale": "mwn",
+    "name": "Cinamwanga",
+    "region": 517,
+    "mepsId": null,
+    "home": "/mwn/wol/h/r517/lp-nm"
+  },
+  {
+    "symbol": "NDA",
+    "lib": "nda",
+    "locale": "ndc",
+    "name": "Cindau",
+    "region": 248,
+    "mepsId": null,
+    "home": "/ndc/wol/h/r248/lp-nda"
+  },
+  {
+    "symbol": "NEN",
+    "lib": "nen",
+    "locale": "nse",
+    "name": "Cinsenga",
+    "region": 1017,
+    "mepsId": null,
+    "home": "/nse/wol/h/r1017/lp-nen"
+  },
+  {
+    "symbol": "CIN",
+    "lib": "cin",
+    "locale": "nya",
+    "name": "Cinyanja",
+    "region": 66,
+    "mepsId": null,
+    "home": "/nya/wol/h/r66/lp-cin"
+  },
+  {
+    "symbol": "NYU",
+    "lib": "nyu",
+    "locale": "nyu",
+    "name": "Cinyungwe",
+    "region": 246,
+    "mepsId": null,
+    "home": "/nyu/wol/h/r246/lp-nyu"
+  },
+  {
+    "symbol": "SEN",
+    "lib": "sen",
+    "locale": "seh",
+    "name": "Cisena",
+    "region": 243,
+    "mepsId": null,
+    "home": "/seh/wol/h/r243/lp-sen"
+  },
+  {
+    "symbol": "SOL",
+    "lib": "sol",
+    "locale": "sby",
+    "name": "Cisoli",
+    "region": 1154,
+    "mepsId": null,
+    "home": "/sby/wol/h/r1154/lp-sol"
+  },
+  {
+    "symbol": "AW",
+    "lib": "aw",
+    "locale": "tsc",
+    "name": "ciTshwa",
+    "region": 245,
+    "mepsId": null,
+    "home": "/tsc/wol/h/r245/lp-aw"
+  },
+  {
+    "symbol": "TEW",
+    "lib": "tew",
+    "locale": "twx",
+    "name": "Ciutee",
+    "region": 1180,
+    "mepsId": null,
+    "home": "/twx/wol/h/r1180/lp-tew"
+  },
+  {
+    "symbol": "CMK",
+    "lib": "cmk",
+    "locale": "cfg",
+    "name": "Como Karim",
+    "region": 686,
+    "mepsId": null,
+    "home": "/cfg/wol/h/r686/lp-cmk"
+  },
+  {
+    "symbol": "COR",
+    "lib": "cor",
+    "locale": "crn",
+    "name": "cora (el nayar)",
+    "region": 507,
+    "mepsId": null,
+    "home": "/crn/wol/h/r507/lp-cor"
+  },
+  {
+    "symbol": "CSC",
+    "lib": "csc",
+    "locale": "co",
+    "name": "Corsu",
+    "region": 704,
+    "mepsId": null,
+    "home": "/co/wol/h/r704/lp-csc"
+  },
+  {
+    "symbol": "OC",
+    "lib": "oc",
+    "locale": "crm-x-oc",
+    "name": "Cree Omushkego (Roman)",
+    "region": 1051,
+    "mepsId": null,
+    "home": "/crm-x-oc/wol/h/r1051/lp-oc"
+  },
+  {
+    "symbol": "MNT",
+    "lib": "mnt",
+    "locale": "cnr",
+    "name": "crnogorski",
+    "region": 972,
+    "mepsId": null,
+    "home": "/cnr/wol/h/r972/lp-mnt"
+  },
+  {
+    "symbol": "CBE",
+    "lib": "cbe",
+    "locale": "cub",
+    "name": "Cubeo",
+    "region": 660,
+    "mepsId": null,
+    "home": "/cub/wol/h/r660/lp-cbe"
+  },
+  {
+    "symbol": "CPC",
+    "lib": "cpc",
+    "locale": "kpc",
+    "name": "Curripaco",
+    "region": 494,
+    "mepsId": null,
+    "home": "/kpc/wol/h/r494/lp-cpc"
+  },
+  {
+    "symbol": "W",
+    "lib": "w",
+    "locale": "cy",
+    "name": "Cymraeg",
+    "region": 59,
+    "mepsId": null,
+    "home": "/cy/wol/h/r59/lp-w"
+  },
+  {
+    "symbol": "DGA",
+    "lib": "dga",
+    "locale": "dga",
+    "name": "Dagaare",
+    "region": 547,
+    "mepsId": null,
+    "home": "/dga/wol/h/r547/lp-dga"
+  },
+  {
+    "symbol": "DGB",
+    "lib": "dgb",
+    "locale": "dag",
+    "name": "Dagbanli",
+    "region": 548,
+    "mepsId": null,
+    "home": "/dag/wol/h/r548/lp-dgb"
+  },
+  {
+    "symbol": "TUO",
+    "lib": "tuo",
+    "locale": "tuo",
+    "name": "Dahse ye",
+    "region": 1208,
+    "mepsId": null,
+    "home": "/tuo/wol/h/r1208/lp-tuo"
+  },
+  {
+    "symbol": "DT",
+    "lib": "dt",
+    "locale": "dak",
+    "name": "Dakota",
+    "region": 263,
+    "mepsId": null,
+    "home": "/dak/wol/h/r263/lp-dt"
+  },
+  {
+    "symbol": "DMR",
+    "lib": "dmr",
+    "locale": "naq-x-dmr",
+    "name": "Damara",
+    "region": 251,
+    "mepsId": null,
+    "home": "/naq-x-dmr/wol/h/r251/lp-dmr"
+  },
+  {
+    "symbol": "DG",
+    "lib": "dg",
+    "locale": "ada",
+    "name": "Dangme",
+    "region": 217,
+    "mepsId": null,
+    "home": "/ada/wol/h/r217/lp-dg"
+  },
+  {
+    "symbol": "D",
+    "lib": "d",
+    "locale": "da",
+    "name": "Dansk",
+    "region": 9,
+    "mepsId": 9,
+    "home": "/da/wol/h/r9/lp-d"
+  },
+  {
+    "symbol": "DSL",
+    "lib": "dsl",
+    "locale": "dsl",
+    "name": "Dansk tegnsprog",
+    "region": 415,
+    "mepsId": null,
+    "home": "/dsl/wol/h/r415/lp-dsl"
+  },
+  {
+    "symbol": "DKA",
+    "lib": "dka",
+    "locale": "knx",
+    "name": "Dayak Ahe",
+    "region": 294,
+    "mepsId": null,
+    "home": "/knx/wol/h/r294/lp-dka"
+  },
+  {
+    "symbol": "DK",
+    "lib": "dk",
+    "locale": "nij",
+    "name": "Dayak Ngaju",
+    "region": 288,
+    "mepsId": null,
+    "home": "/nij/wol/h/r288/lp-dk"
+  },
+  {
+    "symbol": "DYT",
+    "lib": "dyt",
+    "locale": "xdy",
+    "name": "Dayak Tomun",
+    "region": 315,
+    "mepsId": null,
+    "home": "/xdy/wol/h/r315/lp-dyt"
+  },
+  {
+    "symbol": "DND",
+    "lib": "dnd",
+    "locale": "ddn",
+    "name": "Dendi",
+    "region": 716,
+    "mepsId": null,
+    "home": "/ddn/wol/h/r716/lp-dnd"
+  },
+  {
+    "symbol": "X",
+    "lib": "x",
+    "locale": "de",
+    "name": "Deutsch",
+    "region": 10,
+    "mepsId": 3,
+    "home": "/de/wol/h/r10/lp-x"
+  },
+  {
+    "symbol": "DGS",
+    "lib": "dgs",
+    "locale": "gsg",
+    "name": "Deutsche Gebärdensprache",
+    "region": 420,
+    "mepsId": null,
+    "home": "/gsg/wol/h/r420/lp-dgs"
+  },
+  {
+    "symbol": "SGS",
+    "lib": "sgs",
+    "locale": "sgg",
+    "name": "Deutschschweizer Gebärdensprache",
+    "region": 466,
+    "mepsId": null,
+    "home": "/sgg/wol/h/r466/lp-sgs"
+  },
+  {
+    "symbol": "LO",
+    "lib": "lo",
+    "locale": "luo",
+    "name": "Dholuo",
+    "region": 133,
+    "mepsId": null,
+    "home": "/luo/wol/h/r133/lp-lo"
+  },
+  {
+    "symbol": "ADH",
+    "lib": "adh",
+    "locale": "adh",
+    "name": "Dhopadhola",
+    "region": 595,
+    "mepsId": null,
+    "home": "/adh/wol/h/r595/lp-adh"
+  },
+  {
+    "symbol": "SL",
+    "lib": "sl",
+    "locale": "shk",
+    "name": "Dhøg Cøllø",
+    "region": 1367,
+    "mepsId": null,
+    "home": "/shk/wol/h/r1367/lp-sl"
+  },
+  {
+    "symbol": "ZPV",
+    "lib": "zpv",
+    "locale": "zav",
+    "name": "didza xhidza",
+    "region": 346,
+    "mepsId": null,
+    "home": "/zav/wol/h/r346/lp-zpv"
+  },
+  {
+    "symbol": "ZPI",
+    "lib": "zpi",
+    "locale": "zai",
+    "name": "diidxazá",
+    "region": 111,
+    "mepsId": null,
+    "home": "/zai/wol/h/r111/lp-zpi"
+  },
+  {
+    "symbol": "ZPL",
+    "lib": "zpl",
+    "locale": "zpa",
+    "name": "diitza",
+    "region": 201,
+    "mepsId": null,
+    "home": "/zpa/wol/h/r201/lp-zpl"
+  },
+  {
+    "symbol": "ZPX",
+    "lib": "zpx",
+    "locale": "zpd",
+    "name": "Dillexhon",
+    "region": 1264,
+    "mepsId": null,
+    "home": "/zpd/wol/h/r1264/lp-zpx"
+  },
+  {
+    "symbol": "DI",
+    "lib": "di",
+    "locale": "din",
+    "name": "Dinka",
+    "region": 713,
+    "mepsId": null,
+    "home": "/din/wol/h/r713/lp-di"
+  },
+  {
+    "symbol": "NV",
+    "lib": "nv",
+    "locale": "nv",
+    "name": "Diné Bizaad",
+    "region": 187,
+    "mepsId": null,
+    "home": "/nv/wol/h/r187/lp-nv"
+  },
+  {
+    "symbol": "DTM",
+    "lib": "dtm",
+    "locale": "tbz",
+    "name": "Ditammari",
+    "region": 720,
+    "mepsId": null,
+    "home": "/tbz/wol/h/r720/lp-dtm"
+  },
+  {
+    "symbol": "ZPD",
+    "lib": "zpd",
+    "locale": "zab",
+    "name": "ditsa",
+    "region": 575,
+    "mepsId": null,
+    "home": "/zab/wol/h/r575/lp-zpd"
+  },
+  {
+    "symbol": "ZPC",
+    "lib": "zpc",
+    "locale": "zpj",
+    "name": "ditz zea",
+    "region": 1261,
+    "mepsId": null,
+    "home": "/zpj/wol/h/r1261/lp-zpc"
+  },
+  {
+    "symbol": "DA",
+    "lib": "da",
+    "locale": "dua",
+    "name": "Douala",
+    "region": 184,
+    "mepsId": null,
+    "home": "/dua/wol/h/r184/lp-da"
+  },
+  {
+    "symbol": "LF",
+    "lib": "lf",
+    "locale": "dhv",
+    "name": "Drehu",
+    "region": 132,
+    "mepsId": null,
+    "home": "/dhv/wol/h/r132/lp-lf"
+  },
+  {
+    "symbol": "BM",
+    "lib": "bm",
+    "locale": "ybb",
+    "name": "Dschang",
+    "region": 260,
+    "mepsId": null,
+    "home": "/ybb/wol/h/r260/lp-bm"
+  },
+  {
+    "symbol": "UN",
+    "lib": "un",
+    "locale": "cuk",
+    "name": "dule",
+    "region": 523,
+    "mepsId": null,
+    "home": "/cuk/wol/h/r523/lp-un"
+  },
+  {
+    "symbol": "KAD",
+    "lib": "kad",
+    "locale": "dtp",
+    "name": "Dusun",
+    "region": 219,
+    "mepsId": null,
+    "home": "/dtp/wol/h/r219/lp-kad"
+  },
+  {
+    "symbol": "DZ",
+    "lib": "dz",
+    "locale": "dzo-Tibt",
+    "name": "Dzongkha (Tibetan)",
+    "region": 1320,
+    "mepsId": null,
+    "home": "/dzo-Tibt/wol/h/r1320/lp-dz"
+  },
+  {
+    "symbol": "ZPG",
+    "lib": "zpg",
+    "locale": "zpg",
+    "name": "dîdzrie’",
+    "region": 362,
+    "mepsId": null,
+    "home": "/zpg/wol/h/r362/lp-zpg"
+  },
+  {
+    "symbol": "EBA",
+    "lib": "eba",
+    "locale": "igb",
+    "name": "Ebira",
+    "region": 731,
+    "mepsId": null,
+    "home": "/igb/wol/h/r731/lp-eba"
+  },
+  {
+    "symbol": "ED",
+    "lib": "ed",
+    "locale": "bin",
+    "name": "Edo",
+    "region": 292,
+    "mepsId": null,
+    "home": "/bin/wol/h/r292/lp-ed"
+  },
+  {
+    "symbol": "ST",
+    "lib": "st",
+    "locale": "et",
+    "name": "eesti",
+    "region": 37,
+    "mepsId": null,
+    "home": "/et/wol/h/r37/lp-st"
+  },
+  {
+    "symbol": "STD",
+    "lib": "std",
+    "locale": "eso",
+    "name": "eesti viipekeel",
+    "region": 384,
+    "mepsId": null,
+    "home": "/eso/wol/h/r384/lp-std"
+  },
+  {
+    "symbol": "EFN",
+    "lib": "efn",
+    "locale": "llp",
+    "name": "Efate (North)",
+    "region": 733,
+    "mepsId": null,
+    "home": "/llp/wol/h/r733/lp-efn"
+  },
+  {
+    "symbol": "EFS",
+    "lib": "efs",
+    "locale": "erk",
+    "name": "Efate (South)",
+    "region": 734,
+    "mepsId": null,
+    "home": "/erk/wol/h/r734/lp-efs"
+  },
+  {
+    "symbol": "EF",
+    "lib": "ef",
+    "locale": "efi",
+    "name": "Efịk",
+    "region": 35,
+    "mepsId": null,
+    "home": "/efi/wol/h/r35/lp-ef"
+  },
+  {
+    "symbol": "EJH",
+    "lib": "ejh",
+    "locale": "etu",
+    "name": "Ejagham",
+    "region": 736,
+    "mepsId": null,
+    "home": "/etu/wol/h/r736/lp-ejh"
+  },
+  {
+    "symbol": "HVU",
+    "lib": "hvu",
+    "locale": "hav",
+    "name": "Ekihavu",
+    "region": 792,
+    "mepsId": null,
+    "home": "/hav/wol/h/r792/lp-hvu"
+  },
+  {
+    "symbol": "HY",
+    "lib": "hy",
+    "locale": "hay",
+    "name": "Ekihaya",
+    "region": 796,
+    "mepsId": null,
+    "home": "/hay/wol/h/r796/lp-hy"
+  },
+  {
+    "symbol": "LE",
+    "lib": "le",
+    "locale": "ngl",
+    "name": "Elomwe",
+    "region": 332,
+    "mepsId": null,
+    "home": "/ngl/wol/h/r332/lp-le"
+  },
+  {
+    "symbol": "MAC",
+    "lib": "mac",
+    "locale": "vmw",
+    "name": "Emakhuwa",
+    "region": 255,
+    "mepsId": null,
+    "home": "/vmw/wol/h/r255/lp-mac"
+  },
+  {
+    "symbol": "MYW",
+    "lib": "myw",
+    "locale": "mny",
+    "name": "Emanyawa",
+    "region": 1006,
+    "mepsId": null,
+    "home": "/mny/wol/h/r1006/lp-myw"
+  },
+  {
+    "symbol": "EMB",
+    "lib": "emb",
+    "locale": "cto",
+    "name": "embera katio",
+    "region": 342,
+    "mepsId": null,
+    "home": "/cto/wol/h/r342/lp-emb"
+  },
+  {
+    "symbol": "EMP",
+    "lib": "emp",
+    "locale": "emp",
+    "name": "Emberá dóbida",
+    "region": 527,
+    "mepsId": null,
+    "home": "/emp/wol/h/r527/lp-emp"
+  },
+  {
+    "symbol": "EA",
+    "lib": "ea",
+    "locale": "enq",
+    "name": "Enga",
+    "region": 730,
+    "mepsId": null,
+    "home": "/enq/wol/h/r730/lp-ea"
+  },
+  {
+    "symbol": "E",
+    "lib": "e",
+    "locale": "en",
+    "name": "English",
+    "region": 1,
+    "mepsId": 0,
+    "home": "/en/wol/h/r1/lp-e"
+  },
+  {
+    "symbol": "IH",
+    "lib": "ih",
+    "locale": "ish",
+    "name": "Esan",
+    "region": 312,
+    "mepsId": null,
+    "home": "/ish/wol/h/r312/lp-ih"
+  },
+  {
+    "symbol": "S",
+    "lib": "s",
+    "locale": "es",
+    "name": "español",
+    "region": 4,
+    "mepsId": 1,
+    "home": "/es/wol/h/r4/lp-s"
+  },
+  {
+    "symbol": "CO",
+    "lib": "co",
+    "locale": "chw",
+    "name": "Etxuwabo",
+    "region": 333,
+    "mepsId": null,
+    "home": "/chw/wol/h/r333/lp-co"
+  },
+  {
+    "symbol": "BQ",
+    "lib": "bq",
+    "locale": "eu",
+    "name": "Euskara",
+    "region": 223,
+    "mepsId": null,
+    "home": "/eu/wol/h/r223/lp-bq"
+  },
+  {
+    "symbol": "EWN",
+    "lib": "ewn",
+    "locale": "ewo",
+    "name": "Ewondo",
+    "region": 325,
+    "mepsId": null,
+    "home": "/ewo/wol/h/r325/lp-ewn"
+  },
+  {
+    "symbol": "EW",
+    "lib": "ew",
+    "locale": "ee",
+    "name": "Eʋegbe",
+    "region": 114,
+    "mepsId": null,
+    "home": "/ee/wol/h/r114/lp-ew"
+  },
+  {
+    "symbol": "SM",
+    "lib": "sm",
+    "locale": "sm",
+    "name": "Faa-Samoa",
+    "region": 173,
+    "mepsId": null,
+    "home": "/sm/wol/h/r173/lp-sm"
+  },
+  {
+    "symbol": "WA",
+    "lib": "wa",
+    "locale": "wls",
+    "name": "Faka'uvea",
+    "region": 134,
+    "mepsId": null,
+    "home": "/wls/wol/h/r134/lp-wa"
+  },
+  {
+    "symbol": "NN",
+    "lib": "nn",
+    "locale": "niu",
+    "name": "Faka-Niue",
+    "region": 371,
+    "mepsId": null,
+    "home": "/niu/wol/h/r371/lp-nn"
+  },
+  {
+    "symbol": "OE",
+    "lib": "oe",
+    "locale": "tkl",
+    "name": "Faka-Tokelau",
+    "region": 1055,
+    "mepsId": null,
+    "home": "/tkl/wol/h/r1055/lp-oe"
+  },
+  {
+    "symbol": "TO",
+    "lib": "to",
+    "locale": "to",
+    "name": "Faka-Tonga",
+    "region": 83,
+    "mepsId": null,
+    "home": "/to/wol/h/r83/lp-to"
+  },
+  {
+    "symbol": "FT",
+    "lib": "ft",
+    "locale": "fud",
+    "name": "Fakafutuna",
+    "region": 750,
+    "mepsId": null,
+    "home": "/fud/wol/h/r750/lp-ft"
+  },
+  {
+    "symbol": "FGN",
+    "lib": "fgn",
+    "locale": "fan",
+    "name": "Fang",
+    "region": 308,
+    "mepsId": null,
+    "home": "/fan/wol/h/r308/lp-fgn"
+  },
+  {
+    "symbol": "FF",
+    "lib": "ff",
+    "locale": "gur",
+    "name": "Farefare",
+    "region": 447,
+    "mepsId": null,
+    "home": "/gur/wol/h/r447/lp-ff"
+  },
+  {
+    "symbol": "FTL",
+    "lib": "ftl",
+    "locale": "ddg",
+    "name": "Fataluku",
+    "region": 752,
+    "mepsId": null,
+    "home": "/ddg/wol/h/r752/lp-ftl"
+  },
+  {
+    "symbol": "FJS",
+    "lib": "fjs",
+    "locale": "sgn-FJ",
+    "name": "Fiji Sign Language",
+    "region": 745,
+    "mepsId": null,
+    "home": "/sgn-FJ/wol/h/r745/lp-fjs"
+  },
+  {
+    "symbol": "FSL",
+    "lib": "fsl",
+    "locale": "psp",
+    "name": "Filipino Sign Language",
+    "region": 404,
+    "mepsId": null,
+    "home": "/psp/wol/h/r404/lp-fsl"
+  },
+  {
+    "symbol": "F",
+    "lib": "f",
+    "locale": "fr",
+    "name": "Français",
+    "region": 30,
+    "mepsId": 2,
+    "home": "/fr/wol/h/r30/lp-f"
+  },
+  {
+    "symbol": "FCA",
+    "lib": "fca",
+    "locale": "fr-ca",
+    "name": "Français (Canada)",
+    "region": 744,
+    "mepsId": null,
+    "home": "/fr-ca/wol/h/r744/lp-fca"
+  },
+  {
+    "symbol": "FS",
+    "lib": "fs",
+    "locale": "fy",
+    "name": "Frysk",
+    "region": 267,
+    "mepsId": null,
+    "home": "/fy/wol/h/r267/lp-fs"
+  },
+  {
+    "symbol": "PLR",
+    "lib": "plr",
+    "locale": "fuf",
+    "name": "Fula",
+    "region": 1077,
+    "mepsId": null,
+    "home": "/fuf/wol/h/r1077/lp-plr"
+  },
+  {
+    "symbol": "FD",
+    "lib": "fd",
+    "locale": "fub",
+    "name": "Fulfulde (Kamerun)",
+    "region": 208,
+    "mepsId": null,
+    "home": "/fub/wol/h/r208/lp-fd"
+  },
+  {
+    "symbol": "FLN",
+    "lib": "fln",
+    "locale": "fuv",
+    "name": "Fulfulde (Nigerian)",
+    "region": 747,
+    "mepsId": null,
+    "home": "/fuv/wol/h/r747/lp-fln"
+  },
+  {
+    "symbol": "FR",
+    "lib": "fr",
+    "locale": "fo",
+    "name": "Føroyskt",
+    "region": 241,
+    "mepsId": null,
+    "home": "/fo/wol/h/r241/lp-fr"
+  },
+  {
+    "symbol": "FO",
+    "lib": "fo",
+    "locale": "fon",
+    "name": "Fɔngbe",
+    "region": 262,
+    "mepsId": null,
+    "home": "/fon/wol/h/r262/lp-fo"
+  },
+  {
+    "symbol": "GA",
+    "lib": "ga",
+    "locale": "gaa",
+    "name": "Ga",
+    "region": 121,
+    "mepsId": null,
+    "home": "/gaa/wol/h/r121/lp-ga"
+  },
+  {
+    "symbol": "GC",
+    "lib": "gc",
+    "locale": "ga",
+    "name": "Gaeilge",
+    "region": 204,
+    "mepsId": null,
+    "home": "/ga/wol/h/r204/lp-gc"
+  },
+  {
+    "symbol": "GZR",
+    "lib": "gzr",
+    "locale": "gag-x-gzr",
+    "name": "gagauz (latin)",
+    "region": 780,
+    "mepsId": null,
+    "home": "/gag-x-gzr/wol/h/r780/lp-gzr"
+  },
+  {
+    "symbol": "GLC",
+    "lib": "glc",
+    "locale": "gl",
+    "name": "Galego",
+    "region": 231,
+    "mepsId": null,
+    "home": "/gl/wol/h/r231/lp-glc"
+  },
+  {
+    "symbol": "GRF",
+    "lib": "grf",
+    "locale": "cab",
+    "name": "Garifuna",
+    "region": 158,
+    "mepsId": null,
+    "home": "/cab/wol/h/r158/lp-grf"
+  },
+  {
+    "symbol": "GBA",
+    "lib": "gba",
+    "locale": "gba",
+    "name": "Gbaya",
+    "region": 756,
+    "mepsId": null,
+    "home": "/gba/wol/h/r756/lp-gba"
+  },
+  {
+    "symbol": "GDE",
+    "lib": "gde",
+    "locale": "jw-gde",
+    "name": "Gede'uffa",
+    "region": 1280,
+    "mepsId": null,
+    "home": "/jw-gde/wol/h/r1280/lp-gde"
+  },
+  {
+    "symbol": "GHS",
+    "lib": "ghs",
+    "locale": "gse",
+    "name": "Ghanaian Sign Language",
+    "region": 492,
+    "mepsId": null,
+    "home": "/gse/wol/h/r492/lp-ghs"
+  },
+  {
+    "symbol": "MBL",
+    "lib": "mbl",
+    "locale": "mdp",
+    "name": "Gimbala",
+    "region": 933,
+    "mepsId": null,
+    "home": "/mdp/wol/h/r933/lp-mbl"
+  },
+  {
+    "symbol": "GY",
+    "lib": "gy",
+    "locale": "nyf",
+    "name": "Giryama",
+    "region": 778,
+    "mepsId": null,
+    "home": "/nyf/wol/h/r778/lp-gy"
+  },
+  {
+    "symbol": "GTN",
+    "lib": "gtn",
+    "locale": "toh",
+    "name": "Gitonga",
+    "region": 565,
+    "mepsId": null,
+    "home": "/toh/wol/h/r565/lp-gtn"
+  },
+  {
+    "symbol": "GN",
+    "lib": "gn",
+    "locale": "gkn",
+    "name": "Gokana",
+    "region": 301,
+    "mepsId": null,
+    "home": "/gkn/wol/h/r301/lp-gn"
+  },
+  {
+    "symbol": "GO",
+    "lib": "go",
+    "locale": "goa",
+    "name": "Goro",
+    "region": 198,
+    "mepsId": null,
+    "home": "/goa/wol/h/r198/lp-go"
+  },
+  {
+    "symbol": "GRB",
+    "lib": "grb",
+    "locale": "grb",
+    "name": "Grebo",
+    "region": 1330,
+    "mepsId": null,
+    "home": "/grb/wol/h/r1330/lp-grb"
+  },
+  {
+    "symbol": "GHB",
+    "lib": "ghb",
+    "locale": "guh",
+    "name": "guahibo",
+    "region": 761,
+    "mepsId": null,
+    "home": "/guh/wol/h/r761/lp-ghb"
+  },
+  {
+    "symbol": "GI",
+    "lib": "gi",
+    "locale": "gug",
+    "name": "guarani",
+    "region": 48,
+    "mepsId": null,
+    "home": "/gug/wol/h/r48/lp-gi"
+  },
+  {
+    "symbol": "KAA",
+    "lib": "kaa",
+    "locale": "kgk",
+    "name": "Guarani (Kaiowá)",
+    "region": 1284,
+    "mepsId": null,
+    "home": "/kgk/wol/h/r1284/lp-kaa"
+  },
+  {
+    "symbol": "GIM",
+    "lib": "gim",
+    "locale": "gun",
+    "name": "Guaraní (Mbyá)",
+    "region": 1281,
+    "mepsId": null,
+    "home": "/gun/wol/h/r1281/lp-gim"
+  },
+  {
+    "symbol": "GIB",
+    "lib": "gib",
+    "locale": "gui",
+    "name": "Guaraní boliviano",
+    "region": 338,
+    "mepsId": null,
+    "home": "/gui/wol/h/r338/lp-gib"
+  },
+  {
+    "symbol": "GRM",
+    "lib": "grm",
+    "locale": "gu-Latn",
+    "name": "Gujarati (Roman)",
+    "region": 1332,
+    "mepsId": null,
+    "home": "/gu-Latn/wol/h/r1332/lp-grm"
+  },
+  {
+    "symbol": "GRC",
+    "lib": "grc",
+    "locale": "gux",
+    "name": "Gulmancema",
+    "region": 774,
+    "mepsId": null,
+    "home": "/gux/wol/h/r774/lp-grc"
+  },
+  {
+    "symbol": "GNB",
+    "lib": "gnb",
+    "locale": "guw-bj",
+    "name": "Gun (Benin)",
+    "region": 770,
+    "mepsId": null,
+    "home": "/guw-bj/wol/h/r770/lp-gnb"
+  },
+  {
+    "symbol": "EG",
+    "lib": "eg",
+    "locale": "guw",
+    "name": "Gungbe",
+    "region": 63,
+    "mepsId": null,
+    "home": "/guw/wol/h/r63/lp-eg"
+  },
+  {
+    "symbol": "GCS",
+    "lib": "gcs",
+    "locale": "gd",
+    "name": "Gàidhlig",
+    "region": 759,
+    "mepsId": null,
+    "home": "/gd/wol/h/r759/lp-gcs"
+  },
+  {
+    "symbol": "KQ",
+    "lib": "kq",
+    "locale": "ki",
+    "name": "Gĩkũyũ",
+    "region": 95,
+    "mepsId": null,
+    "home": "/ki/wol/h/r95/lp-kq"
+  },
+  {
+    "symbol": "HDY",
+    "lib": "hdy",
+    "locale": "hdy",
+    "name": "Hadiyya",
+    "region": 1345,
+    "mepsId": null,
+    "home": "/hdy/wol/h/r1345/lp-hdy"
+  },
+  {
+    "symbol": "HLA",
+    "lib": "hla",
+    "locale": "hla",
+    "name": "Halia",
+    "region": 784,
+    "mepsId": null,
+    "home": "/hla/wol/h/r784/lp-hla"
+  },
+  {
+    "symbol": "HNO",
+    "lib": "hno",
+    "locale": "lml",
+    "name": "Hano",
+    "region": 785,
+    "mepsId": null,
+    "home": "/lml/wol/h/r785/lp-hno"
+  },
+  {
+    "symbol": "HRV",
+    "lib": "hrv",
+    "locale": "bgc",
+    "name": "Haryanvi",
+    "region": 787,
+    "mepsId": null,
+    "home": "/bgc/wol/h/r787/lp-hrv"
+  },
+  {
+    "symbol": "HA",
+    "lib": "ha",
+    "locale": "ha",
+    "name": "Hausa",
+    "region": 220,
+    "mepsId": null,
+    "home": "/ha/wol/h/r220/lp-ha"
+  },
+  {
+    "symbol": "HWP",
+    "lib": "hwp",
+    "locale": "hwc",
+    "name": "Hawai’i Pidgin",
+    "region": 794,
+    "mepsId": null,
+    "home": "/hwc/wol/h/r794/lp-hwp"
+  },
+  {
+    "symbol": "HV",
+    "lib": "hv",
+    "locale": "hil",
+    "name": "Hiligaynon",
+    "region": 94,
+    "mepsId": null,
+    "home": "/hil/wol/h/r94/lp-hv"
+  },
+  {
+    "symbol": "HRM",
+    "lib": "hrm",
+    "locale": "hi-Latn",
+    "name": "Hindi (Roman)",
+    "region": 1317,
+    "mepsId": null,
+    "home": "/hi-Latn/wol/h/r1317/lp-hrm"
+  },
+  {
+    "symbol": "MO",
+    "lib": "mo",
+    "locale": "ho",
+    "name": "Hiri Motu",
+    "region": 74,
+    "mepsId": null,
+    "home": "/ho/wol/h/r74/lp-mo"
+  },
+  {
+    "symbol": "HM",
+    "lib": "hm",
+    "locale": "hmn",
+    "name": "Hmoob Dawb",
+    "region": 78,
+    "mepsId": null,
+    "home": "/hmn/wol/h/r78/lp-hm"
+  },
+  {
+    "symbol": "MDH",
+    "lib": "mdh",
+    "locale": "nan-x-mdh",
+    "name": "Hokkien Medan",
+    "region": 938,
+    "mepsId": null,
+    "home": "/nan-x-mdh/wol/h/r938/lp-mdh"
+  },
+  {
+    "symbol": "HPI",
+    "lib": "hpi",
+    "locale": "hop",
+    "name": "Hopi",
+    "region": 259,
+    "mepsId": null,
+    "home": "/hop/wol/h/r259/lp-hpi"
+  },
+  {
+    "symbol": "C",
+    "lib": "c",
+    "locale": "hr",
+    "name": "hrvatski",
+    "region": 19,
+    "mepsId": null,
+    "home": "/hr/wol/h/r19/lp-c"
+  },
+  {
+    "symbol": "HZJ",
+    "lib": "hzj",
+    "locale": "csq",
+    "name": "hrvatski znakovni jezik",
+    "region": 489,
+    "mepsId": null,
+    "home": "/csq/wol/h/r489/lp-hzj"
+  },
+  {
+    "symbol": "HSK",
+    "lib": "hsk",
+    "locale": "hrx",
+    "name": "Hunsrik",
+    "region": 307,
+    "mepsId": null,
+    "home": "/hrx/wol/h/r307/lp-hsk"
+  },
+  {
+    "symbol": "PRA",
+    "lib": "pra",
+    "locale": "pid",
+    "name": "huo̧ttö̧ja̧",
+    "region": 566,
+    "mepsId": null,
+    "home": "/pid/wol/h/r566/lp-pra"
+  },
+  {
+    "symbol": "HTX",
+    "lib": "htx",
+    "locale": "geh",
+    "name": "Hutterite German",
+    "region": 1369,
+    "mepsId": null,
+    "home": "/geh/wol/h/r1369/lp-htx"
+  },
+  {
+    "symbol": "IBL",
+    "lib": "ibl",
+    "locale": "ibl",
+    "name": "Ibaloi",
+    "region": 798,
+    "mepsId": null,
+    "home": "/ibl/wol/h/r798/lp-ibl"
+  },
+  {
+    "symbol": "IA",
+    "lib": "ia",
+    "locale": "iba",
+    "name": "Iban",
+    "region": 283,
+    "mepsId": null,
+    "home": "/iba/wol/h/r283/lp-ia"
+  },
+  {
+    "symbol": "IG",
+    "lib": "ig",
+    "locale": "ibg",
+    "name": "Ibanag",
+    "region": 336,
+    "mepsId": null,
+    "home": "/ibg/wol/h/r336/lp-ig"
+  },
+  {
+    "symbol": "IBI",
+    "lib": "ibi",
+    "locale": "yom-x-ibi",
+    "name": "Ibinda",
+    "region": 297,
+    "mepsId": null,
+    "home": "/yom-x-ibi/wol/h/r297/lp-ibi"
+  },
+  {
+    "symbol": "NDL",
+    "lib": "ndl",
+    "locale": "ndh",
+    "name": "Ichindali",
+    "region": 1014,
+    "mepsId": null,
+    "home": "/ndh/wol/h/r1014/lp-ndl"
+  },
+  {
+    "symbol": "ID",
+    "lib": "id",
+    "locale": "idu",
+    "name": "Idoma",
+    "region": 302,
+    "mepsId": null,
+    "home": "/idu/wol/h/r302/lp-id"
+  },
+  {
+    "symbol": "IF",
+    "lib": "if",
+    "locale": "ifk",
+    "name": "Ifugao",
+    "region": 800,
+    "mepsId": null,
+    "home": "/ifk/wol/h/r800/lp-if"
+  },
+  {
+    "symbol": "AA",
+    "lib": "aa",
+    "locale": "igl",
+    "name": "Igala",
+    "region": 589,
+    "mepsId": null,
+    "home": "/igl/wol/h/r589/lp-aa"
+  },
+  {
+    "symbol": "IB",
+    "lib": "ib",
+    "locale": "ig",
+    "name": "Igbo",
+    "region": 31,
+    "mepsId": null,
+    "home": "/ig/wol/h/r31/lp-ib"
+  },
+  {
+    "symbol": "IGE",
+    "lib": "ige",
+    "locale": "ige",
+    "name": "Igede",
+    "region": 309,
+    "mepsId": null,
+    "home": "/ige/wol/h/r309/lp-ige"
+  },
+  {
+    "symbol": "KUR",
+    "lib": "kur",
+    "locale": "kuj",
+    "name": "Igikuria",
+    "region": 878,
+    "mepsId": null,
+    "home": "/kuj/wol/h/r878/lp-kur"
+  },
+  {
+    "symbol": "CSR",
+    "lib": "csr",
+    "locale": "crj-Latn",
+    "name": "Iinuuayimuwin",
+    "region": 1276,
+    "mepsId": null,
+    "home": "/crj-Latn/wol/h/r1276/lp-csr"
+  },
+  {
+    "symbol": "IJ",
+    "lib": "ij",
+    "locale": "ijc",
+    "name": "Ijaw",
+    "region": 803,
+    "mepsId": null,
+    "home": "/ijc/wol/h/r803/lp-ij"
+  },
+  {
+    "symbol": "YW",
+    "lib": "yw",
+    "locale": "rw",
+    "name": "Ikinyarwanda",
+    "region": 127,
+    "mepsId": null,
+    "home": "/rw/wol/h/r127/lp-yw"
+  },
+  {
+    "symbol": "RU",
+    "lib": "ru",
+    "locale": "run",
+    "name": "Ikirundi",
+    "region": 82,
+    "mepsId": null,
+    "home": "/run/wol/h/r82/lp-ru"
+  },
+  {
+    "symbol": "IL",
+    "lib": "il",
+    "locale": "ilo",
+    "name": "Iloko",
+    "region": 115,
+    "mepsId": 19,
+    "home": "/ilo/wol/h/r115/lp-il"
+  },
+  {
+    "symbol": "LLO",
+    "lib": "llo",
+    "locale": "llb",
+    "name": "Ilolo",
+    "region": 907,
+    "mepsId": null,
+    "home": "/llb/wol/h/r907/lp-llo"
+  },
+  {
+    "symbol": "MWM",
+    "lib": "mwm",
+    "locale": "mgh",
+    "name": "Imakhuwa Imeetto",
+    "region": 993,
+    "mepsId": null,
+    "home": "/mgh/wol/h/r993/lp-mwm"
+  },
+  {
+    "symbol": "IKN",
+    "lib": "ikn",
+    "locale": "akl",
+    "name": "Inakeanon",
+    "region": 804,
+    "mepsId": null,
+    "home": "/akl/wol/h/r804/lp-ikn"
+  },
+  {
+    "symbol": "INS",
+    "lib": "ins",
+    "locale": "ins",
+    "name": "Indian Sign Language",
+    "region": 392,
+    "mepsId": null,
+    "home": "/ins/wol/h/r392/lp-ins"
+  },
+  {
+    "symbol": "IN",
+    "lib": "in",
+    "locale": "id",
+    "name": "Indonesia",
+    "region": 25,
+    "mepsId": null,
+    "home": "/id/wol/h/r25/lp-in"
+  },
+  {
+    "symbol": "INB",
+    "lib": "inb",
+    "locale": "inb",
+    "name": "Inga",
+    "region": 518,
+    "mepsId": null,
+    "home": "/inb/wol/h/r518/lp-inb"
+  },
+  {
+    "symbol": "YC",
+    "lib": "yc",
+    "locale": "csw-x-yc",
+    "name": "Ininîmowin",
+    "region": 1247,
+    "mepsId": null,
+    "home": "/csw-x-yc/wol/h/r1247/lp-yc"
+  },
+  {
+    "symbol": "IUR",
+    "lib": "iur",
+    "locale": "iu-Latn",
+    "name": "Inuktitut",
+    "region": 812,
+    "mepsId": null,
+    "home": "/iu-Latn/wol/h/r812/lp-iur"
+  },
+  {
+    "symbol": "ISG",
+    "lib": "isg",
+    "locale": "isg",
+    "name": "Irish Sign Language",
+    "region": 397,
+    "mepsId": null,
+    "home": "/isg/wol/h/r397/lp-isg"
+  },
+  {
+    "symbol": "NBL",
+    "lib": "nbl",
+    "locale": "nr",
+    "name": "IsiNdebele",
+    "region": 86,
+    "mepsId": null,
+    "home": "/nr/wol/h/r86/lp-nbl"
+  },
+  {
+    "symbol": "XO",
+    "lib": "xo",
+    "locale": "xh",
+    "name": "IsiXhosa",
+    "region": 163,
+    "mepsId": null,
+    "home": "/xh/wol/h/r163/lp-xo"
+  },
+  {
+    "symbol": "ZU",
+    "lib": "zu",
+    "locale": "zu",
+    "name": "IsiZulu",
+    "region": 28,
+    "mepsId": null,
+    "home": "/zu/wol/h/r28/lp-zu"
+  },
+  {
+    "symbol": "IS",
+    "lib": "is",
+    "locale": "iso",
+    "name": "Isoko",
+    "region": 215,
+    "mepsId": null,
+    "home": "/iso/wol/h/r215/lp-is"
+  },
+  {
+    "symbol": "I",
+    "lib": "i",
+    "locale": "it",
+    "name": "Italiano",
+    "region": 6,
+    "mepsId": 4,
+    "home": "/it/wol/h/r6/lp-i"
+  },
+  {
+    "symbol": "ITW",
+    "lib": "itw",
+    "locale": "itv",
+    "name": "Itawit",
+    "region": 810,
+    "mepsId": null,
+    "home": "/itv/wol/h/r810/lp-itw"
+  },
+  {
+    "symbol": "ETN",
+    "lib": "etn",
+    "locale": "eto",
+    "name": "Iton",
+    "region": 337,
+    "mepsId": null,
+    "home": "/eto/wol/h/r337/lp-etn"
+  },
+  {
+    "symbol": "IT",
+    "lib": "it",
+    "locale": "its",
+    "name": "Itsekiri",
+    "region": 809,
+    "mepsId": null,
+    "home": "/its/wol/h/r809/lp-it"
+  },
+  {
+    "symbol": "IMN",
+    "lib": "imn",
+    "locale": "ium",
+    "name": "Iu-Mienh",
+    "region": 280,
+    "mepsId": null,
+    "home": "/ium/wol/h/r280/lp-imn"
+  },
+  {
+    "symbol": "IV",
+    "lib": "iv",
+    "locale": "ivv",
+    "name": "Ivatan",
+    "region": 813,
+    "mepsId": null,
+    "home": "/ivv/wol/h/r813/lp-iv"
+  },
+  {
+    "symbol": "IXL",
+    "lib": "ixl",
+    "locale": "ixl",
+    "name": "ixil",
+    "region": 448,
+    "mepsId": null,
+    "home": "/ixl/wol/h/r448/lp-ixl"
+  },
+  {
+    "symbol": "JML",
+    "lib": "jml",
+    "locale": "jls",
+    "name": "Jamaican Sign Language",
+    "region": 390,
+    "mepsId": null,
+    "home": "/jls/wol/h/r390/lp-jml"
+  },
+  {
+    "symbol": "JAR",
+    "lib": "jar",
+    "locale": "jra",
+    "name": "Jarai",
+    "region": 1322,
+    "mepsId": null,
+    "home": "/jra/wol/h/r1322/lp-jar"
+  },
+  {
+    "symbol": "JA",
+    "lib": "ja",
+    "locale": "jv",
+    "name": "Jawa",
+    "region": 253,
+    "mepsId": null,
+    "home": "/jv/wol/h/r253/lp-ja"
+  },
+  {
+    "symbol": "JVN",
+    "lib": "jvn",
+    "locale": "jav",
+    "name": "Jawa Timur",
+    "region": 269,
+    "mepsId": null,
+    "home": "/jav/wol/h/r269/lp-jvn"
+  },
+  {
+    "symbol": "YQ",
+    "lib": "yq",
+    "locale": "yaq",
+    "name": "jiiak noki",
+    "region": 363,
+    "mepsId": null,
+    "home": "/yaq/wol/h/r363/lp-yq"
+  },
+  {
+    "symbol": "GBR",
+    "lib": "gbr",
+    "locale": "guo",
+    "name": "jiw",
+    "region": 1350,
+    "mepsId": null,
+    "home": "/guo/wol/h/r1350/lp-gbr"
+  },
+  {
+    "symbol": "JWK",
+    "lib": "jwk",
+    "locale": "whg",
+    "name": "Jiwaka Yu",
+    "region": 820,
+    "mepsId": null,
+    "home": "/whg/wol/h/r820/lp-jwk"
+  },
+  {
+    "symbol": "JL",
+    "lib": "jl",
+    "locale": "dyu",
+    "name": "Jula",
+    "region": 364,
+    "mepsId": null,
+    "home": "/dyu/wol/h/r364/lp-jl"
+  },
+  {
+    "symbol": "SSN",
+    "lib": "ssn",
+    "locale": "szl",
+    "name": "jynzyk Ślónska Cieszyńskigo",
+    "region": 1156,
+    "mepsId": null,
+    "home": "/szl/wol/h/r1156/lp-ssn"
+  },
+  {
+    "symbol": "MZH",
+    "lib": "mzh",
+    "locale": "maz",
+    "name": "jñatrjo",
+    "region": 520,
+    "mepsId": null,
+    "home": "/maz/wol/h/r520/lp-mzh"
+  },
+  {
+    "symbol": "DO",
+    "lib": "do",
+    "locale": "dyo",
+    "name": "Jóola",
+    "region": 718,
+    "mepsId": null,
+    "home": "/dyo/wol/h/r718/lp-do"
+  },
+  {
+    "symbol": "CNO",
+    "lib": "cno",
+    "locale": "chj",
+    "name": "jújmi kiʼtsa köwɨ̱",
+    "region": 561,
+    "mepsId": null,
+    "home": "/chj/wol/h/r561/lp-cno"
+  },
+  {
+    "symbol": "KBV",
+    "lib": "kbv",
+    "locale": "kea",
+    "name": "Kabuverdianu",
+    "region": 455,
+    "mepsId": null,
+    "home": "/kea/wol/h/r455/lp-kbv"
+  },
+  {
+    "symbol": "KBT",
+    "lib": "kbt",
+    "locale": "kea-x-kbt",
+    "name": "Kabuverdianu (Barlaventu)",
+    "region": 1364,
+    "mepsId": null,
+    "home": "/kea-x-kbt/wol/h/r1364/lp-kbt"
+  },
+  {
+    "symbol": "KAB",
+    "lib": "kab",
+    "locale": "kbp",
+    "name": "Kabɩyɛ",
+    "region": 508,
+    "mepsId": null,
+    "home": "/kbp/wol/h/r508/lp-kab"
+  },
+  {
+    "symbol": "AH",
+    "lib": "ah",
+    "locale": "kac",
+    "name": "Kachin",
+    "region": 539,
+    "mepsId": null,
+    "home": "/kac/wol/h/r539/lp-ah"
+  },
+  {
+    "symbol": "KAZ",
+    "lib": "kaz",
+    "locale": "kzj",
+    "name": "Kadazan",
+    "region": 823,
+    "mepsId": null,
+    "home": "/kzj/wol/h/r823/lp-kaz"
+  },
+  {
+    "symbol": "KGG",
+    "lib": "kgg",
+    "locale": "kgp",
+    "name": "Kaingang",
+    "region": 831,
+    "mepsId": null,
+    "home": "/kgp/wol/h/r831/lp-kgg"
+  },
+  {
+    "symbol": "MH",
+    "lib": "mh",
+    "locale": "mh",
+    "name": "Kajin M̦ajel̦",
+    "region": 311,
+    "mepsId": null,
+    "home": "/mh/wol/h/r311/lp-mh"
+  },
+  {
+    "symbol": "GL",
+    "lib": "gl",
+    "locale": "kl",
+    "name": "Kalaallisut",
+    "region": 140,
+    "mepsId": null,
+    "home": "/kl/wol/h/r140/lp-gl"
+  },
+  {
+    "symbol": "KL",
+    "lib": "kl",
+    "locale": "kck-x-kl",
+    "name": "Kalanga (Botswana)",
+    "region": 543,
+    "mepsId": null,
+    "home": "/kck-x-kl/wol/h/r543/lp-kl"
+  },
+  {
+    "symbol": "KLZ",
+    "lib": "klz",
+    "locale": "kck-x-klz",
+    "name": "Kalanga (Zimbabwe)",
+    "region": 847,
+    "mepsId": null,
+    "home": "/kck-x-klz/wol/h/r847/lp-klz"
+  },
+  {
+    "symbol": "KJ",
+    "lib": "kj",
+    "locale": "kln",
+    "name": "Kalenjin",
+    "region": 837,
+    "mepsId": null,
+    "home": "/kln/wol/h/r837/lp-kj"
+  },
+  {
+    "symbol": "KMY",
+    "lib": "kmy",
+    "locale": "kyk",
+    "name": "Kamayo",
+    "region": 854,
+    "mepsId": null,
+    "home": "/kyk/wol/h/r854/lp-kmy"
+  },
+  {
+    "symbol": "KMB",
+    "lib": "kmb",
+    "locale": "xbr",
+    "name": "Kambera (Sumba Timur)",
+    "region": 849,
+    "mepsId": null,
+    "home": "/xbr/wol/h/r849/lp-kmb"
+  },
+  {
+    "symbol": "KMW",
+    "lib": "kmw",
+    "locale": "hig",
+    "name": "Kamwe",
+    "region": 853,
+    "mepsId": null,
+    "home": "/hig/wol/h/r853/lp-kmw"
+  },
+  {
+    "symbol": "MHK",
+    "lib": "mhk",
+    "locale": "moh",
+    "name": "Kanienʼkéha",
+    "region": 942,
+    "mepsId": null,
+    "home": "/moh/wol/h/r942/lp-mhk"
+  },
+  {
+    "symbol": "KNY",
+    "lib": "kny",
+    "locale": "kne",
+    "name": "Kankanaey",
+    "region": 861,
+    "mepsId": null,
+    "home": "/kne/wol/h/r861/lp-kny"
+  },
+  {
+    "symbol": "CQC",
+    "lib": "cqc",
+    "locale": "cak-x-cqc",
+    "name": "Kaqchikel central",
+    "region": 696,
+    "mepsId": null,
+    "home": "/cak-x-cqc/wol/h/r696/lp-cqc"
+  },
+  {
+    "symbol": "CQ",
+    "lib": "cq",
+    "locale": "cak",
+    "name": "Kaqchikel occidental",
+    "region": 155,
+    "mepsId": null,
+    "home": "/cak/wol/h/r155/lp-cq"
+  },
+  {
+    "symbol": "CQE",
+    "lib": "cqe",
+    "locale": "cak-x-cqe",
+    "name": "Kaqchikel oriental",
+    "region": 697,
+    "mepsId": null,
+    "home": "/cak-x-cqe/wol/h/r697/lp-cqe"
+  },
+  {
+    "symbol": "PK",
+    "lib": "pk",
+    "locale": "pwo",
+    "name": "Karen (Pwo Western)",
+    "region": 1074,
+    "mepsId": null,
+    "home": "/pwo/wol/h/r1074/lp-pk"
+  },
+  {
+    "symbol": "CRB",
+    "lib": "crb",
+    "locale": "car-x-crb",
+    "name": "Kariʼnia",
+    "region": 578,
+    "mepsId": null,
+    "home": "/car-x-crb/wol/h/r578/lp-crb"
+  },
+  {
+    "symbol": "KSM",
+    "lib": "ksm",
+    "locale": "xsm",
+    "name": "Kasem",
+    "region": 873,
+    "mepsId": null,
+    "home": "/xsm/wol/h/r873/lp-ksm"
+  },
+  {
+    "symbol": "KSH",
+    "lib": "ksh",
+    "locale": "csb",
+    "name": "kaszëbsczi",
+    "region": 872,
+    "mepsId": null,
+    "home": "/csb/wol/h/r872/lp-ksh"
+  },
+  {
+    "symbol": "KEI",
+    "lib": "kei",
+    "locale": "kei",
+    "name": "Kei",
+    "region": 368,
+    "mepsId": null,
+    "home": "/kei/wol/h/r368/lp-kei"
+  },
+  {
+    "symbol": "KSI",
+    "lib": "ksi",
+    "locale": "xki",
+    "name": "Kenyan Sign Language",
+    "region": 433,
+    "mepsId": null,
+    "home": "/xki/wol/h/r433/lp-ksi"
+  },
+  {
+    "symbol": "OG",
+    "lib": "og",
+    "locale": "ogo",
+    "name": "Khana",
+    "region": 347,
+    "mepsId": null,
+    "home": "/ogo/wol/h/r347/lp-og"
+  },
+  {
+    "symbol": "KS",
+    "lib": "ks",
+    "locale": "kha",
+    "name": "Khasi",
+    "region": 557,
+    "mepsId": null,
+    "home": "/kha/wol/h/r557/lp-ks"
+  },
+  {
+    "symbol": "KBL",
+    "lib": "kbl",
+    "locale": "blv",
+    "name": "Kibala",
+    "region": 1337,
+    "mepsId": null,
+    "home": "/blv/wol/h/r1337/lp-kbl"
+  },
+  {
+    "symbol": "BMB",
+    "lib": "bmb",
+    "locale": "bmb",
+    "name": "Kibembe",
+    "region": 644,
+    "mepsId": null,
+    "home": "/bmb/wol/h/r644/lp-bmb"
+  },
+  {
+    "symbol": "BSH",
+    "lib": "bsh",
+    "locale": "buc",
+    "name": "Kibushi",
+    "region": 584,
+    "mepsId": null,
+    "home": "/buc/wol/h/r584/lp-bsh"
+  },
+  {
+    "symbol": "AT",
+    "lib": "at",
+    "locale": "en",
+    "name": "Kidawida",
+    "region": 617,
+    "mepsId": null,
+    "home": "/en/wol/h/r617/lp-at"
+  },
+  {
+    "symbol": "KFL",
+    "lib": "kfl",
+    "locale": "flr",
+    "name": "Kifuliiru",
+    "region": 1346,
+    "mepsId": null,
+    "home": "/flr/wol/h/r1346/lp-kfl"
+  },
+  {
+    "symbol": "HH",
+    "lib": "hh",
+    "locale": "heh",
+    "name": "Kihehe",
+    "region": 782,
+    "mepsId": null,
+    "home": "/heh/wol/h/r782/lp-hh"
+  },
+  {
+    "symbol": "KHB",
+    "lib": "khb",
+    "locale": "hem",
+    "name": "Kihemba",
+    "region": 1344,
+    "mepsId": null,
+    "home": "/hem/wol/h/r1344/lp-khb"
+  },
+  {
+    "symbol": "KB",
+    "lib": "kb",
+    "locale": "kam",
+    "name": "Kikamba",
+    "region": 148,
+    "mepsId": null,
+    "home": "/kam/wol/h/r148/lp-kb"
+  },
+  {
+    "symbol": "KD",
+    "lib": "kd",
+    "locale": "kqn",
+    "name": "Kikaonde",
+    "region": 68,
+    "mepsId": null,
+    "home": "/kqn/wol/h/r68/lp-kd"
+  },
+  {
+    "symbol": "KG",
+    "lib": "kg",
+    "locale": "kwy",
+    "name": "Kikongo",
+    "region": 128,
+    "mepsId": null,
+    "home": "/kwy/wol/h/r128/lp-kg"
+  },
+  {
+    "symbol": "MK",
+    "lib": "mk",
+    "locale": "kg",
+    "name": "Kikongo (Rép. dém. du congo)",
+    "region": 271,
+    "mepsId": null,
+    "home": "/kg/wol/h/r271/lp-mk"
+  },
+  {
+    "symbol": "KGL",
+    "lib": "kgl",
+    "locale": "ktu-x-kgl",
+    "name": "Kikongo ya leta",
+    "region": 832,
+    "mepsId": null,
+    "home": "/ktu-x-kgl/wol/h/r832/lp-kgl"
+  },
+  {
+    "symbol": "LR",
+    "lib": "lr",
+    "locale": "ldi",
+    "name": "Kilari",
+    "region": 916,
+    "mepsId": null,
+    "home": "/ldi/wol/h/r916/lp-lr"
+  },
+  {
+    "symbol": "KU",
+    "lib": "ku",
+    "locale": "lu",
+    "name": "Kiluba",
+    "region": 360,
+    "mepsId": null,
+    "home": "/lu/wol/h/r360/lp-ku"
+  },
+  {
+    "symbol": "MNN",
+    "lib": "mnn",
+    "locale": "en",
+    "name": "Kimanianga",
+    "region": 969,
+    "mepsId": null,
+    "home": "/en/wol/h/r969/lp-mnn"
+  },
+  {
+    "symbol": "MTN",
+    "lib": "mtn",
+    "locale": "mgv",
+    "name": "Kimatengo",
+    "region": 988,
+    "mepsId": null,
+    "home": "/mgv/wol/h/r988/lp-mtn"
+  },
+  {
+    "symbol": "KIM",
+    "lib": "kim",
+    "locale": "kmb",
+    "name": "Kimbundu",
+    "region": 149,
+    "mepsId": null,
+    "home": "/kmb/wol/h/r149/lp-kim"
+  },
+  {
+    "symbol": "KIN",
+    "lib": "kin",
+    "locale": "nnb",
+    "name": "Kinande",
+    "region": 538,
+    "mepsId": null,
+    "home": "/nnb/wol/h/r538/lp-kin"
+  },
+  {
+    "symbol": "KNR",
+    "lib": "knr",
+    "locale": "krj",
+    "name": "Kinaray-a",
+    "region": 860,
+    "mepsId": null,
+    "home": "/krj/wol/h/r860/lp-knr"
+  },
+  {
+    "symbol": "KK",
+    "lib": "kk",
+    "locale": "nyy-x-kk",
+    "name": "Kinyakyusa",
+    "region": 838,
+    "mepsId": null,
+    "home": "/nyy-x-kk/wol/h/r838/lp-kk"
+  },
+  {
+    "symbol": "KIP",
+    "lib": "kip",
+    "locale": "pem",
+    "name": "Kipende",
+    "region": 372,
+    "mepsId": null,
+    "home": "/pem/wol/h/r372/lp-kip"
+  },
+  {
+    "symbol": "GB",
+    "lib": "gb",
+    "locale": "gil",
+    "name": "Kiribati",
+    "region": 178,
+    "mepsId": null,
+    "home": "/gil/wol/h/r178/lp-gb"
+  },
+  {
+    "symbol": "SGA",
+    "lib": "sga",
+    "locale": "sng",
+    "name": "Kisanga",
+    "region": 1133,
+    "mepsId": null,
+    "home": "/sng/wol/h/r1133/lp-sga"
+  },
+  {
+    "symbol": "KI",
+    "lib": "ki",
+    "locale": "kss",
+    "name": "Kisiei",
+    "region": 305,
+    "mepsId": null,
+    "home": "/kss/wol/h/r305/lp-ki"
+  },
+  {
+    "symbol": "II",
+    "lib": "ii",
+    "locale": "guz",
+    "name": "Kisii",
+    "region": 802,
+    "mepsId": null,
+    "home": "/guz/wol/h/r802/lp-ii"
+  },
+  {
+    "symbol": "KSN",
+    "lib": "ksn",
+    "locale": "sop",
+    "name": "Kisongye",
+    "region": 174,
+    "mepsId": null,
+    "home": "/sop/wol/h/r174/lp-ksn"
+  },
+  {
+    "symbol": "UK",
+    "lib": "uk",
+    "locale": "suk",
+    "name": "Kisukuma",
+    "region": 1219,
+    "mepsId": null,
+    "home": "/suk/wol/h/r1219/lp-uk"
+  },
+  {
+    "symbol": "SW",
+    "lib": "sw",
+    "locale": "sw",
+    "name": "Kiswahili",
+    "region": 13,
+    "mepsId": null,
+    "home": "/sw/wol/h/r13/lp-sw"
+  },
+  {
+    "symbol": "ZS",
+    "lib": "zs",
+    "locale": "swc",
+    "name": "Kiswahili (Congo)",
+    "region": 143,
+    "mepsId": null,
+    "home": "/swc/wol/h/r143/lp-zs"
+  },
+  {
+    "symbol": "KIT",
+    "lib": "kit",
+    "locale": "ktu-x-kit",
+    "name": "Kituba",
+    "region": 836,
+    "mepsId": null,
+    "home": "/ktu-x-kit/wol/h/r836/lp-kit"
+  },
+  {
+    "symbol": "LW",
+    "lib": "lw",
+    "locale": "lwg",
+    "name": "Kiwanga",
+    "region": 919,
+    "mepsId": null,
+    "home": "/lwg/wol/h/r919/lp-lw"
+  },
+  {
+    "symbol": "KBK",
+    "lib": "kbk",
+    "locale": "trp",
+    "name": "Kokborok",
+    "region": 1341,
+    "mepsId": null,
+    "home": "/trp/wol/h/r1341/lp-kbk"
+  },
+  {
+    "symbol": "KKL",
+    "lib": "kkl",
+    "locale": "kzn",
+    "name": "Kokola",
+    "region": 840,
+    "mepsId": null,
+    "home": "/kzn/wol/h/r840/lp-kkl"
+  },
+  {
+    "symbol": "KT",
+    "lib": "kt",
+    "locale": "gom",
+    "name": "Konkani (Romi)",
+    "region": 244,
+    "mepsId": null,
+    "home": "/gom/wol/h/r244/lp-kt"
+  },
+  {
+    "symbol": "KKB",
+    "lib": "kkb",
+    "locale": "xon",
+    "name": "Konkomba",
+    "region": 1361,
+    "mepsId": null,
+    "home": "/xon/wol/h/r1361/lp-kkb"
+  },
+  {
+    "symbol": "OS",
+    "lib": "os",
+    "locale": "kos",
+    "name": "Kosraean",
+    "region": 1062,
+    "mepsId": null,
+    "home": "/kos/wol/h/r1062/lp-os"
+  },
+  {
+    "symbol": "TEM",
+    "lib": "tem",
+    "locale": "kdh",
+    "name": "Kotokoli",
+    "region": 1178,
+    "mepsId": null,
+    "home": "/kdh/wol/h/r1178/lp-tem"
+  },
+  {
+    "symbol": "KP",
+    "lib": "kp",
+    "locale": "xpe",
+    "name": "Kpelle",
+    "region": 496,
+    "mepsId": null,
+    "home": "/xpe/wol/h/r496/lp-kp"
+  },
+  {
+    "symbol": "GRZ",
+    "lib": "grz",
+    "locale": "gkp",
+    "name": "Kpɛlɛɛwoo",
+    "region": 777,
+    "mepsId": null,
+    "home": "/gkp/wol/h/r777/lp-grz"
+  },
+  {
+    "symbol": "CE",
+    "lib": "ce",
+    "locale": "mfe",
+    "name": "Kreol Morisien",
+    "region": 221,
+    "mepsId": null,
+    "home": "/mfe/wol/h/r221/lp-ce"
+  },
+  {
+    "symbol": "SC",
+    "lib": "sc",
+    "locale": "crs",
+    "name": "Kreol Seselwa",
+    "region": 210,
+    "mepsId": null,
+    "home": "/crs/wol/h/r210/lp-sc"
+  },
+  {
+    "symbol": "CR",
+    "lib": "cr",
+    "locale": "ht",
+    "name": "Kreyòl ayisyen",
+    "region": 60,
+    "mepsId": null,
+    "home": "/ht/wol/h/r60/lp-cr"
+  },
+  {
+    "symbol": "KRI",
+    "lib": "kri",
+    "locale": "kri",
+    "name": "Krio",
+    "region": 151,
+    "mepsId": null,
+    "home": "/kri/wol/h/r151/lp-kri"
+  },
+  {
+    "symbol": "TCR",
+    "lib": "tcr",
+    "locale": "pov",
+    "name": "Kriol di Gine-Bisau",
+    "region": 451,
+    "mepsId": null,
+    "home": "/pov/wol/h/r451/lp-tcr"
+  },
+  {
+    "symbol": "RCR",
+    "lib": "rcr",
+    "locale": "rcf",
+    "name": "Kréol Rénioné",
+    "region": 212,
+    "mepsId": null,
+    "home": "/rcf/wol/h/r212/lp-rcr"
+  },
+  {
+    "symbol": "GCR",
+    "lib": "gcr",
+    "locale": "gcf",
+    "name": "Kréyòl Gwadloup",
+    "region": 258,
+    "mepsId": null,
+    "home": "/gcf/wol/h/r258/lp-gcr"
+  },
+  {
+    "symbol": "GNC",
+    "lib": "gnc",
+    "locale": "gcr",
+    "name": "Kréyòl gwiyanè",
+    "region": 341,
+    "mepsId": null,
+    "home": "/gcr/wol/h/r341/lp-gnc"
+  },
+  {
+    "symbol": "MTC",
+    "lib": "mtc",
+    "locale": "gcf-x-mtc",
+    "name": "Kréyòl Matinik",
+    "region": 986,
+    "mepsId": null,
+    "home": "/gcf-x-mtc/wol/h/r986/lp-mtc"
+  },
+  {
+    "symbol": "KHN",
+    "lib": "khn",
+    "locale": "sbs",
+    "name": "Kuhane (Subiya)",
+    "region": 499,
+    "mepsId": null,
+    "home": "/sbs/wol/h/r499/lp-khn"
+  },
+  {
+    "symbol": "RA",
+    "lib": "ra",
+    "locale": "rar",
+    "name": "Kuki Airani",
+    "region": 528,
+    "mepsId": null,
+    "home": "/rar/wol/h/r528/lp-ra"
+  },
+  {
+    "symbol": "KNM",
+    "lib": "knm",
+    "locale": "en",
+    "name": "Kunama",
+    "region": 858,
+    "mepsId": null,
+    "home": "/en/wol/h/r858/lp-knm"
+  },
+  {
+    "symbol": "KDA",
+    "lib": "kda",
+    "locale": "kdn",
+    "name": "Kunda",
+    "region": 826,
+    "mepsId": null,
+    "home": "/kdn/wol/h/r826/lp-kda"
+  },
+  {
+    "symbol": "RD",
+    "lib": "rd",
+    "locale": "kmr-x-rd",
+    "name": "Kurdî (Kurmancî)",
+    "region": 361,
+    "mepsId": null,
+    "home": "/kmr-x-rd/wol/h/r361/lp-rd"
+  },
+  {
+    "symbol": "RDU",
+    "lib": "rdu",
+    "locale": "kmr-x-rdu",
+    "name": "Kurdî Kurmancî (Kavkazûs)",
+    "region": 176,
+    "mepsId": null,
+    "home": "/kmr-x-rdu/wol/h/r176/lp-rdu"
+  },
+  {
+    "symbol": "KUS",
+    "lib": "kus",
+    "locale": "kus",
+    "name": "Kusaal",
+    "region": 879,
+    "mepsId": null,
+    "home": "/kus/wol/h/r879/lp-kus"
+  },
+  {
+    "symbol": "KVM",
+    "lib": "kvm",
+    "locale": "olu",
+    "name": "Kuvale (Mucubal)",
+    "region": 1289,
+    "mepsId": null,
+    "home": "/olu/wol/h/r1289/lp-kvm"
+  },
+  {
+    "symbol": "KWA",
+    "lib": "kwa",
+    "locale": "kwd",
+    "name": "Kwaio",
+    "region": 883,
+    "mepsId": null,
+    "home": "/kwd/wol/h/r883/lp-kwa"
+  },
+  {
+    "symbol": "KW",
+    "lib": "kw",
+    "locale": "kwf",
+    "name": "Kwara'ae",
+    "region": 882,
+    "mepsId": null,
+    "home": "/kwf/wol/h/r882/lp-kw"
+  },
+  {
+    "symbol": "LUC",
+    "lib": "luc",
+    "locale": "acf",
+    "name": "Kwéyòl (Patwa)",
+    "region": 918,
+    "mepsId": null,
+    "home": "/acf/wol/h/r918/lp-luc"
+  },
+  {
+    "symbol": "NKN",
+    "lib": "nkn",
+    "locale": "nyy-x-nkn",
+    "name": "Kyangonde",
+    "region": 473,
+    "mepsId": null,
+    "home": "/nyy-x-nkn/wol/h/r473/lp-nkn"
+  },
+  {
+    "symbol": "UU",
+    "lib": "uu",
+    "locale": "mer",
+    "name": "Kĩmĩĩrũ",
+    "region": 1223,
+    "mepsId": null,
+    "home": "/mer/wol/h/r1223/lp-uu"
+  },
+  {
+    "symbol": "LAD",
+    "lib": "lad",
+    "locale": "lld-x-lad",
+    "name": "Ladin de Gherdëina",
+    "region": 888,
+    "mepsId": null,
+    "home": "/lld-x-lad/wol/h/r888/lp-lad"
+  },
+  {
+    "symbol": "LKT",
+    "lib": "lkt",
+    "locale": "lkt",
+    "name": "Lakotiya",
+    "region": 408,
+    "mepsId": null,
+    "home": "/lkt/wol/h/r408/lp-lkt"
+  },
+  {
+    "symbol": "AB",
+    "lib": "ab",
+    "locale": "lam",
+    "name": "Lamba",
+    "region": 65,
+    "mepsId": null,
+    "home": "/lam/wol/h/r65/lp-ab"
+  },
+  {
+    "symbol": "LN",
+    "lib": "ln",
+    "locale": "laj",
+    "name": "Lango",
+    "region": 910,
+    "mepsId": null,
+    "home": "/laj/wol/h/r910/lp-ln"
+  },
+  {
+    "symbol": "BRS",
+    "lib": "brs",
+    "locale": "sgn-BI",
+    "name": "Langue des signes burundaise",
+    "region": 1268,
+    "mepsId": null,
+    "home": "/sgn-BI/wol/h/r1268/lp-brs"
+  },
+  {
+    "symbol": "CML",
+    "lib": "cml",
+    "locale": "sgn-CM",
+    "name": "Langue des signes camerounaise",
+    "region": 1333,
+    "mepsId": null,
+    "home": "/sgn-CM/wol/h/r1333/lp-cml"
+  },
+  {
+    "symbol": "CRS",
+    "lib": "crs",
+    "locale": "sgn-cf",
+    "name": "Langue des signes centrafricaine",
+    "region": 701,
+    "mepsId": null,
+    "home": "/sgn-cf/wol/h/r701/lp-crs"
+  },
+  {
+    "symbol": "CGS",
+    "lib": "cgs",
+    "locale": "sgn-CD",
+    "name": "Langue des signes congolaise",
+    "region": 426,
+    "mepsId": null,
+    "home": "/sgn-CD/wol/h/r426/lp-cgs"
+  },
+  {
+    "symbol": "SBF",
+    "lib": "sbf",
+    "locale": "sfb",
+    "name": "Langue des signes de Belgique francophone",
+    "region": 484,
+    "mepsId": null,
+    "home": "/sfb/wol/h/r484/lp-sbf"
+  },
+  {
+    "symbol": "LSF",
+    "lib": "lsf",
+    "locale": "fsl",
+    "name": "Langue des signes française",
+    "region": 383,
+    "mepsId": null,
+    "home": "/fsl/wol/h/r383/lp-lsf"
+  },
+  {
+    "symbol": "LSI",
+    "lib": "lsi",
+    "locale": "sgn-CI",
+    "name": "Langue des signes ivoirienne",
+    "region": 413,
+    "mepsId": null,
+    "home": "/sgn-CI/wol/h/r413/lp-lsi"
+  },
+  {
+    "symbol": "LSQ",
+    "lib": "lsq",
+    "locale": "fcs",
+    "name": "Langue des signes québécoise",
+    "region": 405,
+    "mepsId": null,
+    "home": "/fcs/wol/h/r405/lp-lsq"
+  },
+  {
+    "symbol": "CLX",
+    "lib": "clx",
+    "locale": "chd",
+    "name": "lataiki",
+    "region": 683,
+    "mepsId": null,
+    "home": "/chd/wol/h/r683/lp-clx"
+  },
+  {
+    "symbol": "LTG",
+    "lib": "ltg",
+    "locale": "ltg",
+    "name": "Latgalīšu",
+    "region": 240,
+    "mepsId": null,
+    "home": "/ltg/wol/h/r240/lp-ltg"
+  },
+  {
+    "symbol": "LT",
+    "lib": "lt",
+    "locale": "lv",
+    "name": "latviešu",
+    "region": 49,
+    "mepsId": null,
+    "home": "/lv/wol/h/r49/lp-lt"
+  },
+  {
+    "symbol": "LSL",
+    "lib": "lsl",
+    "locale": "lsl",
+    "name": "latviešu zīmju valoda",
+    "region": 418,
+    "mepsId": null,
+    "home": "/lsl/wol/h/r418/lp-lsl"
+  },
+  {
+    "symbol": "LAH",
+    "lib": "lah",
+    "locale": "lhu",
+    "name": "Laˇhuˍ hkawˇ",
+    "region": 889,
+    "mepsId": null,
+    "home": "/lhu/wol/h/r889/lp-lah"
+  },
+  {
+    "symbol": "LGA",
+    "lib": "lga",
+    "locale": "lea",
+    "name": "Lega",
+    "region": 898,
+    "mepsId": null,
+    "home": "/lea/wol/h/r898/lp-lga"
+  },
+  {
+    "symbol": "LL",
+    "lib": "ll",
+    "locale": "lln",
+    "name": "Lele",
+    "region": 905,
+    "mepsId": null,
+    "home": "/lln/wol/h/r905/lp-ll"
+  },
+  {
+    "symbol": "LNK",
+    "lib": "lnk",
+    "locale": "tnl",
+    "name": "Lenakel",
+    "region": 913,
+    "mepsId": null,
+    "home": "/tnl/wol/h/r913/lp-lnk"
+  },
+  {
+    "symbol": "LSA",
+    "lib": "lsa",
+    "locale": "aed",
+    "name": "lengua de señas argentina",
+    "region": 386,
+    "mepsId": null,
+    "home": "/aed/wol/h/r386/lp-lsa"
+  },
+  {
+    "symbol": "BVL",
+    "lib": "bvl",
+    "locale": "bvl",
+    "name": "lengua de señas boliviana",
+    "region": 398,
+    "mepsId": null,
+    "home": "/bvl/wol/h/r398/lp-bvl"
+  },
+  {
+    "symbol": "SCH",
+    "lib": "sch",
+    "locale": "csg",
+    "name": "lengua de señas chilena",
+    "region": 377,
+    "mepsId": null,
+    "home": "/csg/wol/h/r377/lp-sch"
+  },
+  {
+    "symbol": "LSC",
+    "lib": "lsc",
+    "locale": "csn",
+    "name": "lengua de señas colombiana",
+    "region": 379,
+    "mepsId": null,
+    "home": "/csn/wol/h/r379/lp-lsc"
+  },
+  {
+    "symbol": "SCR",
+    "lib": "scr",
+    "locale": "csr",
+    "name": "lengua de señas costarricense",
+    "region": 438,
+    "mepsId": null,
+    "home": "/csr/wol/h/r438/lp-scr"
+  },
+  {
+    "symbol": "CBS",
+    "lib": "cbs",
+    "locale": "csf",
+    "name": "lengua de señas cubana",
+    "region": 464,
+    "mepsId": null,
+    "home": "/csf/wol/h/r464/lp-cbs"
+  },
+  {
+    "symbol": "LSG",
+    "lib": "lsg",
+    "locale": "gsm",
+    "name": "lengua de señas de Guatemala",
+    "region": 444,
+    "mepsId": null,
+    "home": "/gsm/wol/h/r444/lp-lsg"
+  },
+  {
+    "symbol": "SRD",
+    "lib": "srd",
+    "locale": "doq",
+    "name": "lengua de señas dominicana",
+    "region": 1375,
+    "mepsId": null,
+    "home": "/doq/wol/h/r1375/lp-srd"
+  },
+  {
+    "symbol": "SEC",
+    "lib": "sec",
+    "locale": "ecs",
+    "name": "lengua de señas ecuatoriana",
+    "region": 367,
+    "mepsId": null,
+    "home": "/ecs/wol/h/r367/lp-sec"
+  },
+  {
+    "symbol": "SHO",
+    "lib": "sho",
+    "locale": "hds",
+    "name": "lengua de señas hondureña",
+    "region": 434,
+    "mepsId": null,
+    "home": "/hds/wol/h/r434/lp-sho"
+  },
+  {
+    "symbol": "LSM",
+    "lib": "lsm",
+    "locale": "mfs",
+    "name": "lengua de señas mexicana",
+    "region": 387,
+    "mepsId": null,
+    "home": "/mfs/wol/h/r387/lp-lsm"
+  },
+  {
+    "symbol": "PSL",
+    "lib": "psl",
+    "locale": "lsp",
+    "name": "lengua de señas panameñas",
+    "region": 439,
+    "mepsId": null,
+    "home": "/lsp/wol/h/r439/lp-psl"
+  },
+  {
+    "symbol": "LSP",
+    "lib": "lsp",
+    "locale": "pys",
+    "name": "lengua de señas paraguaya",
+    "region": 406,
+    "mepsId": null,
+    "home": "/pys/wol/h/r406/lp-lsp"
+  },
+  {
+    "symbol": "SPE",
+    "lib": "spe",
+    "locale": "prl",
+    "name": "lengua de señas peruana",
+    "region": 380,
+    "mepsId": null,
+    "home": "/prl/wol/h/r380/lp-spe"
+  },
+  {
+    "symbol": "LSS",
+    "lib": "lss",
+    "locale": "esn",
+    "name": "lengua de señas salvadoreña",
+    "region": 435,
+    "mepsId": null,
+    "home": "/esn/wol/h/r435/lp-lss"
+  },
+  {
+    "symbol": "LSU",
+    "lib": "lsu",
+    "locale": "ugy",
+    "name": "lengua de señas uruguaya",
+    "region": 500,
+    "mepsId": null,
+    "home": "/ugy/wol/h/r500/lp-lsu"
+  },
+  {
+    "symbol": "LSV",
+    "lib": "lsv",
+    "locale": "vsl",
+    "name": "lengua de señas venezolana",
+    "region": 407,
+    "mepsId": null,
+    "home": "/vsl/wol/h/r407/lp-lsv"
+  },
+  {
+    "symbol": "LSE",
+    "lib": "lse",
+    "locale": "ssp",
+    "name": "lengua de signos española",
+    "region": 388,
+    "mepsId": null,
+    "home": "/ssp/wol/h/r388/lp-lse"
+  },
+  {
+    "symbol": "LSN",
+    "lib": "lsn",
+    "locale": "ncs",
+    "name": "lenguaje de señas nicaragüense",
+    "region": 437,
+    "mepsId": null,
+    "home": "/ncs/wol/h/r437/lp-lsn"
+  },
+  {
+    "symbol": "LHK",
+    "lib": "lhk",
+    "locale": "koo",
+    "name": "Lhukonzo",
+    "region": 139,
+    "mepsId": null,
+    "home": "/koo/wol/h/r139/lp-lhk"
+  },
+  {
+    "symbol": "ELI",
+    "lib": "eli",
+    "locale": "lir",
+    "name": "Liberian English",
+    "region": 737,
+    "mepsId": null,
+    "home": "/lir/wol/h/r737/lp-eli"
+  },
+  {
+    "symbol": "L",
+    "lib": "l",
+    "locale": "lt",
+    "name": "lietuvių",
+    "region": 32,
+    "mepsId": null,
+    "home": "/lt/wol/h/r32/lp-l"
+  },
+  {
+    "symbol": "LTS",
+    "lib": "lts",
+    "locale": "lls",
+    "name": "lietuvių gestų",
+    "region": 421,
+    "mepsId": null,
+    "home": "/lls/wol/h/r421/lp-lts"
+  },
+  {
+    "symbol": "LMG",
+    "lib": "lmg",
+    "locale": "rms",
+    "name": "Limba semnelor române",
+    "region": 445,
+    "mepsId": null,
+    "home": "/rms/wol/h/r445/lp-lmg"
+  },
+  {
+    "symbol": "LBM",
+    "lib": "lbm",
+    "locale": "lmp",
+    "name": "Limbum",
+    "region": 376,
+    "mepsId": null,
+    "home": "/lmp/wol/h/r376/lp-lbm"
+  },
+  {
+    "symbol": "LI",
+    "lib": "li",
+    "locale": "ln",
+    "name": "Lingala",
+    "region": 126,
+    "mepsId": null,
+    "home": "/ln/wol/h/r126/lp-li"
+  },
+  {
+    "symbol": "ISL",
+    "lib": "isl",
+    "locale": "ise",
+    "name": "Lingua dei segni italiana",
+    "region": 382,
+    "mepsId": null,
+    "home": "/ise/wol/h/r382/lp-isl"
+  },
+  {
+    "symbol": "LKA",
+    "lib": "lka",
+    "locale": "yaz",
+    "name": "Lokaa",
+    "region": 1334,
+    "mepsId": null,
+    "home": "/yaz/wol/h/r1334/lp-lka"
+  },
+  {
+    "symbol": "PP",
+    "lib": "pp",
+    "locale": "pon",
+    "name": "Lokaiahn Pohnpei",
+    "region": 136,
+    "mepsId": null,
+    "home": "/pon/wol/h/r136/lp-pp"
+  },
+  {
+    "symbol": "DNS",
+    "lib": "dns",
+    "locale": "dez",
+    "name": "Londengese",
+    "region": 717,
+    "mepsId": null,
+    "home": "/dez/wol/h/r717/lp-dns"
+  },
+  {
+    "symbol": "LGD",
+    "lib": "lgd",
+    "locale": "lnu",
+    "name": "Longuda",
+    "region": 585,
+    "mepsId": null,
+    "home": "/lnu/wol/h/r585/lp-lgd"
+  },
+  {
+    "symbol": "SGM",
+    "lib": "sgm",
+    "locale": "soe",
+    "name": "Losongomino",
+    "region": 1135,
+    "mepsId": null,
+    "home": "/soe/wol/h/r1135/lp-sgm"
+  },
+  {
+    "symbol": "LC",
+    "lib": "lc",
+    "locale": "lch",
+    "name": "Luchazi",
+    "region": 894,
+    "mepsId": null,
+    "home": "/lch/wol/h/r894/lp-lc"
+  },
+  {
+    "symbol": "LU",
+    "lib": "lu",
+    "locale": "lg",
+    "name": "Luganda",
+    "region": 138,
+    "mepsId": null,
+    "home": "/lg/wol/h/r138/lp-lu"
+  },
+  {
+    "symbol": "LG",
+    "lib": "lg",
+    "locale": "lgg",
+    "name": "Lugbara",
+    "region": 897,
+    "mepsId": null,
+    "home": "/lgg/wol/h/r897/lp-lg"
+  },
+  {
+    "symbol": "TZL",
+    "lib": "tzl",
+    "locale": "tza",
+    "name": "Lugha ya Alama ya Tanzania",
+    "region": 1216,
+    "mepsId": null,
+    "home": "/tza/wol/h/r1216/lp-tzl"
+  },
+  {
+    "symbol": "LD",
+    "lib": "ld",
+    "locale": "lun",
+    "name": "Lunda",
+    "region": 69,
+    "mepsId": null,
+    "home": "/lun/wol/h/r69/lp-ld"
+  },
+  {
+    "symbol": "OL",
+    "lib": "ol",
+    "locale": "rag",
+    "name": "Luragooli",
+    "region": 1057,
+    "mepsId": null,
+    "home": "/rag/wol/h/r1057/lp-ol"
+  },
+  {
+    "symbol": "LV",
+    "lib": "lv",
+    "locale": "lue",
+    "name": "Luvale",
+    "region": 67,
+    "mepsId": null,
+    "home": "/lue/wol/h/r67/lp-lv"
+  },
+  {
+    "symbol": "VE",
+    "lib": "ve",
+    "locale": "ve",
+    "name": "Luvenda",
+    "region": 164,
+    "mepsId": null,
+    "home": "/ve/wol/h/r164/lp-ve"
+  },
+  {
+    "symbol": "LX",
+    "lib": "lx",
+    "locale": "lb",
+    "name": "Lëtzebuergesch",
+    "region": 533,
+    "mepsId": null,
+    "home": "/lb/wol/h/r533/lp-lx"
+  },
+  {
+    "symbol": "LAS",
+    "lib": "las",
+    "locale": "sgn-AO",
+    "name": "Língua angolana de sinais",
+    "region": 425,
+    "mepsId": null,
+    "home": "/sgn-AO/wol/h/r425/lp-las"
+  },
+  {
+    "symbol": "LSB",
+    "lib": "lsb",
+    "locale": "bzs",
+    "name": "Língua brasileira de sinais (Libras)",
+    "region": 402,
+    "mepsId": null,
+    "home": "/bzs/wol/h/r402/lp-lsb"
+  },
+  {
+    "symbol": "SLM",
+    "lib": "slm",
+    "locale": "mzy",
+    "name": "Língua de Sinais Moçambicana",
+    "region": 411,
+    "mepsId": null,
+    "home": "/mzy/wol/h/r411/lp-slm"
+  },
+  {
+    "symbol": "LGP",
+    "lib": "lgp",
+    "locale": "psr",
+    "name": "Língua Gestual Portuguesa",
+    "region": 381,
+    "mepsId": null,
+    "home": "/psr/wol/h/r381/lp-lgp"
+  },
+  {
+    "symbol": "OM",
+    "lib": "om",
+    "locale": "lom",
+    "name": "Lɔɔma",
+    "region": 460,
+    "mepsId": null,
+    "home": "/lom/wol/h/r460/lp-om"
+  },
+  {
+    "symbol": "MNO",
+    "lib": "mno",
+    "locale": "mev",
+    "name": "Maa",
+    "region": 970,
+    "mepsId": null,
+    "home": "/mev/wol/h/r970/lp-mno"
+  },
+  {
+    "symbol": "MS",
+    "lib": "ms",
+    "locale": "mas",
+    "name": "Maasai",
+    "region": 982,
+    "mepsId": null,
+    "home": "/mas/wol/h/r982/lp-ms"
+  },
+  {
+    "symbol": "MAY",
+    "lib": "may",
+    "locale": "yua",
+    "name": "maaya",
+    "region": 40,
+    "mepsId": null,
+    "home": "/yua/wol/h/r40/lp-may"
+  },
+  {
+    "symbol": "MDI",
+    "lib": "mdi",
+    "locale": "mhi",
+    "name": "Madi",
+    "region": 939,
+    "mepsId": null,
+    "home": "/mhi/wol/h/r939/lp-mdi"
+  },
+  {
+    "symbol": "MDR",
+    "lib": "mdr",
+    "locale": "mad",
+    "name": "Madura",
+    "region": 287,
+    "mepsId": null,
+    "home": "/mad/wol/h/r287/lp-mdr"
+  },
+  {
+    "symbol": "MAF",
+    "lib": "maf",
+    "locale": "maf",
+    "name": "Mafa",
+    "region": 1352,
+    "mepsId": null,
+    "home": "/maf/wol/h/r1352/lp-maf"
+  },
+  {
+    "symbol": "MU",
+    "lib": "mu",
+    "locale": "mdh",
+    "name": "Maguindanao",
+    "region": 991,
+    "mepsId": null,
+    "home": "/mdh/wol/h/r991/lp-mu"
+  },
+  {
+    "symbol": "H",
+    "lib": "h",
+    "locale": "hu",
+    "name": "magyar",
+    "region": 17,
+    "mepsId": 14,
+    "home": "/hu/wol/h/r17/lp-h"
+  },
+  {
+    "symbol": "HDF",
+    "lib": "hdf",
+    "locale": "hsh",
+    "name": "magyar jelnyelv",
+    "region": 396,
+    "mepsId": null,
+    "home": "/hsh/wol/h/r396/lp-hdf"
+  },
+  {
+    "symbol": "MKA",
+    "lib": "mka",
+    "locale": "mcp",
+    "name": "Makaa",
+    "region": 327,
+    "mepsId": null,
+    "home": "/mcp/wol/h/r327/lp-mka"
+  },
+  {
+    "symbol": "MKS",
+    "lib": "mks",
+    "locale": "mkz-x-mks",
+    "name": "Makasae",
+    "region": 953,
+    "mepsId": null,
+    "home": "/mkz-x-mks/wol/h/r953/lp-mks"
+  },
+  {
+    "symbol": "MHM",
+    "lib": "mhm",
+    "locale": "xmc",
+    "name": "Makhuwa-Marrevone",
+    "region": 944,
+    "mepsId": null,
+    "home": "/xmc/wol/h/r944/lp-mhm"
+  },
+  {
+    "symbol": "MHS",
+    "lib": "mhs",
+    "locale": "vmk",
+    "name": "Makhuwa-Shirima",
+    "region": 945,
+    "mepsId": null,
+    "home": "/vmk/wol/h/r945/lp-mhs"
+  },
+  {
+    "symbol": "MCS",
+    "lib": "mcs",
+    "locale": "mbc",
+    "name": "Makusi",
+    "region": 503,
+    "mepsId": null,
+    "home": "/mbc/wol/h/r503/lp-mcs"
+  },
+  {
+    "symbol": "MG",
+    "lib": "mg",
+    "locale": "mg",
+    "name": "Malagasy",
+    "region": 26,
+    "mepsId": null,
+    "home": "/mg/wol/h/r26/lp-mg"
+  },
+  {
+    "symbol": "MLG",
+    "lib": "mlg",
+    "locale": "mln",
+    "name": "Malango",
+    "region": 955,
+    "mepsId": null,
+    "home": "/mln/wol/h/r955/lp-mlg"
+  },
+  {
+    "symbol": "MT",
+    "lib": "mt",
+    "locale": "mt",
+    "name": "Malti",
+    "region": 85,
+    "mepsId": null,
+    "home": "/mt/wol/h/r85/lp-mt"
+  },
+  {
+    "symbol": "MZ",
+    "lib": "mz",
+    "locale": "mam",
+    "name": "mam",
+    "region": 160,
+    "mepsId": null,
+    "home": "/mam/wol/h/r160/lp-mz"
+  },
+  {
+    "symbol": "AMA",
+    "lib": "ama",
+    "locale": "mqj",
+    "name": "Mamasa",
+    "region": 609,
+    "mepsId": null,
+    "home": "/mqj/wol/h/r609/lp-ama"
+  },
+  {
+    "symbol": "MME",
+    "lib": "mme",
+    "locale": "mgm-x-mme",
+    "name": "Mambae (Ermera)",
+    "region": 961,
+    "mepsId": null,
+    "home": "/mgm-x-mme/wol/h/r961/lp-mme"
+  },
+  {
+    "symbol": "MNM",
+    "lib": "mnm",
+    "locale": "xmm",
+    "name": "Manado",
+    "region": 968,
+    "mepsId": null,
+    "home": "/xmm/wol/h/r968/lp-mnm"
+  },
+  {
+    "symbol": "MNK",
+    "lib": "mnk",
+    "locale": "mnk",
+    "name": "Mandinka",
+    "region": 967,
+    "mepsId": null,
+    "home": "/mnk/wol/h/r967/lp-mnk"
+  },
+  {
+    "symbol": "MNJ",
+    "lib": "mnj",
+    "locale": "mzv",
+    "name": "Mandja",
+    "region": 1348,
+    "mepsId": null,
+    "home": "/mzv/wol/h/r1348/lp-mnj"
+  },
+  {
+    "symbol": "MGR",
+    "lib": "mgr",
+    "locale": "mrv",
+    "name": "Mangareva",
+    "region": 299,
+    "mepsId": null,
+    "home": "/mrv/wol/h/r299/lp-mgr"
+  },
+  {
+    "symbol": "MIR",
+    "lib": "mir",
+    "locale": "mni-Latn",
+    "name": "Manipuri (Roman)",
+    "region": 558,
+    "mepsId": null,
+    "home": "/mni-Latn/wol/h/r558/lp-mir"
+  },
+  {
+    "symbol": "MJK",
+    "lib": "mjk",
+    "locale": "mfv",
+    "name": "Manjaku",
+    "region": 947,
+    "mepsId": null,
+    "home": "/mfv/wol/h/r947/lp-mjk"
+  },
+  {
+    "symbol": "MPD",
+    "lib": "mpd",
+    "locale": "arn",
+    "name": "mapudungun",
+    "region": 203,
+    "mepsId": null,
+    "home": "/arn/wol/h/r203/lp-mpd"
+  },
+  {
+    "symbol": "MW",
+    "lib": "mw",
+    "locale": "mrw",
+    "name": "Maranaw",
+    "region": 992,
+    "mepsId": null,
+    "home": "/mrw/wol/h/r992/lp-mw"
+  },
+  {
+    "symbol": "MQN",
+    "lib": "mqn",
+    "locale": "mrq",
+    "name": "Marquisien (Nuku Hiva)",
+    "region": 298,
+    "mepsId": null,
+    "home": "/mrq/wol/h/r298/lp-mqn"
+  },
+  {
+    "symbol": "MSN",
+    "lib": "msn",
+    "locale": "en",
+    "name": "Masana",
+    "region": 1377,
+    "mepsId": null,
+    "home": "/en/wol/h/r1377/lp-msn"
+  },
+  {
+    "symbol": "MSH",
+    "lib": "msh",
+    "locale": "shr",
+    "name": "Mashi",
+    "region": 983,
+    "mepsId": null,
+    "home": "/shr/wol/h/r983/lp-msh"
+  },
+  {
+    "symbol": "MSS",
+    "lib": "mss",
+    "locale": "mcf",
+    "name": "Matses",
+    "region": 1362,
+    "mepsId": null,
+    "home": "/mcf/wol/h/r1362/lp-mss"
+  },
+  {
+    "symbol": "MTS",
+    "lib": "mts",
+    "locale": "lsy",
+    "name": "Mauritian Sign Language",
+    "region": 1323,
+    "mepsId": null,
+    "home": "/lsy/wol/h/r1323/lp-mts"
+  },
+  {
+    "symbol": "MYG",
+    "lib": "myg",
+    "locale": "yan",
+    "name": "mayangna",
+    "region": 343,
+    "mepsId": null,
+    "home": "/yan/wol/h/r343/lp-myg"
+  },
+  {
+    "symbol": "MBN",
+    "lib": "mbn",
+    "locale": "mxg",
+    "name": "Mbangala",
+    "region": 1339,
+    "mepsId": null,
+    "home": "/mxg/wol/h/r1339/lp-mbn"
+  },
+  {
+    "symbol": "MBO",
+    "lib": "mbo",
+    "locale": "mbo",
+    "name": "Mbo",
+    "region": 495,
+    "mepsId": null,
+    "home": "/mbo/wol/h/r495/lp-mbo"
+  },
+  {
+    "symbol": "MMU",
+    "lib": "mmu",
+    "locale": "mdd",
+    "name": "Mbum",
+    "region": 1360,
+    "mepsId": null,
+    "home": "/mdd/wol/h/r1360/lp-mmu"
+  },
+  {
+    "symbol": "MBD",
+    "lib": "mbd",
+    "locale": "mck",
+    "name": "Mbunda",
+    "region": 932,
+    "mepsId": null,
+    "home": "/mck/wol/h/r932/lp-mbd"
+  },
+  {
+    "symbol": "MNS",
+    "lib": "mns",
+    "locale": "sgn-PG",
+    "name": "Melanesian Sign Language",
+    "region": 971,
+    "mepsId": null,
+    "home": "/sgn-PG/wol/h/r971/lp-mns"
+  },
+  {
+    "symbol": "ML",
+    "lib": "ml",
+    "locale": "ms",
+    "name": "Melayu",
+    "region": 118,
+    "mepsId": null,
+    "home": "/ms/wol/h/r118/lp-ml"
+  },
+  {
+    "symbol": "MWI",
+    "lib": "mwi",
+    "locale": "mwv",
+    "name": "Mentawai",
+    "region": 306,
+    "mepsId": null,
+    "home": "/mwv/wol/h/r306/lp-mwi"
+  },
+  {
+    "symbol": "MTA",
+    "lib": "mta",
+    "locale": "mgo",
+    "name": "Meta'",
+    "region": 512,
+    "mepsId": null,
+    "home": "/mgo/wol/h/r512/lp-mta"
+  },
+  {
+    "symbol": "TLN",
+    "lib": "tln",
+    "locale": "tcf",
+    "name": "me̱ʼpha̱a̱",
+    "region": 354,
+    "mepsId": null,
+    "home": "/tcf/wol/h/r354/lp-tln"
+  },
+  {
+    "symbol": "FA",
+    "lib": "fa",
+    "locale": "fat",
+    "name": "Mfantse",
+    "region": 284,
+    "mepsId": null,
+    "home": "/fat/wol/h/r284/lp-fa"
+  },
+  {
+    "symbol": "MKQ",
+    "lib": "mkq",
+    "locale": "mic",
+    "name": "Mi'kmaw",
+    "region": 1291,
+    "mepsId": null,
+    "home": "/mic/wol/h/r1291/lp-mkq"
+  },
+  {
+    "symbol": "MIS",
+    "lib": "mis",
+    "locale": "miq",
+    "name": "miskitu",
+    "region": 152,
+    "mepsId": null,
+    "home": "/miq/wol/h/r152/lp-mis"
+  },
+  {
+    "symbol": "LS",
+    "lib": "ls",
+    "locale": "lus",
+    "name": "Mizo",
+    "region": 352,
+    "mepsId": null,
+    "home": "/lus/wol/h/r352/lp-ls"
+  },
+  {
+    "symbol": "RGS",
+    "lib": "rgs",
+    "locale": "drg",
+    "name": "Momogun",
+    "region": 273,
+    "mepsId": null,
+    "home": "/drg/wol/h/r273/lp-rgs"
+  },
+  {
+    "symbol": "KHC",
+    "lib": "khc",
+    "locale": "mvf",
+    "name": "Mongolian (Traditional)",
+    "region": 1286,
+    "mepsId": null,
+    "home": "/mvf/wol/h/r1286/lp-khc"
+  },
+  {
+    "symbol": "HMN",
+    "lib": "hmn",
+    "locale": "hnj",
+    "name": "Moob Ntsuab",
+    "region": 525,
+    "mepsId": null,
+    "home": "/hnj/wol/h/r525/lp-hmn"
+  },
+  {
+    "symbol": "MM",
+    "lib": "mm",
+    "locale": "mos",
+    "name": "Moore",
+    "region": 185,
+    "mepsId": null,
+    "home": "/mos/wol/h/r185/lp-mm"
+  },
+  {
+    "symbol": "MTU",
+    "lib": "mtu",
+    "locale": "meu",
+    "name": "Motu",
+    "region": 572,
+    "mepsId": null,
+    "home": "/meu/wol/h/r572/lp-mtu"
+  },
+  {
+    "symbol": "OU",
+    "lib": "ou",
+    "locale": "mua",
+    "name": "Moundang",
+    "region": 1066,
+    "mepsId": null,
+    "home": "/mua/wol/h/r1066/lp-ou"
+  },
+  {
+    "symbol": "MOU",
+    "lib": "mou",
+    "locale": "mse",
+    "name": "Moussey",
+    "region": 976,
+    "mepsId": null,
+    "home": "/mse/wol/h/r976/lp-mou"
+  },
+  {
+    "symbol": "MBA",
+    "lib": "mba",
+    "locale": "mfq",
+    "name": "Muaba",
+    "region": 931,
+    "mepsId": null,
+    "home": "/mfq/wol/h/r931/lp-mba"
+  },
+  {
+    "symbol": "ME",
+    "lib": "me",
+    "locale": "men",
+    "name": "Mɛnde",
+    "region": 355,
+    "mepsId": null,
+    "home": "/men/wol/h/r355/lp-me"
+  },
+  {
+    "symbol": "NGR",
+    "lib": "ngr",
+    "locale": "nbu",
+    "name": "Naga (Rongmei)",
+    "region": 1313,
+    "mepsId": null,
+    "home": "/nbu/wol/h/r1313/lp-ngr"
+  },
+  {
+    "symbol": "NGD",
+    "lib": "ngd",
+    "locale": "nag",
+    "name": "Nagamese",
+    "region": 1324,
+    "mepsId": null,
+    "home": "/nag/wol/h/r1324/lp-ngd"
+  },
+  {
+    "symbol": "NMK",
+    "lib": "nmk",
+    "locale": "nmk",
+    "name": "Namakura",
+    "region": 1032,
+    "mepsId": null,
+    "home": "/nmk/wol/h/r1032/lp-nmk"
+  },
+  {
+    "symbol": "NB",
+    "lib": "nb",
+    "locale": "nmq",
+    "name": "Nambya",
+    "region": 1009,
+    "mepsId": null,
+    "home": "/nmq/wol/h/r1009/lp-nb"
+  },
+  {
+    "symbol": "SLN",
+    "lib": "sln",
+    "locale": "nbs",
+    "name": "Namibian Sign Language",
+    "region": 1150,
+    "mepsId": null,
+    "home": "/nbs/wol/h/r1150/lp-sln"
+  },
+  {
+    "symbol": "GBM",
+    "lib": "gbm",
+    "locale": "gum",
+    "name": "Namtrik",
+    "region": 430,
+    "mepsId": null,
+    "home": "/gum/wol/h/r430/lp-gbm"
+  },
+  {
+    "symbol": "PAZ",
+    "lib": "paz",
+    "locale": "pbb",
+    "name": "nasa yuwe",
+    "region": 345,
+    "mepsId": null,
+    "home": "/pbb/wol/h/r345/lp-paz"
+  },
+  {
+    "symbol": "NTU",
+    "lib": "ntu",
+    "locale": "ntu",
+    "name": "Natügu",
+    "region": 1044,
+    "mepsId": null,
+    "home": "/ntu/wol/h/r1044/lp-ntu"
+  },
+  {
+    "symbol": "NDW",
+    "lib": "ndw",
+    "locale": "ndc-x-ndw",
+    "name": "Ndau (Western)",
+    "region": 1340,
+    "mepsId": null,
+    "home": "/ndc-x-ndw/wol/h/r1340/lp-ndw"
+  },
+  {
+    "symbol": "NBZ",
+    "lib": "nbz",
+    "locale": "nd",
+    "name": "Ndebele (Zimbabwe)",
+    "region": 357,
+    "mepsId": null,
+    "home": "/nd/wol/h/r357/lp-nbz"
+  },
+  {
+    "symbol": "O",
+    "lib": "o",
+    "locale": "nl",
+    "name": "Nederlands",
+    "region": 18,
+    "mepsId": 7,
+    "home": "/nl/wol/h/r18/lp-o"
+  },
+  {
+    "symbol": "NGT",
+    "lib": "ngt",
+    "locale": "dse",
+    "name": "Nederlandse Gebarentaal",
+    "region": 417,
+    "mepsId": null,
+    "home": "/dse/wol/h/r417/lp-ngt"
+  },
+  {
+    "symbol": "RE",
+    "lib": "re",
+    "locale": "nen",
+    "name": "Nengone",
+    "region": 1102,
+    "mepsId": null,
+    "home": "/nen/wol/h/r1102/lp-re"
+  },
+  {
+    "symbol": "NZS",
+    "lib": "nzs",
+    "locale": "nzs",
+    "name": "New Zealand Sign Language",
+    "region": 453,
+    "mepsId": null,
+    "home": "/nzs/wol/h/r453/lp-nzs"
+  },
+  {
+    "symbol": "TRN",
+    "lib": "trn",
+    "locale": "tuv",
+    "name": "Ng'aturkana",
+    "region": 1201,
+    "mepsId": null,
+    "home": "/tuv/wol/h/r1201/lp-trn"
+  },
+  {
+    "symbol": "NG",
+    "lib": "ng",
+    "locale": "sba",
+    "name": "Ngambay",
+    "region": 1019,
+    "mepsId": null,
+    "home": "/sba/wol/h/r1019/lp-ng"
+  },
+  {
+    "symbol": "NGL",
+    "lib": "ngl",
+    "locale": "nba",
+    "name": "Ngangela",
+    "region": 467,
+    "mepsId": null,
+    "home": "/nba/wol/h/r467/lp-ngl"
+  },
+  {
+    "symbol": "NGN",
+    "lib": "ngn",
+    "locale": "ngb",
+    "name": "Ngbandi (ya Nɔrdi)",
+    "region": 1022,
+    "mepsId": null,
+    "home": "/ngb/wol/h/r1022/lp-ngn"
+  },
+  {
+    "symbol": "NMB",
+    "lib": "nmb",
+    "locale": "nnh",
+    "name": "Ngiemboon",
+    "region": 238,
+    "mepsId": null,
+    "home": "/nnh/wol/h/r238/lp-nmb"
+  },
+  {
+    "symbol": "NGM",
+    "lib": "ngm",
+    "locale": "pls",
+    "name": "ngigua de San Marcos Tlacoyalco",
+    "region": 588,
+    "mepsId": null,
+    "home": "/pls/wol/h/r588/lp-ngm"
+  },
+  {
+    "symbol": "NGB",
+    "lib": "ngb",
+    "locale": "gym",
+    "name": "ngäbere",
+    "region": 249,
+    "mepsId": null,
+    "home": "/gym/wol/h/r249/lp-ngb"
+  },
+  {
+    "symbol": "NGU",
+    "lib": "ngu",
+    "locale": "yrl",
+    "name": "Nheengatu",
+    "region": 1025,
+    "mepsId": null,
+    "home": "/yrl/wol/h/r1025/lp-ngu"
+  },
+  {
+    "symbol": "NI",
+    "lib": "ni",
+    "locale": "nia",
+    "name": "Nias",
+    "region": 265,
+    "mepsId": null,
+    "home": "/nia/wol/h/r265/lp-ni"
+  },
+  {
+    "symbol": "NC",
+    "lib": "nc",
+    "locale": "caq",
+    "name": "Nicobarese",
+    "region": 1010,
+    "mepsId": null,
+    "home": "/caq/wol/h/r1010/lp-nc"
+  },
+  {
+    "symbol": "NGP",
+    "lib": "ngp",
+    "locale": "pcm",
+    "name": "Nigerian Pidgin",
+    "region": 261,
+    "mepsId": null,
+    "home": "/pcm/wol/h/r261/lp-ngp"
+  },
+  {
+    "symbol": "NNS",
+    "lib": "nns",
+    "locale": "nsi",
+    "name": "Nigerian Sign Language",
+    "region": 1036,
+    "mepsId": null,
+    "home": "/nsi/wol/h/r1036/lp-nns"
+  },
+  {
+    "symbol": "ODW",
+    "lib": "odw",
+    "locale": "otw",
+    "name": "Nishnaabemwin",
+    "region": 1054,
+    "mepsId": null,
+    "home": "/otw/wol/h/r1054/lp-odw"
+  },
+  {
+    "symbol": "NVC",
+    "lib": "nvc",
+    "locale": "cag",
+    "name": "nivaĉle",
+    "region": 498,
+    "mepsId": null,
+    "home": "/cag/wol/h/r498/lp-nvc"
+  },
+  {
+    "symbol": "NJB",
+    "lib": "njb",
+    "locale": "nzb",
+    "name": "Njebi",
+    "region": 587,
+    "mepsId": null,
+    "home": "/nzb/wol/h/r587/lp-njb"
+  },
+  {
+    "symbol": "NKY",
+    "lib": "nky",
+    "locale": "nka",
+    "name": "Nkoya",
+    "region": 1030,
+    "mepsId": null,
+    "home": "/nka/wol/h/r1030/lp-nky"
+  },
+  {
+    "symbol": "N",
+    "lib": "n",
+    "locale": "no",
+    "name": "Norsk",
+    "region": 3,
+    "mepsId": 11,
+    "home": "/no/wol/h/r3/lp-n"
+  },
+  {
+    "symbol": "NDF",
+    "lib": "ndf",
+    "locale": "nsl",
+    "name": "Norsk tegnspråk",
+    "region": 441,
+    "mepsId": null,
+    "home": "/nsl/wol/h/r441/lp-ndf"
+  },
+  {
+    "symbol": "NKM",
+    "lib": "nkm",
+    "locale": "nuq",
+    "name": "Nukumanu",
+    "region": 1028,
+    "mepsId": null,
+    "home": "/nuq/wol/h/r1028/lp-nkm"
+  },
+  {
+    "symbol": "NK",
+    "lib": "nk",
+    "locale": "nyk",
+    "name": "Nyaneka",
+    "region": 141,
+    "mepsId": null,
+    "home": "/nyk/wol/h/r141/lp-nk"
+  },
+  {
+    "symbol": "NZ",
+    "lib": "nz",
+    "locale": "nzi",
+    "name": "Nzema",
+    "region": 130,
+    "mepsId": null,
+    "home": "/nzi/wol/h/r130/lp-nz"
+  },
+  {
+    "symbol": "NHG",
+    "lib": "nhg",
+    "locale": "ngu",
+    "name": "náhuatl de guerrero",
+    "region": 196,
+    "mepsId": null,
+    "home": "/ngu/wol/h/r196/lp-nhg"
+  },
+  {
+    "symbol": "NHH",
+    "lib": "nhh",
+    "locale": "nch",
+    "name": "náhuatl de la huasteca",
+    "region": 183,
+    "mepsId": null,
+    "home": "/nch/wol/h/r183/lp-nhh"
+  },
+  {
+    "symbol": "NHV",
+    "lib": "nhv",
+    "locale": "nhk",
+    "name": "náhuatl de Veracruz",
+    "region": 373,
+    "mepsId": null,
+    "home": "/nhk/wol/h/r373/lp-nhv"
+  },
+  {
+    "symbol": "NHC",
+    "lib": "nhc",
+    "locale": "ncx",
+    "name": "náhuatl del centro",
+    "region": 175,
+    "mepsId": null,
+    "home": "/ncx/wol/h/r175/lp-nhc"
+  },
+  {
+    "symbol": "NHT",
+    "lib": "nht",
+    "locale": "ncj",
+    "name": "náhuatl del norte de Puebla",
+    "region": 98,
+    "mepsId": null,
+    "home": "/ncj/wol/h/r98/lp-nht"
+  },
+  {
+    "symbol": "WC",
+    "lib": "wc",
+    "locale": "cwd-x-wc",
+    "name": "Nîhithawîwin",
+    "region": 1229,
+    "mepsId": null,
+    "home": "/cwd-x-wc/wol/h/r1229/lp-wc"
+  },
+  {
+    "symbol": "CY",
+    "lib": "cy",
+    "locale": "crk-latn",
+    "name": "nēhiyawēwin",
+    "region": 310,
+    "mepsId": null,
+    "home": "/crk-latn/wol/h/r310/lp-cy"
+  },
+  {
+    "symbol": "OBL",
+    "lib": "obl",
+    "locale": "ann",
+    "name": "Obolo",
+    "region": 571,
+    "mepsId": null,
+    "home": "/ann/wol/h/r571/lp-obl"
+  },
+  {
+    "symbol": "AKN",
+    "lib": "akn",
+    "locale": "djk",
+    "name": "Okanisitongo",
+    "region": 247,
+    "mepsId": null,
+    "home": "/djk/wol/h/r247/lp-akn"
+  },
+  {
+    "symbol": "OKP",
+    "lib": "okp",
+    "locale": "oke",
+    "name": "Okpe",
+    "region": 314,
+    "mepsId": null,
+    "home": "/oke/wol/h/r314/lp-okp"
+  },
+  {
+    "symbol": "LB",
+    "lib": "lb",
+    "locale": "nyd",
+    "name": "Olunyole",
+    "region": 892,
+    "mepsId": null,
+    "home": "/nyd/wol/h/r892/lp-lb"
+  },
+  {
+    "symbol": "OMB",
+    "lib": "omb",
+    "locale": "mbm",
+    "name": "Ombamba",
+    "region": 577,
+    "mepsId": null,
+    "home": "/mbm/wol/h/r577/lp-omb"
+  },
+  {
+    "symbol": "HUV",
+    "lib": "huv",
+    "locale": "huv",
+    "name": "ombeayiiüts",
+    "region": 791,
+    "mepsId": null,
+    "home": "/huv/wol/h/r791/lp-huv"
+  },
+  {
+    "symbol": "ORK",
+    "lib": "ork",
+    "locale": "okv",
+    "name": "Orokaiva",
+    "region": 1061,
+    "mepsId": null,
+    "home": "/okv/wol/h/r1061/lp-ork"
+  },
+  {
+    "symbol": "CGG",
+    "lib": "cgg",
+    "locale": "cgg",
+    "name": "Orukiga",
+    "region": 668,
+    "mepsId": null,
+    "home": "/cgg/wol/h/r668/lp-cgg"
+  },
+  {
+    "symbol": "KY",
+    "lib": "ky",
+    "locale": "kj",
+    "name": "Oshikwanyama",
+    "region": 166,
+    "mepsId": null,
+    "home": "/kj/wol/h/r166/lp-ky"
+  },
+  {
+    "symbol": "OD",
+    "lib": "od",
+    "locale": "ng",
+    "name": "Oshindonga",
+    "region": 170,
+    "mepsId": null,
+    "home": "/ng/wol/h/r170/lp-od"
+  },
+  {
+    "symbol": "HR",
+    "lib": "hr",
+    "locale": "hz",
+    "name": "Otjiherero",
+    "region": 168,
+    "mepsId": null,
+    "home": "/hz/wol/h/r168/lp-hr"
+  },
+  {
+    "symbol": "UZR",
+    "lib": "uzr",
+    "locale": "uz-Latn",
+    "name": "o‘zbekcha (lotincha)",
+    "region": 506,
+    "mepsId": null,
+    "home": "/uz-Latn/wol/h/r506/lp-uzr"
+  },
+  {
+    "symbol": "PPG",
+    "lib": "ppg",
+    "locale": "ood",
+    "name": "O’odham",
+    "region": 1343,
+    "mepsId": null,
+    "home": "/ood/wol/h/r1343/lp-ppg"
+  },
+  {
+    "symbol": "PMA",
+    "lib": "pma",
+    "locale": "pma",
+    "name": "Paama",
+    "region": 1079,
+    "mepsId": null,
+    "home": "/pma/wol/h/r1079/lp-pma"
+  },
+  {
+    "symbol": "PIC",
+    "lib": "pic",
+    "locale": "pri",
+    "name": "Paicî",
+    "region": 1072,
+    "mepsId": null,
+    "home": "/pri/wol/h/r1072/lp-pic"
+  },
+  {
+    "symbol": "BTD",
+    "lib": "btd",
+    "locale": "btd",
+    "name": "Pakpak",
+    "region": 300,
+    "mepsId": null,
+    "home": "/btd/wol/h/r300/lp-btd"
+  },
+  {
+    "symbol": "PU",
+    "lib": "pu",
+    "locale": "pau",
+    "name": "Palauan",
+    "region": 1091,
+    "mepsId": null,
+    "home": "/pau/wol/h/r1091/lp-pu"
+  },
+  {
+    "symbol": "PLK",
+    "lib": "plk",
+    "locale": "plu",
+    "name": "Palikur",
+    "region": 1076,
+    "mepsId": null,
+    "home": "/plu/wol/h/r1076/lp-plk"
+  },
+  {
+    "symbol": "PMO",
+    "lib": "pmo",
+    "locale": "pmf",
+    "name": "Pamona",
+    "region": 482,
+    "mepsId": null,
+    "home": "/pmf/wol/h/r482/lp-pmo"
+  },
+  {
+    "symbol": "PN",
+    "lib": "pn",
+    "locale": "pag",
+    "name": "Pangasinan",
+    "region": 116,
+    "mepsId": null,
+    "home": "/pag/wol/h/r116/lp-pn"
+  },
+  {
+    "symbol": "PAA",
+    "lib": "paa",
+    "locale": "pap-x-paa",
+    "name": "Papiamento (Aruba)",
+    "region": 197,
+    "mepsId": null,
+    "home": "/pap-x-paa/wol/h/r197/lp-paa"
+  },
+  {
+    "symbol": "PA",
+    "lib": "pa",
+    "locale": "pap",
+    "name": "Papiamentu (Kòrsou)",
+    "region": 99,
+    "mepsId": null,
+    "home": "/pap/wol/h/r99/lp-pa"
+  },
+  {
+    "symbol": "JCR",
+    "lib": "jcr",
+    "locale": "jam-x-jcr",
+    "name": "Patwa",
+    "region": 817,
+    "mepsId": null,
+    "home": "/jam-x-jcr/wol/h/r817/lp-jcr"
+  },
+  {
+    "symbol": "PMN",
+    "lib": "pmn",
+    "locale": "aoc",
+    "name": "pemon pe",
+    "region": 576,
+    "mepsId": null,
+    "home": "/aoc/wol/h/r576/lp-pmn"
+  },
+  {
+    "symbol": "XPA",
+    "lib": "xpa",
+    "locale": "pdc",
+    "name": "Pennsylvania Dutch (Deitsh)",
+    "region": 268,
+    "mepsId": null,
+    "home": "/pdc/wol/h/r268/lp-xpa"
+  },
+  {
+    "symbol": "PGW",
+    "lib": "pgw",
+    "locale": "wes-x-pgw",
+    "name": "Pidgin (West Africa)",
+    "region": 429,
+    "mepsId": null,
+    "home": "/wes-x-pgw/wol/h/r429/lp-pgw"
+  },
+  {
+    "symbol": "PCM",
+    "lib": "pcm",
+    "locale": "wes",
+    "name": "Pidgin for Cameroon",
+    "region": 188,
+    "mepsId": null,
+    "home": "/wes/wol/h/r188/lp-pcm"
+  },
+  {
+    "symbol": "PLG",
+    "lib": "plg",
+    "locale": "plg",
+    "name": "pilagá",
+    "region": 232,
+    "mepsId": null,
+    "home": "/plg/wol/h/r232/lp-plg"
+  },
+  {
+    "symbol": "PTJ",
+    "lib": "ptj",
+    "locale": "pjt",
+    "name": "Pitjantjatjara",
+    "region": 1089,
+    "mepsId": null,
+    "home": "/pjt/wol/h/r1089/lp-ptj"
+  },
+  {
+    "symbol": "LWX",
+    "lib": "lwx",
+    "locale": "pdt",
+    "name": "Plautdietsch",
+    "region": 179,
+    "mepsId": null,
+    "home": "/pdt/wol/h/r179/lp-lwx"
+  },
+  {
+    "symbol": "P",
+    "lib": "p",
+    "locale": "pl",
+    "name": "polski",
+    "region": 12,
+    "mepsId": 13,
+    "home": "/pl/wol/h/r12/lp-p"
+  },
+  {
+    "symbol": "PDF",
+    "lib": "pdf",
+    "locale": "pso",
+    "name": "polski język migowy",
+    "region": 385,
+    "mepsId": null,
+    "home": "/pso/wol/h/r385/lp-pdf"
+  },
+  {
+    "symbol": "PMR",
+    "lib": "pmr",
+    "locale": "nds",
+    "name": "Pomerisch",
+    "region": 510,
+    "mepsId": null,
+    "home": "/nds/wol/h/r510/lp-pmr"
+  },
+  {
+    "symbol": "PPU",
+    "lib": "ppu",
+    "locale": "poi",
+    "name": "popoluca de la Sierra",
+    "region": 1085,
+    "mepsId": null,
+    "home": "/poi/wol/h/r1085/lp-ppu"
+  },
+  {
+    "symbol": "JC",
+    "lib": "jc",
+    "locale": "jac-x-jc",
+    "name": "poptí",
+    "region": 470,
+    "mepsId": null,
+    "home": "/jac-x-jc/wol/h/r470/lp-jc"
+  },
+  {
+    "symbol": "PQM",
+    "lib": "pqm",
+    "locale": "poh",
+    "name": "poqomchi'",
+    "region": 1086,
+    "mepsId": null,
+    "home": "/poh/wol/h/r1086/lp-pqm"
+  },
+  {
+    "symbol": "TNG",
+    "lib": "tng",
+    "locale": "pt-AO",
+    "name": "Português (Angola)",
+    "region": 1342,
+    "mepsId": null,
+    "home": "/pt-AO/wol/h/r1342/lp-tng"
+  },
+  {
+    "symbol": "T",
+    "lib": "t",
+    "locale": "pt",
+    "name": "Português (Brasil)",
+    "region": 5,
+    "mepsId": 5,
+    "home": "/pt/wol/h/r5/lp-t"
+  },
+  {
+    "symbol": "TPO",
+    "lib": "tpo",
+    "locale": "pt-PT",
+    "name": "Português (Portugal)",
+    "region": 296,
+    "mepsId": null,
+    "home": "/pt-PT/wol/h/r296/lp-tpo"
+  },
+  {
+    "symbol": "PJR",
+    "lib": "pjr",
+    "locale": "pa-Latn",
+    "name": "Punjabi (Roman)",
+    "region": 1319,
+    "mepsId": null,
+    "home": "/pa-Latn/wol/h/r1319/lp-pjr"
+  },
+  {
+    "symbol": "PJS",
+    "lib": "pjs",
+    "locale": "pnb-Latn",
+    "name": "Punjabi (Shahmukhi) Roman",
+    "region": 1370,
+    "mepsId": null,
+    "home": "/pnb-Latn/wol/h/r1370/lp-pjs"
+  },
+  {
+    "symbol": "TRS",
+    "lib": "trs",
+    "locale": "tsz",
+    "name": "Purépecha",
+    "region": 213,
+    "mepsId": null,
+    "home": "/tsz/wol/h/r213/lp-trs"
+  },
+  {
+    "symbol": "QNJ",
+    "lib": "qnj",
+    "locale": "kjb",
+    "name": "q'anjob'al",
+    "region": 535,
+    "mepsId": null,
+    "home": "/kjb/wol/h/r535/lp-qnj"
+  },
+  {
+    "symbol": "QUN",
+    "lib": "qun",
+    "locale": "que",
+    "name": "Quechua (Ancash)",
+    "region": 80,
+    "mepsId": null,
+    "home": "/que/wol/h/r80/lp-qun"
+  },
+  {
+    "symbol": "QUA",
+    "lib": "qua",
+    "locale": "quy",
+    "name": "Quechua (Ayacucho)",
+    "region": 57,
+    "mepsId": null,
+    "home": "/quy/wol/h/r57/lp-qua"
+  },
+  {
+    "symbol": "QUB",
+    "lib": "qub",
+    "locale": "qu",
+    "name": "Quechua (Bolivia)",
+    "region": 53,
+    "mepsId": null,
+    "home": "/qu/wol/h/r53/lp-qub"
+  },
+  {
+    "symbol": "QU",
+    "lib": "qu",
+    "locale": "quz",
+    "name": "quechua (Cusco)",
+    "region": 62,
+    "mepsId": null,
+    "home": "/quz/wol/h/r62/lp-qu"
+  },
+  {
+    "symbol": "QUM",
+    "lib": "qum",
+    "locale": "quf",
+    "name": "quechua (lambayeque)",
+    "region": 1099,
+    "mepsId": null,
+    "home": "/quf/wol/h/r1099/lp-qum"
+  },
+  {
+    "symbol": "QUL",
+    "lib": "qul",
+    "locale": "qub",
+    "name": "Quechua de Huánuco (Huallaga)",
+    "region": 1098,
+    "mepsId": null,
+    "home": "/qub/wol/h/r1098/lp-qul"
+  },
+  {
+    "symbol": "QUH",
+    "lib": "quh",
+    "locale": "qvw",
+    "name": "quechua wanca",
+    "region": 1097,
+    "mepsId": null,
+    "home": "/qvw/wol/h/r1097/lp-quh"
+  },
+  {
+    "symbol": "QCC",
+    "lib": "qcc",
+    "locale": "qxr",
+    "name": "quichua (cañar)",
+    "region": 454,
+    "mepsId": null,
+    "home": "/qxr/wol/h/r454/lp-qcc"
+  },
+  {
+    "symbol": "QIB",
+    "lib": "qib",
+    "locale": "qu-x-qib",
+    "name": "quichua (chibuleo)",
+    "region": 456,
+    "mepsId": null,
+    "home": "/qu-x-qib/wol/h/r456/lp-qib"
+  },
+  {
+    "symbol": "QIC",
+    "lib": "qic",
+    "locale": "qug",
+    "name": "quichua (chimborazo)",
+    "region": 207,
+    "mepsId": null,
+    "home": "/qug/wol/h/r207/lp-qic"
+  },
+  {
+    "symbol": "QIX",
+    "lib": "qix",
+    "locale": "qug-x-qix",
+    "name": "quichua (cotopaxi)",
+    "region": 1095,
+    "mepsId": null,
+    "home": "/qug-x-qix/wol/h/r1095/lp-qix"
+  },
+  {
+    "symbol": "QII",
+    "lib": "qii",
+    "locale": "qvi",
+    "name": "quichua (imbabura)",
+    "region": 192,
+    "mepsId": null,
+    "home": "/qvi/wol/h/r192/lp-qii"
+  },
+  {
+    "symbol": "QIP",
+    "lib": "qip",
+    "locale": "qvz",
+    "name": "quichua (pastaza)",
+    "region": 458,
+    "mepsId": null,
+    "home": "/qvz/wol/h/r458/lp-qip"
+  },
+  {
+    "symbol": "QCS",
+    "lib": "qcs",
+    "locale": "qu-x-qxl",
+    "name": "quichua (salasaca)",
+    "region": 457,
+    "mepsId": null,
+    "home": "/qu-x-qxl/wol/h/r457/lp-qcs"
+  },
+  {
+    "symbol": "QIS",
+    "lib": "qis",
+    "locale": "qus",
+    "name": "quichua (Santiago del Estero)",
+    "region": 319,
+    "mepsId": null,
+    "home": "/qus/wol/h/r319/lp-qis"
+  },
+  {
+    "symbol": "QIT",
+    "lib": "qit",
+    "locale": "quw",
+    "name": "quichua (tena)",
+    "region": 491,
+    "mepsId": null,
+    "home": "/quw/wol/h/r491/lp-qit"
+  },
+  {
+    "symbol": "QC",
+    "lib": "qc",
+    "locale": "quc",
+    "name": "quiché",
+    "region": 156,
+    "mepsId": null,
+    "home": "/quc/wol/h/r156/lp-qc"
+  },
+  {
+    "symbol": "GK",
+    "lib": "gk",
+    "locale": "kek",
+    "name": "q’eqchi’",
+    "region": 157,
+    "mepsId": null,
+    "home": "/kek/wol/h/r157/lp-gk"
+  },
+  {
+    "symbol": "TRH",
+    "lib": "trh",
+    "locale": "tar",
+    "name": "ralámuli",
+    "region": 233,
+    "mepsId": null,
+    "home": "/tar/wol/h/r233/lp-trh"
+  },
+  {
+    "symbol": "RPN",
+    "lib": "rpn",
+    "locale": "rap",
+    "name": "rapa nui",
+    "region": 1121,
+    "mepsId": null,
+    "home": "/rap/wol/h/r1121/lp-rpn"
+  },
+  {
+    "symbol": "RM",
+    "lib": "rm",
+    "locale": "rmn-x-rm",
+    "name": "romane (Makedonija)",
+    "region": 375,
+    "mepsId": null,
+    "home": "/rmn-x-rm/wol/h/r375/lp-rm"
+  },
+  {
+    "symbol": "RME",
+    "lib": "rme",
+    "locale": "rmn-x-rme",
+    "name": "Romane (Srbija)",
+    "region": 1109,
+    "mepsId": null,
+    "home": "/rmn-x-rme/wol/h/r1109/lp-rme"
+  },
+  {
+    "symbol": "RMH",
+    "lib": "rmh",
+    "locale": "rmy-CL",
+    "name": "Romane Jorajane",
+    "region": 1111,
+    "mepsId": null,
+    "home": "/rmy-CL/wol/h/r1111/lp-rmh"
+  },
+  {
+    "symbol": "RMF",
+    "lib": "rmf",
+    "locale": "rmo-FR",
+    "name": "Romanes (Manouche)",
+    "region": 1338,
+    "mepsId": null,
+    "home": "/rmo-FR/wol/h/r1338/lp-rmf"
+  },
+  {
+    "symbol": "RMX",
+    "lib": "rmx",
+    "locale": "rmo",
+    "name": "Romanes (Sinti)",
+    "region": 329,
+    "mepsId": null,
+    "home": "/rmo/wol/h/r329/lp-rmx"
+  },
+  {
+    "symbol": "RMS",
+    "lib": "rms",
+    "locale": "rmc-sk",
+    "name": "romanes (vichodno Slovačiko)",
+    "region": 370,
+    "mepsId": null,
+    "home": "/rmc-sk/wol/h/r370/lp-rms"
+  },
+  {
+    "symbol": "RMA",
+    "lib": "rma",
+    "locale": "rmy-AR",
+    "name": "Romanes Kalderash",
+    "region": 331,
+    "mepsId": null,
+    "home": "/rmy-AR/wol/h/r331/lp-rma"
+  },
+  {
+    "symbol": "LVA",
+    "lib": "lva",
+    "locale": "rmy-x-lva",
+    "name": "romani (lovári, Ungriko Them)",
+    "region": 242,
+    "mepsId": null,
+    "home": "/rmy-x-lva/wol/h/r242/lp-lva"
+  },
+  {
+    "symbol": "RMT",
+    "lib": "rmt",
+    "locale": "rml",
+    "name": "romani (Polska Roma)",
+    "region": 1115,
+    "mepsId": null,
+    "home": "/rml/wol/h/r1115/lp-rmt"
+  },
+  {
+    "symbol": "RCK",
+    "lib": "rck",
+    "locale": "rmy-x-rck",
+    "name": "Romany (Meçkar)",
+    "region": 1297,
+    "mepsId": null,
+    "home": "/rmy-x-rck/wol/h/r1297/lp-rck"
+  },
+  {
+    "symbol": "RML",
+    "lib": "rml",
+    "locale": "rmy-AL",
+    "name": "rome (shqipëri)",
+    "region": 530,
+    "mepsId": null,
+    "home": "/rmy-AL/wol/h/r530/lp-rml"
+  },
+  {
+    "symbol": "RHS",
+    "lib": "rhs",
+    "locale": "rm-x-rhs",
+    "name": "romontsch (sursilvan)",
+    "region": 1105,
+    "mepsId": null,
+    "home": "/rm-x-rhs/wol/h/r1105/lp-rhs"
+  },
+  {
+    "symbol": "M",
+    "lib": "m",
+    "locale": "ro",
+    "name": "Română",
+    "region": 34,
+    "mepsId": null,
+    "home": "/ro/wol/h/r34/lp-m"
+  },
+  {
+    "symbol": "TII",
+    "lib": "tii",
+    "locale": "txq",
+    "name": "Rote Tii",
+    "region": 275,
+    "mepsId": null,
+    "home": "/txq/wol/h/r275/lp-tii"
+  },
+  {
+    "symbol": "RO",
+    "lib": "ro",
+    "locale": "rtm",
+    "name": "Rotuạm ta",
+    "region": 270,
+    "mepsId": null,
+    "home": "/rtm/wol/h/r270/lp-ro"
+  },
+  {
+    "symbol": "RV",
+    "lib": "rv",
+    "locale": "rug",
+    "name": "Roviana",
+    "region": 1122,
+    "mepsId": null,
+    "home": "/rug/wol/h/r1122/lp-rv"
+  },
+  {
+    "symbol": "RMR",
+    "lib": "rmr",
+    "locale": "rmy",
+    "name": "Rromani (România)",
+    "region": 493,
+    "mepsId": null,
+    "home": "/rmy/wol/h/r493/lp-rmr"
+  },
+  {
+    "symbol": "WG",
+    "lib": "wg",
+    "locale": "kwn",
+    "name": "Rukwangali",
+    "region": 150,
+    "mepsId": null,
+    "home": "/kwn/wol/h/r150/lp-wg"
+  },
+  {
+    "symbol": "RH",
+    "lib": "rh",
+    "locale": "rm-x-rh",
+    "name": "Rumantsch (Ladin)",
+    "region": 1103,
+    "mepsId": null,
+    "home": "/rm-x-rh/wol/h/r1103/lp-rh"
+  },
+  {
+    "symbol": "RNY",
+    "lib": "rny",
+    "locale": "diu",
+    "name": "Rumanyo",
+    "region": 474,
+    "mepsId": null,
+    "home": "/diu/wol/h/r474/lp-rny"
+  },
+  {
+    "symbol": "RNN",
+    "lib": "rnn",
+    "locale": "ro-x-rnn",
+    "name": "rumunski (vlaški)",
+    "region": 1120,
+    "mepsId": null,
+    "home": "/ro-x-rnn/wol/h/r1120/lp-rnn"
+  },
+  {
+    "symbol": "RNK",
+    "lib": "rnk",
+    "locale": "ro-x-rnk",
+    "name": "rumunski (vlaški, Bačka)",
+    "region": 1326,
+    "mepsId": null,
+    "home": "/ro-x-rnk/wol/h/r1326/lp-rnk"
+  },
+  {
+    "symbol": "RR",
+    "lib": "rr",
+    "locale": "nyn",
+    "name": "Runyankore",
+    "region": 123,
+    "mepsId": null,
+    "home": "/nyn/wol/h/r123/lp-rr"
+  },
+  {
+    "symbol": "RT",
+    "lib": "rt",
+    "locale": "ttj",
+    "name": "Rutoro",
+    "region": 524,
+    "mepsId": null,
+    "home": "/ttj/wol/h/r524/lp-rt"
+  },
+  {
+    "symbol": "SRM",
+    "lib": "srm",
+    "locale": "srm",
+    "name": "Saamakatöngö",
+    "region": 250,
+    "mepsId": null,
+    "home": "/srm/wol/h/r250/lp-srm"
+  },
+  {
+    "symbol": "HWU",
+    "lib": "hwu",
+    "locale": "hvn",
+    "name": "Sabu",
+    "region": 276,
+    "mepsId": null,
+    "home": "/hvn/wol/h/r276/lp-hwu"
+  },
+  {
+    "symbol": "SKL",
+    "lib": "skl",
+    "locale": "skg-x-skl",
+    "name": "Sakalava",
+    "region": 1148,
+    "mepsId": null,
+    "home": "/skg-x-skl/wol/h/r1148/lp-skl"
+  },
+  {
+    "symbol": "SAL",
+    "lib": "sal",
+    "locale": "loe",
+    "name": "Saluan",
+    "region": 1127,
+    "mepsId": null,
+    "home": "/loe/wol/h/r1127/lp-sal"
+  },
+  {
+    "symbol": "SMS",
+    "lib": "sms",
+    "locale": "sgn-WS",
+    "name": "Samoan Sign Language",
+    "region": 555,
+    "mepsId": null,
+    "home": "/sgn-WS/wol/h/r555/lp-sms"
+  },
+  {
+    "symbol": "SBR",
+    "lib": "sbr",
+    "locale": "saq",
+    "name": "Sampur",
+    "region": 1129,
+    "mepsId": null,
+    "home": "/saq/wol/h/r1129/lp-sbr"
+  },
+  {
+    "symbol": "CRE",
+    "lib": "cre",
+    "locale": "icr",
+    "name": "San Andrés Creole",
+    "region": 1358,
+    "mepsId": null,
+    "home": "/icr/wol/h/r1358/lp-cre"
+  },
+  {
+    "symbol": "SGR",
+    "lib": "sgr",
+    "locale": "sxn",
+    "name": "Sangir",
+    "region": 320,
+    "mepsId": null,
+    "home": "/sxn/wol/h/r320/lp-sgr"
+  },
+  {
+    "symbol": "SG",
+    "lib": "sg",
+    "locale": "sg",
+    "name": "Sango",
+    "region": 87,
+    "mepsId": null,
+    "home": "/sg/wol/h/r87/lp-sg"
+  },
+  {
+    "symbol": "SHD",
+    "lib": "shd",
+    "locale": "sat-Deva",
+    "name": "Santhali (Devanagari)",
+    "region": 1138,
+    "mepsId": null,
+    "home": "/sat-Deva/wol/h/r1138/lp-shd"
+  },
+  {
+    "symbol": "SHR",
+    "lib": "shr",
+    "locale": "sat",
+    "name": "Santhali (Roman)",
+    "region": 1140,
+    "mepsId": null,
+    "home": "/sat/wol/h/r1140/lp-shr"
+  },
+  {
+    "symbol": "STN",
+    "lib": "stn",
+    "locale": "cri",
+    "name": "Santome",
+    "region": 1160,
+    "mepsId": null,
+    "home": "/cri/wol/h/r1160/lp-stn"
+  },
+  {
+    "symbol": "SAR",
+    "lib": "sar",
+    "locale": "mwm",
+    "name": "Sar",
+    "region": 1128,
+    "mepsId": null,
+    "home": "/mwm/wol/h/r1128/lp-sar"
+  },
+  {
+    "symbol": "SRI",
+    "lib": "sri",
+    "locale": "hns",
+    "name": "Sarnami Hindoestani",
+    "region": 410,
+    "mepsId": null,
+    "home": "/hns/wol/h/r410/lp-sri"
+  },
+  {
+    "symbol": "STM",
+    "lib": "stm",
+    "locale": "mav",
+    "name": "Satere Mawe",
+    "region": 1159,
+    "mepsId": null,
+    "home": "/mav/wol/h/r1159/lp-stm"
+  },
+  {
+    "symbol": "MXT",
+    "lib": "mxt",
+    "locale": "meh",
+    "name": "saʼan savi",
+    "region": 1003,
+    "mepsId": null,
+    "home": "/meh/wol/h/r1003/lp-mxt"
+  },
+  {
+    "symbol": "MXC",
+    "lib": "mxc",
+    "locale": "mio",
+    "name": "saʼan xiñi saví",
+    "region": 996,
+    "mepsId": null,
+    "home": "/mio/wol/h/r996/lp-mxc"
+  },
+  {
+    "symbol": "XSW",
+    "lib": "xsw",
+    "locale": "gsw",
+    "name": "Schweizerdeutsch",
+    "region": 1244,
+    "mepsId": null,
+    "home": "/gsw/wol/h/r1244/lp-xsw"
+  },
+  {
+    "symbol": "ER",
+    "lib": "er",
+    "locale": "srr",
+    "name": "Seereer",
+    "region": 740,
+    "mepsId": null,
+    "home": "/srr/wol/h/r740/lp-er"
+  },
+  {
+    "symbol": "SHW",
+    "lib": "shw",
+    "locale": "sfw",
+    "name": "Sehwi",
+    "region": 556,
+    "mepsId": null,
+    "home": "/sfw/wol/h/r556/lp-shw"
+  },
+  {
+    "symbol": "SFC",
+    "lib": "sfc",
+    "locale": "sef",
+    "name": "Senarì",
+    "region": 483,
+    "mepsId": null,
+    "home": "/sef/wol/h/r483/lp-sfc"
+  },
+  {
+    "symbol": "SE",
+    "lib": "se",
+    "locale": "nso",
+    "name": "Sepedi",
+    "region": 165,
+    "mepsId": null,
+    "home": "/nso/wol/h/r165/lp-se"
+  },
+  {
+    "symbol": "SPL",
+    "lib": "spl",
+    "locale": "nso-x-spl",
+    "name": "Sepulana",
+    "region": 254,
+    "mepsId": null,
+    "home": "/nso-x-spl/wol/h/r254/lp-spl"
+  },
+  {
+    "symbol": "SU",
+    "lib": "su",
+    "locale": "st",
+    "name": "Sesotho (Lesotho)",
+    "region": 21,
+    "mepsId": null,
+    "home": "/st/wol/h/r21/lp-su"
+  },
+  {
+    "symbol": "SSA",
+    "lib": "ssa",
+    "locale": "st-ZA",
+    "name": "Sesotho (South Africa)",
+    "region": 374,
+    "mepsId": null,
+    "home": "/st-ZA/wol/h/r374/lp-ssa"
+  },
+  {
+    "symbol": "TN",
+    "lib": "tn",
+    "locale": "tn",
+    "name": "Setswana",
+    "region": 129,
+    "mepsId": null,
+    "home": "/tn/wol/h/r129/lp-tn"
+  },
+  {
+    "symbol": "SHA",
+    "lib": "sha",
+    "locale": "shn",
+    "name": "Shan",
+    "region": 1136,
+    "mepsId": null,
+    "home": "/shn/wol/h/r1136/lp-sha"
+  },
+  {
+    "symbol": "HWI",
+    "lib": "hwi",
+    "locale": "cbt",
+    "name": "shawi",
+    "region": 1335,
+    "mepsId": null,
+    "home": "/cbt/wol/h/r1335/lp-hwi"
+  },
+  {
+    "symbol": "CMG",
+    "lib": "cmg",
+    "locale": "zdj",
+    "name": "Shikomori (Ngazidja)",
+    "region": 279,
+    "mepsId": null,
+    "home": "/zdj/wol/h/r279/lp-cmg"
+  },
+  {
+    "symbol": "MKD",
+    "lib": "mkd",
+    "locale": "kde",
+    "name": "Shimakonde",
+    "region": 948,
+    "mepsId": null,
+    "home": "/kde/wol/h/r948/lp-mkd"
+  },
+  {
+    "symbol": "ORR",
+    "lib": "orr",
+    "locale": "swb-x-orr",
+    "name": "Shimaore (Alifuɓe)",
+    "region": 541,
+    "mepsId": null,
+    "home": "/swb-x-orr/wol/h/r541/lp-orr"
+  },
+  {
+    "symbol": "SHC",
+    "lib": "shc",
+    "locale": "shp",
+    "name": "shipibo-conibo",
+    "region": 1137,
+    "mepsId": null,
+    "home": "/shp/wol/h/r1137/lp-shc"
+  },
+  {
+    "symbol": "CA",
+    "lib": "ca",
+    "locale": "sn",
+    "name": "Shona",
+    "region": 45,
+    "mepsId": null,
+    "home": "/sn/wol/h/r45/lp-ca"
+  },
+  {
+    "symbol": "AL",
+    "lib": "al",
+    "locale": "sq",
+    "name": "shqip",
+    "region": 41,
+    "mepsId": null,
+    "home": "/sq/wol/h/r41/lp-al"
+  },
+  {
+    "symbol": "ALS",
+    "lib": "als",
+    "locale": "sqk",
+    "name": "shqipe e shenjave",
+    "region": 446,
+    "mepsId": null,
+    "home": "/sqk/wol/h/r446/lp-als"
+  },
+  {
+    "symbol": "SHU",
+    "lib": "shu",
+    "locale": "jiv",
+    "name": "shuar",
+    "region": 459,
+    "mepsId": null,
+    "home": "/jiv/wol/h/r459/lp-shu"
+  },
+  {
+    "symbol": "BMN",
+    "lib": "bmn",
+    "locale": "bax",
+    "name": "Shü Pamom",
+    "region": 645,
+    "mepsId": null,
+    "home": "/bax/wol/h/r645/lp-bmn"
+  },
+  {
+    "symbol": "DM",
+    "lib": "dm",
+    "locale": "sid",
+    "name": "Sidaamu Afoo",
+    "region": 105,
+    "mepsId": null,
+    "home": "/sid/wol/h/r105/lp-dm"
+  },
+  {
+    "symbol": "BLF",
+    "lib": "blf",
+    "locale": "bla",
+    "name": "Siksikáíitsi'powahsini",
+    "region": 323,
+    "mepsId": null,
+    "home": "/bla/wol/h/r323/lp-blf"
+  },
+  {
+    "symbol": "SK",
+    "lib": "sk",
+    "locale": "loz",
+    "name": "Silozi",
+    "region": 72,
+    "mepsId": null,
+    "home": "/loz/wol/h/r72/lp-sk"
+  },
+  {
+    "symbol": "NDV",
+    "lib": "ndv",
+    "locale": "sd-Deva",
+    "name": "Sindhi (Devanagari)",
+    "region": 1329,
+    "mepsId": null,
+    "home": "/sd-Deva/wol/h/r1329/lp-ndv"
+  },
+  {
+    "symbol": "SGL",
+    "lib": "sgl",
+    "locale": "sls",
+    "name": "Singapore Sign Language",
+    "region": 1318,
+    "mepsId": null,
+    "home": "/sls/wol/h/r1318/lp-sgl"
+  },
+  {
+    "symbol": "SWI",
+    "lib": "swi",
+    "locale": "ss",
+    "name": "SiSwati",
+    "region": 88,
+    "mepsId": null,
+    "home": "/ss/wol/h/r88/lp-swi"
+  },
+  {
+    "symbol": "SZJ",
+    "lib": "szj",
+    "locale": "sgn-SI",
+    "name": "slovenski znakovni jezik",
+    "region": 395,
+    "mepsId": null,
+    "home": "/sgn-SI/wol/h/r395/lp-szj"
+  },
+  {
+    "symbol": "VSL",
+    "lib": "vsl",
+    "locale": "svk",
+    "name": "slovenský posunkový jazyk",
+    "region": 389,
+    "mepsId": null,
+    "home": "/svk/wol/h/r389/lp-vsl"
+  },
+  {
+    "symbol": "V",
+    "lib": "v",
+    "locale": "sk",
+    "name": "slovenčina",
+    "region": 38,
+    "mepsId": null,
+    "home": "/sk/wol/h/r38/lp-v"
+  },
+  {
+    "symbol": "SV",
+    "lib": "sv",
+    "locale": "sl",
+    "name": "slovenščina",
+    "region": 64,
+    "mepsId": null,
+    "home": "/sl/wol/h/r64/lp-sv"
+  },
+  {
+    "symbol": "SP",
+    "lib": "sp",
+    "locale": "pis",
+    "name": "Solomon Islands Pidgin",
+    "region": 103,
+    "mepsId": null,
+    "home": "/pis/wol/h/r103/lp-sp"
+  },
+  {
+    "symbol": "SGO",
+    "lib": "sgo",
+    "locale": "nsx",
+    "name": "Songo",
+    "region": 1300,
+    "mepsId": null,
+    "home": "/nsx/wol/h/r1300/lp-sgo"
+  },
+  {
+    "symbol": "SO",
+    "lib": "so",
+    "locale": "so",
+    "name": "Soomaali",
+    "region": 182,
+    "mepsId": null,
+    "home": "/so/wol/h/r182/lp-so"
+  },
+  {
+    "symbol": "SUS",
+    "lib": "sus",
+    "locale": "sus",
+    "name": "Soso xui",
+    "region": 1161,
+    "mepsId": null,
+    "home": "/sus/wol/h/r1161/lp-sus"
+  },
+  {
+    "symbol": "SAS",
+    "lib": "sas",
+    "locale": "sfs",
+    "name": "South African Sign Language",
+    "region": 443,
+    "mepsId": null,
+    "home": "/sfs/wol/h/r443/lp-sas"
+  },
+  {
+    "symbol": "SR",
+    "lib": "sr",
+    "locale": "srn",
+    "name": "Sranantongo",
+    "region": 50,
+    "mepsId": null,
+    "home": "/srn/wol/h/r50/lp-sr"
+  },
+  {
+    "symbol": "SBO",
+    "lib": "sbo",
+    "locale": "sr-Latn",
+    "name": "srpski (latinica)",
+    "region": 353,
+    "mepsId": null,
+    "home": "/sr-Latn/wol/h/r353/lp-sbo"
+  },
+  {
+    "symbol": "SBS",
+    "lib": "sbs",
+    "locale": "sgn-RS",
+    "name": "srpski znakovni jezik",
+    "region": 475,
+    "mepsId": null,
+    "home": "/sgn-RS/wol/h/r475/lp-sbs"
+  },
+  {
+    "symbol": "SD",
+    "lib": "sd",
+    "locale": "su",
+    "name": "Sunda",
+    "region": 281,
+    "mepsId": null,
+    "home": "/su/wol/h/r281/lp-sd"
+  },
+  {
+    "symbol": "FID",
+    "lib": "fid",
+    "locale": "fse",
+    "name": "suomalainen viittomakieli",
+    "region": 366,
+    "mepsId": null,
+    "home": "/fse/wol/h/r366/lp-fid"
+  },
+  {
+    "symbol": "FI",
+    "lib": "fi",
+    "locale": "fi",
+    "name": "suomi",
+    "region": 16,
+    "mepsId": 10,
+    "home": "/fi/wol/h/r16/lp-fi"
+  },
+  {
+    "symbol": "SRG",
+    "lib": "srg",
+    "locale": "sgd",
+    "name": "Surigaonon",
+    "region": 1155,
+    "mepsId": null,
+    "home": "/sgd/wol/h/r1155/lp-srg"
+  },
+  {
+    "symbol": "SSU",
+    "lib": "ssu",
+    "locale": "sgn-SR",
+    "name": "Surinaamse Gebarentaal",
+    "region": 424,
+    "mepsId": null,
+    "home": "/sgn-SR/wol/h/r424/lp-ssu"
+  },
+  {
+    "symbol": "Z",
+    "lib": "z",
+    "locale": "sv",
+    "name": "Svenska",
+    "region": 14,
+    "mepsId": 8,
+    "home": "/sv/wol/h/r14/lp-z"
+  },
+  {
+    "symbol": "SSL",
+    "lib": "ssl",
+    "locale": "swl",
+    "name": "Svenskt teckenspråk",
+    "region": 440,
+    "mepsId": null,
+    "home": "/swl/wol/h/r440/lp-ssl"
+  },
+  {
+    "symbol": "SWK",
+    "lib": "swk",
+    "locale": "swc-x-swk",
+    "name": "Swahili (Katanga)",
+    "region": 1356,
+    "mepsId": null,
+    "home": "/swc-x-swk/wol/h/r1356/lp-swk"
+  },
+  {
+    "symbol": "SWS",
+    "lib": "sws",
+    "locale": "sgn-sz",
+    "name": "Swazi Sign Language",
+    "region": 1165,
+    "mepsId": null,
+    "home": "/sgn-sz/wol/h/r1165/lp-sws"
+  },
+  {
+    "symbol": "LP",
+    "lib": "lp",
+    "locale": "se",
+    "name": "sámegiella (davvi)",
+    "region": 291,
+    "mepsId": null,
+    "home": "/se/wol/h/r291/lp-lp"
+  },
+  {
+    "symbol": "MAP",
+    "lib": "map",
+    "locale": "mop",
+    "name": "T'an",
+    "region": 928,
+    "mepsId": null,
+    "home": "/mop/wol/h/r928/lp-map"
+  },
+  {
+    "symbol": "TBW",
+    "lib": "tbw",
+    "locale": "tap",
+    "name": "Taabwa",
+    "region": 1172,
+    "mepsId": null,
+    "home": "/tap/wol/h/r1172/lp-tbw"
+  },
+  {
+    "symbol": "TG",
+    "lib": "tg",
+    "locale": "tl",
+    "name": "Tagalog",
+    "region": 27,
+    "mepsId": 17,
+    "home": "/tl/wol/h/r27/lp-tg"
+  },
+  {
+    "symbol": "TH",
+    "lib": "th",
+    "locale": "ty",
+    "name": "Tahiti",
+    "region": 154,
+    "mepsId": null,
+    "home": "/ty/wol/h/r154/lp-th"
+  },
+  {
+    "symbol": "KE",
+    "lib": "ke",
+    "locale": "uar",
+    "name": "Tairuma",
+    "region": 828,
+    "mepsId": null,
+    "home": "/uar/wol/h/r828/lp-ke"
+  },
+  {
+    "symbol": "TAL",
+    "lib": "tal",
+    "locale": "vec",
+    "name": "Talian",
+    "region": 321,
+    "mepsId": null,
+    "home": "/vec/wol/h/r321/lp-tal"
+  },
+  {
+    "symbol": "TME",
+    "lib": "tme",
+    "locale": "taj",
+    "name": "Tamang (Eastern)",
+    "region": 1349,
+    "mepsId": null,
+    "home": "/taj/wol/h/r1349/lp-tme"
+  },
+  {
+    "symbol": "TLS",
+    "lib": "tls",
+    "locale": "ta-x-tls",
+    "name": "Tamil (Spoken)",
+    "region": 1331,
+    "mepsId": null,
+    "home": "/ta-x-tls/wol/h/r1331/lp-tls"
+  },
+  {
+    "symbol": "TND",
+    "lib": "tnd",
+    "locale": "tdx",
+    "name": "Tandroy",
+    "region": 194,
+    "mepsId": null,
+    "home": "/tdx/wol/h/r194/lp-tnd"
+  },
+  {
+    "symbol": "TNK",
+    "lib": "tnk",
+    "locale": "xmv",
+    "name": "Tankarana",
+    "region": 190,
+    "mepsId": null,
+    "home": "/xmv/wol/h/r190/lp-tnk"
+  },
+  {
+    "symbol": "KBY",
+    "lib": "kby",
+    "locale": "kab",
+    "name": "Taqbaylit",
+    "region": 228,
+    "mepsId": null,
+    "home": "/kab/wol/h/r228/lp-kby"
+  },
+  {
+    "symbol": "TRW",
+    "lib": "trw",
+    "locale": "tac",
+    "name": "tarahumara occidental",
+    "region": 1202,
+    "mepsId": null,
+    "home": "/tac/wol/h/r1202/lp-trw"
+  },
+  {
+    "symbol": "YG",
+    "lib": "yg",
+    "locale": "yer",
+    "name": "Tarok",
+    "region": 1249,
+    "mepsId": null,
+    "home": "/yer/wol/h/r1249/lp-yg"
+  },
+  {
+    "symbol": "TA",
+    "lib": "ta",
+    "locale": "tsg",
+    "name": "Tausug",
+    "region": 1169,
+    "mepsId": null,
+    "home": "/tsg/wol/h/r1169/lp-ta"
+  },
+  {
+    "symbol": "MA",
+    "lib": "ma",
+    "locale": "mi",
+    "name": "Te Reo Māori",
+    "region": 923,
+    "mepsId": null,
+    "home": "/mi/wol/h/r923/lp-ma"
+  },
+  {
+    "symbol": "TTM",
+    "lib": "ttm",
+    "locale": "mzc",
+    "name": "Tenin’ny Tanana Malagasy",
+    "region": 416,
+    "mepsId": null,
+    "home": "/mzc/wol/h/r416/lp-ttm"
+  },
+  {
+    "symbol": "TWD",
+    "lib": "twd",
+    "locale": "nan-x-twd",
+    "name": "Teochew (Indonesia)",
+    "region": 1210,
+    "mepsId": null,
+    "home": "/nan-x-twd/wol/h/r1210/lp-twd"
+  },
+  {
+    "symbol": "TER",
+    "lib": "ter",
+    "locale": "ter",
+    "name": "Terêna",
+    "region": 1179,
+    "mepsId": null,
+    "home": "/ter/wol/h/r1179/lp-ter"
+  },
+  {
+    "symbol": "TTB",
+    "lib": "ttb",
+    "locale": "tet",
+    "name": "Tetun Belu",
+    "region": 339,
+    "mepsId": null,
+    "home": "/tet/wol/h/r339/lp-ttb"
+  },
+  {
+    "symbol": "TTP",
+    "lib": "ttp",
+    "locale": "tdt",
+    "name": "Tetun Dili",
+    "region": 71,
+    "mepsId": null,
+    "home": "/tdt/wol/h/r71/lp-ttp"
+  },
+  {
+    "symbol": "TLR",
+    "lib": "tlr",
+    "locale": "ta-x-tlr",
+    "name": "Thamil (Rōman)",
+    "region": 1188,
+    "mepsId": null,
+    "home": "/ta-x-tlr/wol/h/r1188/lp-tlr"
+  },
+  {
+    "symbol": "MBK",
+    "lib": "mbk",
+    "locale": "mhw",
+    "name": "Thimbukushu",
+    "region": 478,
+    "mepsId": null,
+    "home": "/mhw/wol/h/r478/lp-mbk"
+  },
+  {
+    "symbol": "UE",
+    "lib": "ue",
+    "locale": "nus",
+    "name": "Thok Nath",
+    "region": 1217,
+    "mepsId": null,
+    "home": "/nus/wol/h/r1217/lp-ue"
+  },
+  {
+    "symbol": "TCN",
+    "lib": "tcn",
+    "locale": "tca",
+    "name": "Ticuna",
+    "region": 1174,
+    "mepsId": null,
+    "home": "/tca/wol/h/r1174/lp-tcn"
+  },
+  {
+    "symbol": "TYW",
+    "lib": "tyw",
+    "locale": "car-x-tyw",
+    "name": "Tilewuyu",
+    "region": 1215,
+    "mepsId": null,
+    "home": "/car-x-tyw/wol/h/r1215/lp-tyw"
+  },
+  {
+    "symbol": "UBM",
+    "lib": "ubm",
+    "locale": "aoz",
+    "name": "Timor Dawan",
+    "region": 286,
+    "mepsId": null,
+    "home": "/aoz/wol/h/r286/lp-ubm"
+  },
+  {
+    "symbol": "KUA",
+    "lib": "kua",
+    "locale": "ksd",
+    "name": "Tinata Tuna",
+    "region": 875,
+    "mepsId": null,
+    "home": "/ksd/wol/h/r875/lp-kua"
+  },
+  {
+    "symbol": "TV",
+    "lib": "tv",
+    "locale": "tiv",
+    "name": "Tiv",
+    "region": 216,
+    "mepsId": null,
+    "home": "/tiv/wol/h/r216/lp-tv"
+  },
+  {
+    "symbol": "OB",
+    "lib": "ob",
+    "locale": "mlu",
+    "name": "Toabaita",
+    "region": 1049,
+    "mepsId": null,
+    "home": "/mlu/wol/h/r1049/lp-ob"
+  },
+  {
+    "symbol": "TR",
+    "lib": "tr",
+    "locale": "tqo",
+    "name": "Toaripi",
+    "region": 1198,
+    "mepsId": null,
+    "home": "/tqo/wol/h/r1198/lp-tr"
+  },
+  {
+    "symbol": "TOB",
+    "lib": "tob",
+    "locale": "tob",
+    "name": "toba",
+    "region": 234,
+    "mepsId": null,
+    "home": "/tob/wol/h/r234/lp-tob"
+  },
+  {
+    "symbol": "TGS",
+    "lib": "tgs",
+    "locale": "sgn-TG",
+    "name": "Togo Sign Language",
+    "region": 1366,
+    "mepsId": null,
+    "home": "/sgn-TG/wol/h/r1366/lp-tgs"
+  },
+  {
+    "symbol": "TJO",
+    "lib": "tjo",
+    "locale": "toj",
+    "name": "tojol-abʼal",
+    "region": 209,
+    "mepsId": null,
+    "home": "/toj/wol/h/r209/lp-tjo"
+  },
+  {
+    "symbol": "MP",
+    "lib": "mp",
+    "locale": "tpi",
+    "name": "Tok Pisin",
+    "region": 75,
+    "mepsId": null,
+    "home": "/tpi/wol/h/r75/lp-mp"
+  },
+  {
+    "symbol": "TOR",
+    "lib": "tor",
+    "locale": "sda",
+    "name": "Toraja",
+    "region": 285,
+    "mepsId": null,
+    "home": "/sda/wol/h/r285/lp-tor"
+  },
+  {
+    "symbol": "TSC",
+    "lib": "tsc",
+    "locale": "tcs",
+    "name": "Tores Streit Kriol",
+    "region": 369,
+    "mepsId": null,
+    "home": "/tcs/wol/h/r369/lp-tsc"
+  },
+  {
+    "symbol": "TOT",
+    "lib": "tot",
+    "locale": "top",
+    "name": "totonaco",
+    "region": 90,
+    "mepsId": null,
+    "home": "/top/wol/h/r90/lp-tot"
+  },
+  {
+    "symbol": "TPR",
+    "lib": "tpr",
+    "locale": "tui",
+    "name": "Toupouri",
+    "region": 227,
+    "mepsId": null,
+    "home": "/tui/wol/h/r227/lp-tpr"
+  },
+  {
+    "symbol": "TTS",
+    "lib": "tts",
+    "locale": "lst",
+    "name": "Trinidad and Tobago Sign Language",
+    "region": 1336,
+    "mepsId": null,
+    "home": "/lst/wol/h/r1336/lp-tts"
+  },
+  {
+    "symbol": "TZE",
+    "lib": "tze",
+    "locale": "tzh",
+    "name": "tseltal",
+    "region": 189,
+    "mepsId": null,
+    "home": "/tzh/wol/h/r189/lp-tze"
+  },
+  {
+    "symbol": "SH",
+    "lib": "sh",
+    "locale": "lua",
+    "name": "Tshiluba",
+    "region": 477,
+    "mepsId": null,
+    "home": "/lua/wol/h/r477/lp-sh"
+  },
+  {
+    "symbol": "TMH",
+    "lib": "tmh",
+    "locale": "xmw",
+    "name": "Tsimihety",
+    "region": 1368,
+    "mepsId": null,
+    "home": "/xmw/wol/h/r1368/lp-tmh"
+  },
+  {
+    "symbol": "TZO",
+    "lib": "tzo",
+    "locale": "tzo",
+    "name": "tsotsil",
+    "region": 91,
+    "mepsId": null,
+    "home": "/tzo/wol/h/r91/lp-tzo"
+  },
+  {
+    "symbol": "VL",
+    "lib": "vl",
+    "locale": "tvl",
+    "name": "Tuvalu",
+    "region": 153,
+    "mepsId": null,
+    "home": "/tvl/wol/h/r153/lp-vl"
+  },
+  {
+    "symbol": "MXO",
+    "lib": "mxo",
+    "locale": "jmx",
+    "name": "Tu̱ʼun ndaʼví",
+    "region": 237,
+    "mepsId": null,
+    "home": "/jmx/wol/h/r237/lp-mxo"
+  },
+  {
+    "symbol": "MXG",
+    "lib": "mxg",
+    "locale": "mxv",
+    "name": "tu’un sâví",
+    "region": 349,
+    "mepsId": null,
+    "home": "/mxv/wol/h/r349/lp-mxg"
+  },
+  {
+    "symbol": "TW",
+    "lib": "tw",
+    "locale": "tw",
+    "name": "Twi",
+    "region": 33,
+    "mepsId": null,
+    "home": "/tw/wol/h/r33/lp-tw"
+  },
+  {
+    "symbol": "TWS",
+    "lib": "tws",
+    "locale": "tw-x-tws",
+    "name": "Twi (Asante)",
+    "region": 317,
+    "mepsId": null,
+    "home": "/tw-x-tws/wol/h/r317/lp-tws"
+  },
+  {
+    "symbol": "CPI",
+    "lib": "cpi",
+    "locale": "cce",
+    "name": "Txitxopi",
+    "region": 324,
+    "mepsId": null,
+    "home": "/cce/wol/h/r324/lp-cpi"
+  },
+  {
+    "symbol": "TZU",
+    "lib": "tzu",
+    "locale": "tzj",
+    "name": "tzʼutujil",
+    "region": 550,
+    "mepsId": null,
+    "home": "/tzj/wol/h/r550/lp-tzu"
+  },
+  {
+    "symbol": "HST",
+    "lib": "hst",
+    "locale": "hus",
+    "name": "tének",
+    "region": 222,
+    "mepsId": null,
+    "home": "/hus/wol/h/r222/lp-hst"
+  },
+  {
+    "symbol": "HSV",
+    "lib": "hsv",
+    "locale": "hus-x-hsv",
+    "name": "tének de Veracruz",
+    "region": 788,
+    "mepsId": null,
+    "home": "/hus-x-hsv/wol/h/r788/lp-hsv"
+  },
+  {
+    "symbol": "TKL",
+    "lib": "tkl",
+    "locale": "tsm",
+    "name": "Türk İşaret Dili",
+    "region": 488,
+    "mepsId": null,
+    "home": "/tsm/wol/h/r488/lp-tkl"
+  },
+  {
+    "symbol": "TMR",
+    "lib": "tmr",
+    "locale": "tk",
+    "name": "türkmen",
+    "region": 236,
+    "mepsId": null,
+    "home": "/tk/wol/h/r236/lp-tmr"
+  },
+  {
+    "symbol": "TK",
+    "lib": "tk",
+    "locale": "tr",
+    "name": "Türkçe",
+    "region": 22,
+    "mepsId": null,
+    "home": "/tr/wol/h/r22/lp-tk"
+  },
+  {
+    "symbol": "USL",
+    "lib": "usl",
+    "locale": "ugn",
+    "name": "Ugandan Sign Language",
+    "region": 490,
+    "mepsId": null,
+    "home": "/ugn/wol/h/r490/lp-usl"
+  },
+  {
+    "symbol": "UB",
+    "lib": "ub",
+    "locale": "umb",
+    "name": "Umbundu",
+    "region": 92,
+    "mepsId": null,
+    "home": "/umb/wol/h/r92/lp-ub"
+  },
+  {
+    "symbol": "UR",
+    "lib": "ur",
+    "locale": "urh",
+    "name": "Urhobo",
+    "region": 295,
+    "mepsId": null,
+    "home": "/urh/wol/h/r295/lp-ur"
+  },
+  {
+    "symbol": "URP",
+    "lib": "urp",
+    "locale": "upv",
+    "name": "Uripiv",
+    "region": 1221,
+    "mepsId": null,
+    "home": "/upv/wol/h/r1221/lp-urp"
+  },
+  {
+    "symbol": "RWS",
+    "lib": "rws",
+    "locale": "sgn-RW",
+    "name": "Ururimi rw'amarenga yo mu Rwanda",
+    "region": 1126,
+    "mepsId": null,
+    "home": "/sgn-RW/wol/h/r1126/lp-rws"
+  },
+  {
+    "symbol": "DR",
+    "lib": "dr",
+    "locale": "rnd",
+    "name": "Uruund",
+    "region": 521,
+    "mepsId": null,
+    "home": "/rnd/wol/h/r521/lp-dr"
+  },
+  {
+    "symbol": "FN",
+    "lib": "fn",
+    "locale": "fj",
+    "name": "vakaViti",
+    "region": 169,
+    "mepsId": null,
+    "home": "/fj/wol/h/r169/lp-fn"
+  },
+  {
+    "symbol": "VLC",
+    "lib": "vlc",
+    "locale": "ca-x-vlc",
+    "name": "valencià",
+    "region": 226,
+    "mepsId": null,
+    "home": "/ca-x-vlc/wol/h/r226/lp-vlc"
+  },
+  {
+    "symbol": "WAM",
+    "lib": "wam",
+    "locale": "prk",
+    "name": "Vax",
+    "region": 1227,
+    "mepsId": null,
+    "home": "/prk/wol/h/r1227/lp-wam"
+  },
+  {
+    "symbol": "VZ",
+    "lib": "vz",
+    "locale": "skg-x-vz",
+    "name": "Vezo",
+    "region": 205,
+    "mepsId": null,
+    "home": "/skg-x-vz/wol/h/r205/lp-vz"
+  },
+  {
+    "symbol": "VT",
+    "lib": "vt",
+    "locale": "vi",
+    "name": "Việt",
+    "region": 47,
+    "mepsId": null,
+    "home": "/vi/wol/h/r47/lp-vt"
+  },
+  {
+    "symbol": "SLV",
+    "lib": "slv",
+    "locale": "hab",
+    "name": "Việt Nam (Ngôn ngữ ký hiệu)",
+    "region": 582,
+    "mepsId": null,
+    "home": "/hab/wol/h/r582/lp-slv"
+  },
+  {
+    "symbol": "VGT",
+    "lib": "vgt",
+    "locale": "vgt",
+    "name": "Vlaamse Gebarentaal",
+    "region": 485,
+    "mepsId": null,
+    "home": "/vgt/wol/h/r485/lp-vgt"
+  },
+  {
+    "symbol": "HU",
+    "lib": "hu",
+    "locale": "hul",
+    "name": "Vula’a",
+    "region": 790,
+    "mepsId": null,
+    "home": "/hul/wol/h/r790/lp-hu"
+  },
+  {
+    "symbol": "VRU",
+    "lib": "vru",
+    "locale": "vro",
+    "name": "võro",
+    "region": 1226,
+    "mepsId": null,
+    "home": "/vro/wol/h/r1226/lp-vru"
+  },
+  {
+    "symbol": "YP",
+    "lib": "yp",
+    "locale": "yap",
+    "name": "Waab",
+    "region": 316,
+    "mepsId": null,
+    "home": "/yap/wol/h/r316/lp-yp"
+  },
+  {
+    "symbol": "WMM",
+    "lib": "wmm",
+    "locale": "en",
+    "name": "Waama",
+    "region": 1235,
+    "mepsId": null,
+    "home": "/en/wol/h/r1235/lp-wmm"
+  },
+  {
+    "symbol": "WPH",
+    "lib": "wph",
+    "locale": "wap",
+    "name": "Wapichana",
+    "region": 1241,
+    "mepsId": null,
+    "home": "/wap/wol/h/r1241/lp-wph"
+  },
+  {
+    "symbol": "WRO",
+    "lib": "wro",
+    "locale": "wba",
+    "name": "warao",
+    "region": 562,
+    "mepsId": null,
+    "home": "/wba/wol/h/r562/lp-wro"
+  },
+  {
+    "symbol": "SA",
+    "lib": "sa",
+    "locale": "war",
+    "name": "Waray-Waray",
+    "region": 110,
+    "mepsId": null,
+    "home": "/war/wol/h/r110/lp-sa"
+  },
+  {
+    "symbol": "AO",
+    "lib": "ao",
+    "locale": "bci",
+    "name": "Wawle",
+    "region": 120,
+    "mepsId": null,
+    "home": "/bci/wol/h/r120/lp-ao"
+  },
+  {
+    "symbol": "WY",
+    "lib": "wy",
+    "locale": "guc",
+    "name": "Wayuunaiki",
+    "region": 147,
+    "mepsId": null,
+    "home": "/guc/wol/h/r147/lp-wy"
+  },
+  {
+    "symbol": "WJW",
+    "lib": "wjw",
+    "locale": "wew",
+    "name": "Wejewa (Sumba Barat)",
+    "region": 274,
+    "mepsId": null,
+    "home": "/wew/wol/h/r274/lp-wjw"
+  },
+  {
+    "symbol": "WCH",
+    "lib": "wch",
+    "locale": "mzh",
+    "name": "wichí",
+    "region": 186,
+    "mepsId": null,
+    "home": "/mzh/wol/h/r186/lp-wch"
+  },
+  {
+    "symbol": "MLY",
+    "lib": "mly",
+    "locale": "mbp",
+    "name": "wiwa dumuna",
+    "region": 1351,
+    "mepsId": null,
+    "home": "/mbp/wol/h/r1351/lp-mly"
+  },
+  {
+    "symbol": "HCH",
+    "lib": "hch",
+    "locale": "hch",
+    "name": "wixárika",
+    "region": 504,
+    "mepsId": null,
+    "home": "/hch/wol/h/r504/lp-hch"
+  },
+  {
+    "symbol": "WL",
+    "lib": "wl",
+    "locale": "wal",
+    "name": "Wolayttattuwa",
+    "region": 117,
+    "mepsId": null,
+    "home": "/wal/wol/h/r117/lp-wl"
+  },
+  {
+    "symbol": "WO",
+    "lib": "wo",
+    "locale": "wo",
+    "name": "Wolof",
+    "region": 1240,
+    "mepsId": null,
+    "home": "/wo/wol/h/r1240/lp-wo"
+  },
+  {
+    "symbol": "GUR",
+    "lib": "gur",
+    "locale": "gxx",
+    "name": "wɛ",
+    "region": 199,
+    "mepsId": null,
+    "home": "/gxx/wol/h/r199/lp-gur"
+  },
+  {
+    "symbol": "CGM",
+    "lib": "cgm",
+    "locale": "tso-MZ",
+    "name": "xiChangana (Moçambique)",
+    "region": 534,
+    "mepsId": null,
+    "home": "/tso-MZ/wol/h/r534/lp-cgm"
+  },
+  {
+    "symbol": "CGA",
+    "lib": "cga",
+    "locale": "tso-ZW",
+    "name": "Xichangana (Zimbabwe)",
+    "region": 667,
+    "mepsId": null,
+    "home": "/tso-ZW/wol/h/r667/lp-cga"
+  },
+  {
+    "symbol": "RN",
+    "lib": "rn",
+    "locale": "rng",
+    "name": "Xironga",
+    "region": 1117,
+    "mepsId": null,
+    "home": "/rng/wol/h/r1117/lp-rn"
+  },
+  {
+    "symbol": "TS",
+    "lib": "ts",
+    "locale": "ts",
+    "name": "Xitsonga",
+    "region": 84,
+    "mepsId": null,
+    "home": "/ts/wol/h/r84/lp-ts"
+  },
+  {
+    "symbol": "YKM",
+    "lib": "ykm",
+    "locale": "yky",
+    "name": "Yakoma",
+    "region": 1359,
+    "mepsId": null,
+    "home": "/yky/wol/h/r1359/lp-ykm"
+  },
+  {
+    "symbol": "YCB",
+    "lib": "ycb",
+    "locale": "daf",
+    "name": "Yaoba",
+    "region": 502,
+    "mepsId": null,
+    "home": "/daf/wol/h/r502/lp-ycb"
+  },
+  {
+    "symbol": "CLT",
+    "lib": "clt",
+    "locale": "chf",
+    "name": "yokotʼan",
+    "region": 330,
+    "mepsId": null,
+    "home": "/chf/wol/h/r330/lp-clt"
+  },
+  {
+    "symbol": "YMB",
+    "lib": "ymb",
+    "locale": "yom-x-ymb",
+    "name": "Yombe",
+    "region": 1252,
+    "mepsId": null,
+    "home": "/yom-x-ymb/wol/h/r1252/lp-ymb"
+  },
+  {
+    "symbol": "MYO",
+    "lib": "myo",
+    "locale": "mfy",
+    "name": "yoremnok'ki",
+    "region": 509,
+    "mepsId": null,
+    "home": "/mfy/wol/h/r509/lp-myo"
+  },
+  {
+    "symbol": "YR",
+    "lib": "yr",
+    "locale": "yo",
+    "name": "Yorùbá",
+    "region": 36,
+    "mepsId": null,
+    "home": "/yo/wol/h/r36/lp-yr"
+  },
+  {
+    "symbol": "YKP",
+    "lib": "ykp",
+    "locale": "yup",
+    "name": "yukpa",
+    "region": 545,
+    "mepsId": null,
+    "home": "/yup/wol/h/r545/lp-ykp"
+  },
+  {
+    "symbol": "ZAS",
+    "lib": "zas",
+    "locale": "zsl",
+    "name": "Zambian Sign Language",
+    "region": 400,
+    "mepsId": null,
+    "home": "/zsl/wol/h/r400/lp-zas"
+  },
+  {
+    "symbol": "ZN",
+    "lib": "zn",
+    "locale": "zne",
+    "name": "Zande",
+    "region": 573,
+    "mepsId": null,
+    "home": "/zne/wol/h/r573/lp-zn"
+  },
+  {
+    "symbol": "ZPS",
+    "lib": "zps",
+    "locale": "zpr",
+    "name": "Zapotec (Santiago Xanica)",
+    "region": 1263,
+    "mepsId": null,
+    "home": "/zpr/wol/h/r1263/lp-zps"
+  },
+  {
+    "symbol": "ZPT",
+    "lib": "zpt",
+    "locale": "zpf",
+    "name": "zapoteco de Quiatoni",
+    "region": 532,
+    "mepsId": null,
+    "home": "/zpf/wol/h/r532/lp-zpt"
+  },
+  {
+    "symbol": "ZR",
+    "lib": "zr",
+    "locale": "dje",
+    "name": "Zarma",
+    "region": 1266,
+    "mepsId": null,
+    "home": "/dje/wol/h/r1266/lp-zr"
+  },
+  {
+    "symbol": "ZZN",
+    "lib": "zzn",
+    "locale": "kiu",
+    "name": "Zazaca (Kuzey)",
+    "region": 1267,
+    "mepsId": null,
+    "home": "/kiu/wol/h/r1267/lp-zzn"
+  },
+  {
+    "symbol": "ZSL",
+    "lib": "zsl",
+    "locale": "zib",
+    "name": "Zimbabwe Sign Language",
+    "region": 403,
+    "mepsId": null,
+    "home": "/zib/wol/h/r403/lp-zsl"
+  },
+  {
+    "symbol": "MAZ",
+    "lib": "maz",
+    "locale": "mau",
+    "name": "énná",
+    "region": 96,
+    "mepsId": null,
+    "home": "/mau/wol/h/r96/lp-maz"
+  },
+  {
+    "symbol": "IC",
+    "lib": "ic",
+    "locale": "is",
+    "name": "íslenska",
+    "region": 89,
+    "mepsId": null,
+    "home": "/is/wol/h/r89/lp-ic"
+  },
+  {
+    "symbol": "OTM",
+    "lib": "otm",
+    "locale": "ote",
+    "name": "Ñañu",
+    "region": 230,
+    "mepsId": null,
+    "home": "/ote/wol/h/r230/lp-otm"
+  },
+  {
+    "symbol": "AMG",
+    "lib": "amg",
+    "locale": "amu",
+    "name": "ñoomndaa",
+    "region": 469,
+    "mepsId": null,
+    "home": "/amu/wol/h/r469/lp-amg"
+  },
+  {
+    "symbol": "OTE",
+    "lib": "ote",
+    "locale": "otm",
+    "name": "ñuhü",
+    "region": 1065,
+    "mepsId": null,
+    "home": "/otm/wol/h/r1065/lp-ote"
+  },
+  {
+    "symbol": "MXN",
+    "lib": "mxn",
+    "locale": "xtd",
+    "name": "ñutnuu",
+    "region": 1001,
+    "mepsId": null,
+    "home": "/xtd/wol/h/r1001/lp-mxn"
+  },
+  {
+    "symbol": "OTS",
+    "lib": "ots",
+    "locale": "ots",
+    "name": "ñätho",
+    "region": 516,
+    "mepsId": null,
+    "home": "/ots/wol/h/r516/lp-ots"
+  },
+  {
+    "symbol": "OGS",
+    "lib": "ogs",
+    "locale": "asq",
+    "name": "Österreichische Gebärdensprache",
+    "region": 465,
+    "mepsId": null,
+    "home": "/asq/wol/h/r465/lp-ogs"
+  },
+  {
+    "symbol": "CSE",
+    "lib": "cse",
+    "locale": "cse",
+    "name": "český znakový jazyk",
+    "region": 401,
+    "mepsId": null,
+    "home": "/cse/wol/h/r401/lp-cse"
+  },
+  {
+    "symbol": "B",
+    "lib": "b",
+    "locale": "cs",
+    "name": "čeština",
+    "region": 29,
+    "mepsId": 16,
+    "home": "/cs/wol/h/r29/lp-b"
+  },
+  {
+    "symbol": "NA",
+    "lib": "na",
+    "locale": "naq-x-na",
+    "name": "ǀApakhoen gowab",
+    "region": 436,
+    "mepsId": null,
+    "home": "/naq-x-na/wol/h/r436/lp-na"
+  },
+  {
+    "symbol": "BA",
+    "lib": "ba",
+    "locale": "bsq",
+    "name": "Ɓǎsɔ́ɔ̀ (Ɖàbíɖà)",
+    "region": 581,
+    "mepsId": null,
+    "home": "/bsq/wol/h/r581/lp-ba"
+  },
+  {
+    "symbol": "OT",
+    "lib": "ot",
+    "locale": "tll",
+    "name": "Ɔtɛtɛla",
+    "region": 340,
+    "mepsId": null,
+    "home": "/tll/wol/h/r340/lp-ot"
+  },
+  {
+    "symbol": "HW",
+    "lib": "hw",
+    "locale": "haw",
+    "name": "ʻŌlelo Hawaiʻi",
+    "region": 580,
+    "mepsId": null,
+    "home": "/haw/wol/h/r580/lp-hw"
+  },
+  {
+    "symbol": "ET",
+    "lib": "et",
+    "locale": "btg",
+    "name": "ˈBhɛtɩgbʋʋ",
+    "region": 202,
+    "mepsId": null,
+    "home": "/btg/wol/h/r202/lp-et"
+  },
+  {
+    "symbol": "G",
+    "lib": "g",
+    "locale": "el",
+    "name": "Ελληνική",
+    "region": 11,
+    "mepsId": 12,
+    "home": "/el/wol/h/r11/lp-g"
+  },
+  {
+    "symbol": "GSL",
+    "lib": "gsl",
+    "locale": "gss",
+    "name": "Ελληνική Νοηματική Γλώσσα",
+    "region": 378,
+    "mepsId": null,
+    "home": "/gss/wol/h/r378/lp-gsl"
+  },
+  {
+    "symbol": "RMN",
+    "lib": "rmn",
+    "locale": "rmn-x-rmn",
+    "name": "Ρομανί (Βόρεια Ελλάδα)",
+    "region": 225,
+    "mepsId": null,
+    "home": "/rmn-x-rmn/wol/h/r225/lp-rmn"
+  },
+  {
+    "symbol": "RMG",
+    "lib": "rmg",
+    "locale": "rmn-x-rmg",
+    "name": "Ρομανί (Νότια Ελλάδα)",
+    "region": 224,
+    "mepsId": null,
+    "home": "/rmn-x-rmg/wol/h/r224/lp-rmg"
+  },
+  {
+    "symbol": "AD",
+    "lib": "ad",
+    "locale": "ady",
+    "name": "адыгабзэ",
+    "region": 536,
+    "mepsId": null,
+    "home": "/ady/wol/h/r536/lp-ad"
+  },
+  {
+    "symbol": "KBR",
+    "lib": "kbr",
+    "locale": "kbd",
+    "name": "адыгэбзэ",
+    "region": 825,
+    "mepsId": null,
+    "home": "/kbd/wol/h/r825/lp-kbr"
+  },
+  {
+    "symbol": "ALT",
+    "lib": "alt",
+    "locale": "alt",
+    "name": "алтай",
+    "region": 468,
+    "mepsId": null,
+    "home": "/alt/wol/h/r468/lp-alt"
+  },
+  {
+    "symbol": "ABK",
+    "lib": "abk",
+    "locale": "ab",
+    "name": "аԥсуа",
+    "region": 358,
+    "mepsId": null,
+    "home": "/ab/wol/h/r358/lp-abk"
+  },
+  {
+    "symbol": "BAK",
+    "lib": "bak",
+    "locale": "ba",
+    "name": "башҡорт",
+    "region": 365,
+    "mepsId": null,
+    "home": "/ba/wol/h/r365/lp-bak"
+  },
+  {
+    "symbol": "BEL",
+    "lib": "bel",
+    "locale": "be",
+    "name": "беларуская",
+    "region": 635,
+    "mepsId": null,
+    "home": "/be/wol/h/r635/lp-bel"
+  },
+  {
+    "symbol": "BY",
+    "lib": "by",
+    "locale": "bxr",
+    "name": "буряад",
+    "region": 551,
+    "mepsId": null,
+    "home": "/bxr/wol/h/r551/lp-by"
+  },
+  {
+    "symbol": "BL",
+    "lib": "bl",
+    "locale": "bg",
+    "name": "български",
+    "region": 46,
+    "mepsId": null,
+    "home": "/bg/wol/h/r46/lp-bl"
+  },
+  {
+    "symbol": "BLS",
+    "lib": "bls",
+    "locale": "bqn",
+    "name": "български жестов език",
+    "region": 564,
+    "mepsId": null,
+    "home": "/bqn/wol/h/r564/lp-bls"
+  },
+  {
+    "symbol": "GZ",
+    "lib": "gz",
+    "locale": "gag-x-gz",
+    "name": "гaгaуз",
+    "region": 779,
+    "mepsId": null,
+    "home": "/gag-x-gz/wol/h/r779/lp-gz"
+  },
+  {
+    "symbol": "DRG",
+    "lib": "drg",
+    "locale": "dar",
+    "name": "дарган",
+    "region": 719,
+    "mepsId": null,
+    "home": "/dar/wol/h/r719/lp-drg"
+  },
+  {
+    "symbol": "DGR",
+    "lib": "dgr",
+    "locale": "os-x-dgr",
+    "name": "дигорон",
+    "region": 344,
+    "mepsId": null,
+    "home": "/os-x-dgr/wol/h/r344/lp-dgr"
+  },
+  {
+    "symbol": "RSC",
+    "lib": "rsc",
+    "locale": "rue",
+    "name": "Закарпатська русинська",
+    "region": 1299,
+    "mepsId": null,
+    "home": "/rue/wol/h/r1299/lp-rsc"
+  },
+  {
+    "symbol": "OSS",
+    "lib": "oss",
+    "locale": "os",
+    "name": "ирон",
+    "region": 97,
+    "mepsId": null,
+    "home": "/os/wol/h/r97/lp-oss"
+  },
+  {
+    "symbol": "KRY",
+    "lib": "kry",
+    "locale": "tt-x-kry",
+    "name": "керәшен татар",
+    "region": 871,
+    "mepsId": null,
+    "home": "/tt-x-kry/wol/h/r871/lp-kry"
+  },
+  {
+    "symbol": "KM",
+    "lib": "km",
+    "locale": "kpv",
+    "name": "коми",
+    "region": 848,
+    "mepsId": null,
+    "home": "/kpv/wol/h/r848/lp-km"
+  },
+  {
+    "symbol": "KMP",
+    "lib": "kmp",
+    "locale": "koi",
+    "name": "коми-пермяцкӧй",
+    "region": 852,
+    "mepsId": null,
+    "home": "/koi/wol/h/r852/lp-kmp"
+  },
+  {
+    "symbol": "BAL",
+    "lib": "bal",
+    "locale": "krc",
+    "name": "къарачай-малкъар",
+    "region": 569,
+    "mepsId": null,
+    "home": "/krc/wol/h/r569/lp-bal"
+  },
+  {
+    "symbol": "KMK",
+    "lib": "kmk",
+    "locale": "kum",
+    "name": "къумукъ",
+    "region": 850,
+    "mepsId": null,
+    "home": "/kum/wol/h/r850/lp-kmk"
+  },
+  {
+    "symbol": "CTC",
+    "lib": "ctc",
+    "locale": "crh-x-ctc",
+    "name": "къырымтатар (кирилл)",
+    "region": 552,
+    "mepsId": null,
+    "home": "/crh-x-ctc/wol/h/r552/lp-ctc"
+  },
+  {
+    "symbol": "KZ",
+    "lib": "kz",
+    "locale": "ky",
+    "name": "кыргыз",
+    "region": 51,
+    "mepsId": null,
+    "home": "/ky/wol/h/r51/lp-kz"
+  },
+  {
+    "symbol": "MRH",
+    "lib": "mrh",
+    "locale": "mrj",
+    "name": "кырык мары",
+    "region": 980,
+    "mepsId": null,
+    "home": "/mrj/wol/h/r980/lp-mrh"
+  },
+  {
+    "symbol": "RDC",
+    "lib": "rdc",
+    "locale": "kmr-Cyrl",
+    "name": "К′öрди Кöрманщи (Кирили)",
+    "region": 218,
+    "mepsId": null,
+    "home": "/kmr-Cyrl/wol/h/r218/lp-rdc"
+  },
+  {
+    "symbol": "LAK",
+    "lib": "lak",
+    "locale": "lbe",
+    "name": "лакку",
+    "region": 890,
+    "mepsId": null,
+    "home": "/lbe/wol/h/r890/lp-lak"
+  },
+  {
+    "symbol": "LZ",
+    "lib": "lz",
+    "locale": "lez",
+    "name": "лезги",
+    "region": 922,
+    "mepsId": null,
+    "home": "/lez/wol/h/r922/lp-lz"
+  },
+  {
+    "symbol": "AV",
+    "lib": "av",
+    "locale": "av",
+    "name": "магӀарул",
+    "region": 621,
+    "mepsId": null,
+    "home": "/av/wol/h/r621/lp-av"
+  },
+  {
+    "symbol": "MC",
+    "lib": "mc",
+    "locale": "mk",
+    "name": "македонски",
+    "region": 102,
+    "mepsId": null,
+    "home": "/mk/wol/h/r102/lp-mc"
+  },
+  {
+    "symbol": "MNI",
+    "lib": "mni",
+    "locale": "mns",
+    "name": "маньси",
+    "region": 966,
+    "mepsId": null,
+    "home": "/mns/wol/h/r966/lp-mni"
+  },
+  {
+    "symbol": "MAR",
+    "lib": "mar",
+    "locale": "mhr",
+    "name": "марий",
+    "region": 553,
+    "mepsId": null,
+    "home": "/mhr/wol/h/r553/lp-mar"
+  },
+  {
+    "symbol": "MOK",
+    "lib": "mok",
+    "locale": "mdf",
+    "name": "мокшень",
+    "region": 973,
+    "mepsId": null,
+    "home": "/mdf/wol/h/r973/lp-mok"
+  },
+  {
+    "symbol": "KHA",
+    "lib": "kha",
+    "locale": "mn",
+    "name": "монгол",
+    "region": 159,
+    "mepsId": null,
+    "home": "/mn/wol/h/r159/lp-kha"
+  },
+  {
+    "symbol": "MSR",
+    "lib": "msr",
+    "locale": "msr",
+    "name": "монгол дохионы хэл",
+    "region": 546,
+    "mepsId": null,
+    "home": "/msr/wol/h/r546/lp-msr"
+  },
+  {
+    "symbol": "NNT",
+    "lib": "nnt",
+    "locale": "yrk",
+    "name": "ненэцяʼ",
+    "region": 568,
+    "mepsId": null,
+    "home": "/yrk/wol/h/r568/lp-nnt"
+  },
+  {
+    "symbol": "NNF",
+    "lib": "nnf",
+    "locale": "yrk-x-nnf",
+    "name": "нешаӈ",
+    "region": 567,
+    "mepsId": null,
+    "home": "/yrk-x-nnf/wol/h/r567/lp-nnf"
+  },
+  {
+    "symbol": "HE",
+    "lib": "he",
+    "locale": "ce",
+    "name": "нохчийн",
+    "region": 570,
+    "mepsId": null,
+    "home": "/ce/wol/h/r570/lp-he"
+  },
+  {
+    "symbol": "RMC",
+    "lib": "rmc",
+    "locale": "rmn-cyrl",
+    "name": "романе (Македонија) кирилица",
+    "region": 318,
+    "mepsId": null,
+    "home": "/rmn-cyrl/wol/h/r318/lp-rmc"
+  },
+  {
+    "symbol": "RMV",
+    "lib": "rmv",
+    "locale": "rmy-x-rmv",
+    "name": "романи (влахитско, Россия)",
+    "region": 480,
+    "mepsId": null,
+    "home": "/rmy-x-rmv/wol/h/r480/lp-rmv"
+  },
+  {
+    "symbol": "RVC",
+    "lib": "rvc",
+    "locale": "rmy-x-rvc",
+    "name": "Романи (Молдова) кирилик",
+    "region": 1123,
+    "mepsId": null,
+    "home": "/rmy-x-rvc/wol/h/r1123/lp-rvc"
+  },
+  {
+    "symbol": "RMP",
+    "lib": "rmp",
+    "locale": "rml-RU",
+    "name": "романы (русска рома)",
+    "region": 563,
+    "mepsId": null,
+    "home": "/rml-RU/wol/h/r563/lp-rmp"
+  },
+  {
+    "symbol": "RMU",
+    "lib": "rmu",
+    "locale": "rmy-UA",
+    "name": "Романі (ромунгри, Україна)",
+    "region": 1116,
+    "mepsId": null,
+    "home": "/rmy-UA/wol/h/r1116/lp-rmu"
+  },
+  {
+    "symbol": "RMB",
+    "lib": "rmb",
+    "locale": "rmn-x-rmb",
+    "name": "ромски (западна България)",
+    "region": 1108,
+    "mepsId": null,
+    "home": "/rmn-x-rmb/wol/h/r1108/lp-rmb"
+  },
+  {
+    "symbol": "RMY",
+    "lib": "rmy",
+    "locale": "rmn-x-rmy",
+    "name": "ромски (централна България)",
+    "region": 1357,
+    "mepsId": null,
+    "home": "/rmn-x-rmy/wol/h/r1357/lp-rmy"
+  },
+  {
+    "symbol": "U",
+    "lib": "u",
+    "locale": "ru",
+    "name": "русский",
+    "region": 2,
+    "mepsId": 15,
+    "home": "/ru/wol/h/r2/lp-u"
+  },
+  {
+    "symbol": "RSL",
+    "lib": "rsl",
+    "locale": "rsl",
+    "name": "русский жестовый",
+    "region": 422,
+    "mepsId": null,
+    "home": "/rsl/wol/h/r422/lp-rsl"
+  },
+  {
+    "symbol": "YK",
+    "lib": "yk",
+    "locale": "sah",
+    "name": "сахалыы",
+    "region": 554,
+    "mepsId": null,
+    "home": "/sah/wol/h/r554/lp-yk"
+  },
+  {
+    "symbol": "SB",
+    "lib": "sb",
+    "locale": "sr-Cyrl",
+    "name": "српски (ћирилица)",
+    "region": 54,
+    "mepsId": null,
+    "home": "/sr-Cyrl/wol/h/r54/lp-sb"
+  },
+  {
+    "symbol": "TBN",
+    "lib": "tbn",
+    "locale": "tab",
+    "name": "табасаран",
+    "region": 1170,
+    "mepsId": null,
+    "home": "/tab/wol/h/r1170/lp-tbn"
+  },
+  {
+    "symbol": "TAT",
+    "lib": "tat",
+    "locale": "tt",
+    "name": "татар",
+    "region": 100,
+    "mepsId": null,
+    "home": "/tt/wol/h/r100/lp-tat"
+  },
+  {
+    "symbol": "TJ",
+    "lib": "tj",
+    "locale": "tg",
+    "name": "тоҷикӣ",
+    "region": 77,
+    "mepsId": null,
+    "home": "/tg/wol/h/r77/lp-tj"
+  },
+  {
+    "symbol": "TJU",
+    "lib": "tju",
+    "locale": "tg-UZ",
+    "name": "тоҷикӣ (Самарқанд)",
+    "region": 1182,
+    "mepsId": null,
+    "home": "/tg-UZ/wol/h/r1182/lp-tju"
+  },
+  {
+    "symbol": "VI",
+    "lib": "vi",
+    "locale": "tyv",
+    "name": "тыва",
+    "region": 529,
+    "mepsId": null,
+    "home": "/tyv/wol/h/r529/lp-vi"
+  },
+  {
+    "symbol": "TM",
+    "lib": "tm",
+    "locale": "tk-Cyrl",
+    "name": "түркмен (кириллица)",
+    "region": 131,
+    "mepsId": null,
+    "home": "/tk-Cyrl/wol/h/r131/lp-tm"
+  },
+  {
+    "symbol": "UM",
+    "lib": "um",
+    "locale": "udm",
+    "name": "удмурт",
+    "region": 462,
+    "mepsId": null,
+    "home": "/udm/wol/h/r462/lp-um"
+  },
+  {
+    "symbol": "UG",
+    "lib": "ug",
+    "locale": "ug-cyrl",
+    "name": "Уйғур (кирилл йезиғи)",
+    "region": 264,
+    "mepsId": null,
+    "home": "/ug-cyrl/wol/h/r264/lp-ug"
+  },
+  {
+    "symbol": "K",
+    "lib": "k",
+    "locale": "uk",
+    "name": "українська",
+    "region": 15,
+    "mepsId": null,
+    "home": "/uk/wol/h/r15/lp-k"
+  },
+  {
+    "symbol": "UKL",
+    "lib": "ukl",
+    "locale": "ukl",
+    "name": "Українська жестова мова",
+    "region": 1373,
+    "mepsId": null,
+    "home": "/ukl/wol/h/r1373/lp-ukl"
+  },
+  {
+    "symbol": "KHK",
+    "lib": "khk",
+    "locale": "kjh",
+    "name": "хакас",
+    "region": 450,
+    "mepsId": null,
+    "home": "/kjh/wol/h/r450/lp-khk"
+  },
+  {
+    "symbol": "KLK",
+    "lib": "klk",
+    "locale": "xal",
+    "name": "хальмг",
+    "region": 845,
+    "mepsId": null,
+    "home": "/xal/wol/h/r845/lp-klk"
+  },
+  {
+    "symbol": "RMK",
+    "lib": "rmk",
+    "locale": "rmy-x-rmk",
+    "name": "хомани (котлярско, Хусыя)",
+    "region": 583,
+    "mepsId": null,
+    "home": "/rmy-x-rmk/wol/h/r583/lp-rmk"
+  },
+  {
+    "symbol": "CU",
+    "lib": "cu",
+    "locale": "cv",
+    "name": "чӑвашла",
+    "region": 239,
+    "mepsId": null,
+    "home": "/cv/wol/h/r239/lp-cu"
+  },
+  {
+    "symbol": "SGH",
+    "lib": "sgh",
+    "locale": "sgh",
+    "name": "шуғнонӣ",
+    "region": 1134,
+    "mepsId": null,
+    "home": "/sgh/wol/h/r1134/lp-sgh"
+  },
+  {
+    "symbol": "EZ",
+    "lib": "ez",
+    "locale": "myv",
+    "name": "эрзянь",
+    "region": 741,
+    "mepsId": null,
+    "home": "/myv/wol/h/r741/lp-ez"
+  },
+  {
+    "symbol": "UZ",
+    "lib": "uz",
+    "locale": "uz-Cyrl",
+    "name": "ўзбекча",
+    "region": 42,
+    "mepsId": null,
+    "home": "/uz-Cyrl/wol/h/r42/lp-uz"
+  },
+  {
+    "symbol": "AZ",
+    "lib": "az",
+    "locale": "kk",
+    "name": "қазақ",
+    "region": 43,
+    "mepsId": null,
+    "home": "/kk/wol/h/r43/lp-az"
+  },
+  {
+    "symbol": "KRK",
+    "lib": "krk",
+    "locale": "kaa",
+    "name": "қарақалпақ",
+    "region": 869,
+    "mepsId": null,
+    "home": "/kaa/wol/h/r869/lp-krk"
+  },
+  {
+    "symbol": "HMS",
+    "lib": "hms",
+    "locale": "hyw-x-hms",
+    "name": "һамшенерен (кирилица)",
+    "region": 519,
+    "mepsId": null,
+    "home": "/hyw-x-hms/wol/h/r519/lp-hms"
+  },
+  {
+    "symbol": "R",
+    "lib": "r",
+    "locale": "hyw",
+    "name": "Արեւմտահայերէն",
+    "region": 487,
+    "mepsId": null,
+    "home": "/hyw/wol/h/r487/lp-r"
+  },
+  {
+    "symbol": "HMA",
+    "lib": "hma",
+    "locale": "hyw-x-hma",
+    "name": "համշեներեն (հայերեն)",
+    "region": 515,
+    "mepsId": null,
+    "home": "/hyw-x-hma/wol/h/r515/lp-hma"
+  },
+  {
+    "symbol": "REA",
+    "lib": "rea",
+    "locale": "hy",
+    "name": "Հայերեն",
+    "region": 44,
+    "mepsId": null,
+    "home": "/hy/wol/h/r44/lp-rea"
+  },
+  {
+    "symbol": "KRB",
+    "lib": "krb",
+    "locale": "hy-x-krb",
+    "name": "Հայերեն  (արևելյան բարբառ)",
+    "region": 867,
+    "mepsId": null,
+    "home": "/hy-x-krb/wol/h/r867/lp-krb"
+  },
+  {
+    "symbol": "ARS",
+    "lib": "ars",
+    "locale": "aen",
+    "name": "Հայերեն ժեստերի լեզու",
+    "region": 526,
+    "mepsId": null,
+    "home": "/aen/wol/h/r526/lp-ars"
+  },
+  {
+    "symbol": "Q",
+    "lib": "q",
+    "locale": "he",
+    "name": "עברית",
+    "region": 145,
+    "mepsId": null,
+    "home": "/he/wol/h/r145/lp-q"
+  },
+  {
+    "symbol": "QSL",
+    "lib": "qsl",
+    "locale": "isr",
+    "name": "שפת סימנים ישראלית",
+    "region": 486,
+    "mepsId": null,
+    "home": "/isr/wol/h/r486/lp-qsl"
+  },
+  {
+    "symbol": "UGA",
+    "lib": "uga",
+    "locale": "ug-x-uga",
+    "name": "ئۇيغۇر تىلى ‏(‏ئەرەب يېزىقى‏)‏‏‏‏",
+    "region": 1218,
+    "mepsId": null,
+    "home": "/ug-x-uga/wol/h/r1218/lp-uga"
+  },
+  {
+    "symbol": "A",
+    "lib": "a",
+    "locale": "ar",
+    "name": "العربية",
+    "region": 39,
+    "mepsId": null,
+    "home": "/ar/wol/h/r39/lp-a"
+  },
+  {
+    "symbol": "AMO",
+    "lib": "amo",
+    "locale": "ary",
+    "name": "العربية (الدارجة المغربية)",
+    "region": 442,
+    "mepsId": null,
+    "home": "/ary/wol/h/r442/lp-amo"
+  },
+  {
+    "symbol": "ATN",
+    "lib": "atn",
+    "locale": "aeb",
+    "name": "العربية (الدّارجة‏ ‏التّونسيّة)",
+    "region": 574,
+    "mepsId": null,
+    "home": "/aeb/wol/h/r574/lp-atn"
+  },
+  {
+    "symbol": "ASN",
+    "lib": "asn",
+    "locale": "apd",
+    "name": "العربية (اللهجة السودانية)",
+    "region": 1353,
+    "mepsId": null,
+    "home": "/apd/wol/h/r1353/lp-asn"
+  },
+  {
+    "symbol": "AEY",
+    "lib": "aey",
+    "locale": "arz",
+    "name": "العربية (اللهجة المصرية)",
+    "region": 598,
+    "mepsId": null,
+    "home": "/arz/wol/h/r598/lp-aey"
+  },
+  {
+    "symbol": "ADZ",
+    "lib": "adz",
+    "locale": "arq",
+    "name": "العربيّة (الدّارجة الجزائريّة)",
+    "region": 597,
+    "mepsId": null,
+    "home": "/arq/wol/h/r597/lp-adz"
+  },
+  {
+    "symbol": "UD",
+    "lib": "ud",
+    "locale": "ur",
+    "name": "اُردو",
+    "region": 109,
+    "mepsId": null,
+    "home": "/ur/wol/h/r109/lp-ud"
+  },
+  {
+    "symbol": "DAR",
+    "lib": "dar",
+    "locale": "prs",
+    "name": "دری",
+    "region": 579,
+    "mepsId": null,
+    "home": "/prs/wol/h/r579/lp-dar"
+  },
+  {
+    "symbol": "PR",
+    "lib": "pr",
+    "locale": "fa",
+    "name": "فارسی",
+    "region": 76,
+    "mepsId": null,
+    "home": "/fa/wol/h/r76/lp-pr"
+  },
+  {
+    "symbol": "AZA",
+    "lib": "aza",
+    "locale": "kk-Arab",
+    "name": "قازاق ٴتىلى (ارابشا جازۋى)",
+    "region": 560,
+    "mepsId": null,
+    "home": "/kk-Arab/wol/h/r560/lp-aza"
+  },
+  {
+    "symbol": "LBS",
+    "lib": "lbs",
+    "locale": "sgn-LB",
+    "name": "لغة الإشارات اللبنانية",
+    "region": 1290,
+    "mepsId": null,
+    "home": "/sgn-LB/wol/h/r1290/lp-lbs"
+  },
+  {
+    "symbol": "PJN",
+    "lib": "pjn",
+    "locale": "pnb",
+    "name": "پنجابی (شاہ مُکھی)",
+    "region": 211,
+    "mepsId": null,
+    "home": "/pnb/wol/h/r211/lp-pjn"
+  },
+  {
+    "symbol": "PH",
+    "lib": "ph",
+    "locale": "ps",
+    "name": "پښتو",
+    "region": 549,
+    "mepsId": null,
+    "home": "/ps/wol/h/r549/lp-ph"
+  },
+  {
+    "symbol": "RDA",
+    "lib": "rda",
+    "locale": "ckb",
+    "name": "کوردی سۆرانی",
+    "region": 531,
+    "mepsId": null,
+    "home": "/ckb/wol/h/r531/lp-rda"
+  },
+  {
+    "symbol": "AS",
+    "lib": "as",
+    "locale": "aii",
+    "name": "ܐܵܬܘܿܪܵܝܵܐ",
+    "region": 513,
+    "mepsId": null,
+    "home": "/aii/wol/h/r513/lp-as"
+  },
+  {
+    "symbol": "KGH",
+    "lib": "kgh",
+    "locale": "xnr",
+    "name": "कंगड़ी (हमीरपुरी)",
+    "region": 1311,
+    "mepsId": null,
+    "home": "/xnr/wol/h/r1311/lp-kgh"
+  },
+  {
+    "symbol": "KND",
+    "lib": "knd",
+    "locale": "kex",
+    "name": "कोंकणी (देवनागरी)",
+    "region": 257,
+    "mepsId": null,
+    "home": "/kex/wol/h/r257/lp-knd"
+  },
+  {
+    "symbol": "GRW",
+    "lib": "grw",
+    "locale": "gbm",
+    "name": "गढ़वाली",
+    "region": 1315,
+    "mepsId": null,
+    "home": "/gbm/wol/h/r1315/lp-grw"
+  },
+  {
+    "symbol": "CGD",
+    "lib": "cgd",
+    "locale": "hne-Deva",
+    "name": "छत्तीसगढ़ी (देवनागरी)",
+    "region": 1314,
+    "mepsId": null,
+    "home": "/hne-Deva/wol/h/r1314/lp-cgd"
+  },
+  {
+    "symbol": "NP",
+    "lib": "np",
+    "locale": "ne",
+    "name": "नेपाली",
+    "region": 56,
+    "mepsId": null,
+    "home": "/ne/wol/h/r56/lp-np"
+  },
+  {
+    "symbol": "NSL",
+    "lib": "nsl",
+    "locale": "nsp",
+    "name": "नेपाली साङ्केतिक भाषा",
+    "region": 472,
+    "mepsId": null,
+    "home": "/nsp/wol/h/r472/lp-nsl"
+  },
+  {
+    "symbol": "NW",
+    "lib": "nw",
+    "locale": "new",
+    "name": "नेवारी",
+    "region": 1046,
+    "mepsId": null,
+    "home": "/new/wol/h/r1046/lp-nw"
+  },
+  {
+    "symbol": "BHJ",
+    "lib": "bhj",
+    "locale": "bho",
+    "name": "भोजपुरी",
+    "region": 639,
+    "mepsId": null,
+    "home": "/bho/wol/h/r639/lp-bhj"
+  },
+  {
+    "symbol": "MR",
+    "lib": "mr",
+    "locale": "mr",
+    "name": "मराठी",
+    "region": 171,
+    "mepsId": null,
+    "home": "/mr/wol/h/r171/lp-mr"
+  },
+  {
+    "symbol": "MHL",
+    "lib": "mhl",
+    "locale": "mai",
+    "name": "मैथिली",
+    "region": 943,
+    "mepsId": null,
+    "home": "/mai/wol/h/r943/lp-mhl"
+  },
+  {
+    "symbol": "SDD",
+    "lib": "sdd",
+    "locale": "sck-Deva",
+    "name": "सादरी (देवनागरी)",
+    "region": 1310,
+    "mepsId": null,
+    "home": "/sck-Deva/wol/h/r1310/lp-sdd"
+  },
+  {
+    "symbol": "HI",
+    "lib": "hi",
+    "locale": "hi",
+    "name": "हिंदी",
+    "region": 108,
+    "mepsId": null,
+    "home": "/hi/wol/h/r108/lp-hi"
+  },
+  {
+    "symbol": "AE",
+    "lib": "ae",
+    "locale": "as",
+    "name": "অসমীয়া",
+    "region": 206,
+    "mepsId": null,
+    "home": "/as/wol/h/r206/lp-ae"
+  },
+  {
+    "symbol": "GAR",
+    "lib": "gar",
+    "locale": "grt-x-gar",
+    "name": "গারো (আবেং)",
+    "region": 755,
+    "mepsId": null,
+    "home": "/grt-x-gar/wol/h/r755/lp-gar"
+  },
+  {
+    "symbol": "BE",
+    "lib": "be",
+    "locale": "bn",
+    "name": "বাংলা",
+    "region": 137,
+    "mepsId": null,
+    "home": "/bn/wol/h/r137/lp-be"
+  },
+  {
+    "symbol": "MI",
+    "lib": "mi",
+    "locale": "mni",
+    "name": "মৈতৈলোন্",
+    "region": 559,
+    "mepsId": null,
+    "home": "/mni/wol/h/r559/lp-mi"
+  },
+  {
+    "symbol": "SYL",
+    "lib": "syl",
+    "locale": "syl-x-syl",
+    "name": "সেলেটি (বাংলা)",
+    "region": 1167,
+    "mepsId": null,
+    "home": "/syl-x-syl/wol/h/r1167/lp-syl"
+  },
+  {
+    "symbol": "PJ",
+    "lib": "pj",
+    "locale": "pa",
+    "name": "ਪੰਜਾਬੀ",
+    "region": 79,
+    "mepsId": null,
+    "home": "/pa/wol/h/r79/lp-pj"
+  },
+  {
+    "symbol": "KCC",
+    "lib": "kcc",
+    "locale": "kfr",
+    "name": "કચ્છી",
+    "region": 1309,
+    "mepsId": null,
+    "home": "/kfr/wol/h/r1309/lp-kcc"
+  },
+  {
+    "symbol": "GU",
+    "lib": "gu",
+    "locale": "gu",
+    "name": "ગુજરાતી",
+    "region": 73,
+    "mepsId": null,
+    "home": "/gu/wol/h/r73/lp-gu"
+  },
+  {
+    "symbol": "OI",
+    "lib": "oi",
+    "locale": "or",
+    "name": "ଓଡ଼ିଆ",
+    "region": 497,
+    "mepsId": null,
+    "home": "/or/wol/h/r497/lp-oi"
+  },
+  {
+    "symbol": "TL",
+    "lib": "tl",
+    "locale": "ta",
+    "name": "தமிழ்",
+    "region": 122,
+    "mepsId": null,
+    "home": "/ta/wol/h/r122/lp-tl"
+  },
+  {
+    "symbol": "BDG",
+    "lib": "bdg",
+    "locale": "bfq",
+    "name": "படகா",
+    "region": 632,
+    "mepsId": null,
+    "home": "/bfq/wol/h/r632/lp-bdg"
+  },
+  {
+    "symbol": "TU",
+    "lib": "tu",
+    "locale": "te",
+    "name": "తెలుగు",
+    "region": 146,
+    "mepsId": null,
+    "home": "/te/wol/h/r146/lp-tu"
+  },
+  {
+    "symbol": "KA",
+    "lib": "ka",
+    "locale": "kn",
+    "name": "ಕನ್ನಡ",
+    "region": 167,
+    "mepsId": null,
+    "home": "/kn/wol/h/r167/lp-ka"
+  },
+  {
+    "symbol": "KBB",
+    "lib": "kbb",
+    "locale": "kn-x-kbb",
+    "name": "ಕನ್ನಡ (ಬರಹ ಭಾಷೆ)",
+    "region": 1321,
+    "mepsId": null,
+    "home": "/kn-x-kbb/wol/h/r1321/lp-kbb"
+  },
+  {
+    "symbol": "KN",
+    "lib": "kn",
+    "locale": "knn",
+    "name": "ಕೊಂಕಣಿ (ಕನ್ನಡ)",
+    "region": 855,
+    "mepsId": null,
+    "home": "/knn/wol/h/r855/lp-kn"
+  },
+  {
+    "symbol": "MY",
+    "lib": "my",
+    "locale": "ml",
+    "name": "മലയാളം",
+    "region": 162,
+    "mepsId": null,
+    "home": "/ml/wol/h/r162/lp-my"
+  },
+  {
+    "symbol": "SLS",
+    "lib": "sls",
+    "locale": "sqs",
+    "name": "ශ්‍රී ලංකා සංඥා භාෂාව",
+    "region": 479,
+    "mepsId": null,
+    "home": "/sqs/wol/h/r479/lp-sls"
+  },
+  {
+    "symbol": "SN",
+    "lib": "sn",
+    "locale": "si",
+    "name": "සිංහල",
+    "region": 125,
+    "mepsId": null,
+    "home": "/si/wol/h/r125/lp-sn"
+  },
+  {
+    "symbol": "SIL",
+    "lib": "sil",
+    "locale": "tsq",
+    "name": "ภาษามือไทย",
+    "region": 414,
+    "mepsId": null,
+    "home": "/tsq/wol/h/r414/lp-sil"
+  },
+  {
+    "symbol": "SI",
+    "lib": "si",
+    "locale": "th",
+    "name": "ไทย",
+    "region": 113,
+    "mepsId": null,
+    "home": "/th/wol/h/r113/lp-si"
+  },
+  {
+    "symbol": "LA",
+    "lib": "la",
+    "locale": "lo",
+    "name": "ລາວ",
+    "region": 161,
+    "mepsId": null,
+    "home": "/lo/wol/h/r161/lp-la"
+  },
+  {
+    "symbol": "TBT",
+    "lib": "tbt",
+    "locale": "bo",
+    "name": "བོད་སྐད།",
+    "region": 1302,
+    "mepsId": null,
+    "home": "/bo/wol/h/r1302/lp-tbt"
+  },
+  {
+    "symbol": "KR",
+    "lib": "kr",
+    "locale": "ksw",
+    "name": "ကညီ(စှီၤ)ကျိာ်",
+    "region": 350,
+    "mepsId": null,
+    "home": "/ksw/wol/h/r350/lp-kr"
+  },
+  {
+    "symbol": "BU",
+    "lib": "bu",
+    "locale": "my",
+    "name": "မြန်မာ",
+    "region": 144,
+    "mepsId": null,
+    "home": "/my/wol/h/r144/lp-bu"
+  },
+  {
+    "symbol": "BUS",
+    "lib": "bus",
+    "locale": "sgn-MM",
+    "name": "မြန်မာ လက်သင်္ကေတပြဘာသာစကား",
+    "region": 471,
+    "mepsId": null,
+    "home": "/sgn-MM/wol/h/r471/lp-bus"
+  },
+  {
+    "symbol": "MGL",
+    "lib": "mgl",
+    "locale": "xmf",
+    "name": "მარგალური",
+    "region": 431,
+    "mepsId": null,
+    "home": "/xmf/wol/h/r431/lp-mgl"
+  },
+  {
+    "symbol": "GE",
+    "lib": "ge",
+    "locale": "ka",
+    "name": "ქართული",
+    "region": 20,
+    "mepsId": null,
+    "home": "/ka/wol/h/r20/lp-ge"
+  },
+  {
+    "symbol": "TI",
+    "lib": "ti",
+    "locale": "ti",
+    "name": "ትግርኛ",
+    "region": 119,
+    "mepsId": null,
+    "home": "/ti/wol/h/r119/lp-ti"
+  },
+  {
+    "symbol": "AM",
+    "lib": "am",
+    "locale": "am",
+    "name": "አማርኛ",
+    "region": 93,
+    "mepsId": null,
+    "home": "/am/wol/h/r93/lp-am"
+  },
+  {
+    "symbol": "ESL",
+    "lib": "esl",
+    "locale": "eth",
+    "name": "የኢትዮጵያ ምልክት ቋንቋ",
+    "region": 501,
+    "mepsId": null,
+    "home": "/eth/wol/h/r501/lp-esl"
+  },
+  {
+    "symbol": "YCS",
+    "lib": "ycs",
+    "locale": "csw-x-ycs",
+    "name": "ᐃᓂᓃᒧᐏᐣ",
+    "region": 1248,
+    "mepsId": null,
+    "home": "/csw-x-ycs/wol/h/r1248/lp-ycs"
+  },
+  {
+    "symbol": "IU",
+    "lib": "iu",
+    "locale": "iu",
+    "name": "ᐃᓄᒃᑎᑐᑦ (ᖃᓂᐅᔮᖅᐸᐃᑦ)",
+    "region": 811,
+    "mepsId": null,
+    "home": "/iu/wol/h/r811/lp-iu"
+  },
+  {
+    "symbol": "NOS",
+    "lib": "nos",
+    "locale": "ojb-x-nos",
+    "name": "ᐊᓂᔑᓈᐯᒧᐎᓐ",
+    "region": 1037,
+    "mepsId": null,
+    "home": "/ojb-x-nos/wol/h/r1037/lp-nos"
+  },
+  {
+    "symbol": "CYS",
+    "lib": "cys",
+    "locale": "crk-x-cys",
+    "name": "ᓀᐦᐃᔭᐁᐧᐃᐧᐣ",
+    "region": 710,
+    "mepsId": null,
+    "home": "/crk-x-cys/wol/h/r710/lp-cys"
+  },
+  {
+    "symbol": "WCS",
+    "lib": "wcs",
+    "locale": "cwd-x-wcs",
+    "name": "ᓀᐦᐃᖬᐁᐧᐃᐧᐣ",
+    "region": 1230,
+    "mepsId": null,
+    "home": "/cwd-x-wcs/wol/h/r1230/lp-wcs"
+  },
+  {
+    "symbol": "CB",
+    "lib": "cb",
+    "locale": "km",
+    "name": "ខ្មែរ",
+    "region": 124,
+    "mepsId": null,
+    "home": "/km/wol/h/r124/lp-cb"
+  },
+  {
+    "symbol": "CBL",
+    "lib": "cbl",
+    "locale": "sgn-KH",
+    "name": "ភាសាសញ្ញាខ្មែរ",
+    "region": 463,
+    "mepsId": null,
+    "home": "/sgn-KH/wol/h/r463/lp-cbl"
+  },
+  {
+    "symbol": "EMC",
+    "lib": "emc",
+    "locale": "cmi",
+    "name": "ẽbẽra beɗea chamí",
+    "region": 738,
+    "mepsId": null,
+    "home": "/cmi/wol/h/r738/lp-emc"
+  },
+  {
+    "symbol": "CSL",
+    "lib": "csl",
+    "locale": "csl",
+    "name": "中国手语",
+    "region": 432,
+    "mepsId": null,
+    "home": "/csl/wol/h/r432/lp-csl"
+  },
+  {
+    "symbol": "CNS",
+    "lib": "cns",
+    "locale": "yue-Hans",
+    "name": "中文简体（广东话）",
+    "region": 348,
+    "mepsId": null,
+    "home": "/yue-Hans/wol/h/r348/lp-cns"
+  },
+  {
+    "symbol": "CHS",
+    "lib": "chs",
+    "locale": "cmn-Hans",
+    "name": "中文简体（普通话）",
+    "region": 23,
+    "mepsId": null,
+    "home": "/cmn-Hans/wol/h/r23/lp-chs"
+  },
+  {
+    "symbol": "CH",
+    "lib": "ch",
+    "locale": "cmn-Hant",
+    "name": "中文繁體（國語）",
+    "region": 24,
+    "mepsId": null,
+    "home": "/cmn-Hant/wol/h/r24/lp-ch"
+  },
+  {
+    "symbol": "CHC",
+    "lib": "chc",
+    "locale": "yue-Hant",
+    "name": "中文繁體（廣東話）",
+    "region": 214,
+    "mepsId": null,
+    "home": "/yue-Hant/wol/h/r214/lp-chc"
+  },
+  {
+    "symbol": "CHG",
+    "lib": "chg",
+    "locale": "wuu-x-chg",
+    "name": "中文（上海话）",
+    "region": 673,
+    "mepsId": null,
+    "home": "/wuu-x-chg/wol/h/r673/lp-chg"
+  },
+  {
+    "symbol": "CSN",
+    "lib": "csn",
+    "locale": "cmn-x-csn",
+    "name": "中文（四川话）",
+    "region": 705,
+    "mepsId": null,
+    "home": "/cmn-x-csn/wol/h/r705/lp-csn"
+  },
+  {
+    "symbol": "TSL",
+    "lib": "tsl",
+    "locale": "tss",
+    "name": "台灣手語",
+    "region": 412,
+    "mepsId": null,
+    "home": "/tss/wol/h/r412/lp-tsl"
+  },
+  {
+    "symbol": "JSL",
+    "lib": "jsl",
+    "locale": "jsl",
+    "name": "日本手話",
+    "region": 393,
+    "mepsId": null,
+    "home": "/jsl/wol/h/r393/lp-jsl"
+  },
+  {
+    "symbol": "J",
+    "lib": "j",
+    "locale": "ja",
+    "name": "日本語",
+    "region": 7,
+    "mepsId": 6,
+    "home": "/ja/wol/h/r7/lp-j"
+  },
+  {
+    "symbol": "CHW",
+    "lib": "chw",
+    "locale": "nan-x-chw",
+    "name": "閩南語（台灣）",
+    "region": 681,
+    "mepsId": null,
+    "home": "/nan-x-chw/wol/h/r681/lp-chw"
+  },
+  {
+    "symbol": "CHN",
+    "lib": "chn",
+    "locale": "nan-x-chn",
+    "name": "闽南语（泉州）",
+    "region": 677,
+    "mepsId": null,
+    "home": "/nan-x-chn/wol/h/r677/lp-chn"
+  },
+  {
+    "symbol": "AI",
+    "lib": "ai",
+    "locale": "ami",
+    "name": "阿美語",
+    "region": 476,
+    "mepsId": null,
+    "home": "/ami/wol/h/r476/lp-ai"
+  },
+  {
+    "symbol": "HSL",
+    "lib": "hsl",
+    "locale": "hks",
+    "name": "香港手語",
+    "region": 505,
+    "mepsId": null,
+    "home": "/hks/wol/h/r505/lp-hsl"
+  },
+  {
+    "symbol": "CKE",
+    "lib": "cke",
+    "locale": "chr",
+    "name": "ᏣᎳᎩ ᎦᏬᏂᎯᏍᏗ",
+    "region": 682,
+    "mepsId": null,
+    "home": "/chr/wol/h/r682/lp-cke"
+  },
+  {
+    "symbol": "KOC",
+    "lib": "koc",
+    "locale": "ko-cn",
+    "name": "조선어",
+    "region": 862,
+    "mepsId": null,
+    "home": "/ko-cn/wol/h/r862/lp-koc"
+  },
+  {
+    "symbol": "KSL",
+    "lib": "ksl",
+    "locale": "kvk",
+    "name": "한국 수어",
+    "region": 391,
+    "mepsId": null,
+    "home": "/kvk/wol/h/r391/lp-ksl"
+  },
+  {
+    "symbol": "KO",
+    "lib": "ko",
+    "locale": "ko",
+    "name": "한국어",
+    "region": 8,
+    "mepsId": null,
+    "home": "/ko/wol/h/r8/lp-ko"
+  }
+]
