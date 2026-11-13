@@ -3,7 +3,7 @@
   "name": "WOL Highlights",
   "version": "1.0.0",
   "description": "Show JW Library personal study highlights directly on wol.jw.org.",
-  "author": "Daniel Main <addons@danielmain.mozmail.com>",
+  "author": "Daniel Main <ff-addons@funktional.dev>",
   "browser_specific_settings": {
     "gecko": {
       "id": "wol-highlights@danielmain.mozmail.com",

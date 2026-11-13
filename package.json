@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "private": true,
   "description": "Cross-browser WebExtension (Manifest V3) that brings JW Library study highlights directly to Watchtower Online Library (wol.jw.org).",
-  "author": "Daniel Main <addons@danielmain.mozmail.com>",
+  "author": "Daniel Main <ff-addons@funktional.dev>",
   "scripts": {
     "clean": "rm -rf dist",
     "desktop": "cargo run --manifest-path wol-desktop/Cargo.toml",
