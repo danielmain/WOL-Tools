@@ -194,8 +194,25 @@ export async function importJwpub(bytes, initSqlJs) {
   const SQL = await initSqlJs({ locateFile: () => 'lib/sql-wasm.wasm' });
   const db = new SQL.Database(await inner.get(dbName)());
   try {
-    const pub = rows(db, 'SELECT Symbol, Year, MepsLanguageIndex, IssueTagNumber, Title, ShortTitle FROM Publication LIMIT 1')[0];
+    const pub = rows(db, 'SELECT Symbol, Year, MepsLanguageIndex, IssueTagNumber, Title, ShortTitle, PublicationCategorySymbol, PublicationType FROM Publication LIMIT 1')[0];
     if (!pub) throw new Error('Publication metadata is missing');
+    let dbCategories = [];
+    try {
+      dbCategories = rows(db, 'SELECT Category FROM PublicationCategory').map(r => r.Category);
+    } catch {
+      dbCategories = [];
+    }
+    const categories = [...new Set(
+      [
+        ...(Array.isArray(manifest.publication?.categories) ? manifest.publication.categories : []),
+        pub.PublicationCategorySymbol,
+        ...dbCategories,
+      ]
+        .filter((c) => typeof c === 'string' && c.trim() !== '')
+        .map((c) => c.trim().toLowerCase())
+    )];
+    const category = categories[0] || null;
+    const publicationType = (pub.PublicationType || manifest.publication?.publicationType || '').trim() || null;
     const identity = { language: Number(pub.MepsLanguageIndex), symbol: pub.Symbol, year: Number(pub.Year), issue: Number(pub.IssueTagNumber || 0) };
     const langs = await window.__TAURI_INTERNALS__.invoke('get_languages');
     const lang = langs.find(x => x.mepsId === identity.language);
@@ -235,6 +252,9 @@ export async function importJwpub(bytes, initSqlJs) {
       locale: lang.locale,
       lib: lang.lib,
       region: lang.region,
+      category,
+      categories,
+      publicationType,
       coverDataUrl,
       toc,
       chapters,

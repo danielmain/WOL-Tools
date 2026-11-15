@@ -56,6 +56,12 @@ pub struct ImportedPublication {
     pub lib: String,
     pub region: u32,
     #[serde(default)]
+    pub category: Option<String>,
+    #[serde(default)]
+    pub categories: Vec<String>,
+    #[serde(default)]
+    pub publication_type: Option<String>,
+    #[serde(default)]
     pub cover_data_url: Option<String>,
     #[serde(default)]
     pub toc: Vec<TocEntry>,
@@ -160,6 +166,9 @@ pub fn list_imported_publications() -> Vec<serde_json::Value> {
                 "locale": book.locale,
                 "lib": book.lib,
                 "region": book.region,
+                "category": book.category,
+                "categories": book.categories,
+                "publicationType": book.publication_type,
                 "coverDataUrl": book.cover_data_url,
                 "chapterCount": book.chapters.len(),
             })
@@ -197,7 +206,8 @@ pub fn render(uri: &tauri::http::Uri) -> Option<String> {
         return None;
     }
     let book = list().into_iter().find(|b| b.id == book_id)?;
-    render_book(&book, chapter)
+    let from = query_param(uri, "from").filter(|s| s.starts_with('/') && !s.starts_with("//"));
+    render_book(&book, chapter, from.as_deref())
 }
 
 fn render_header(
@@ -447,7 +457,7 @@ fn render_toc_row(book: &ImportedPublication, entry: &TocEntry, is_first: bool) 
     )
 }
 
-fn render_index_page(book: &ImportedPublication) -> String {
+fn render_index_page(book: &ImportedPublication, back_override: Option<&str>) -> String {
     let lib_upper = book.lib.to_uppercase();
     let entries: Vec<TocEntry> = if book.toc.is_empty() {
         book.chapters
@@ -485,6 +495,7 @@ fn render_index_page(book: &ImportedPublication) -> String {
         directory_html.push_str("</ul></li>");
     }
 
+    let back_href = back_override.map(esc).unwrap_or_else(|| "/imported/".to_string());
     let header = render_header(&book.locale, &book.lib, book.region, None);
     let main = format!(
         r#"<div id="regionMain" class="unified showRuby ml-{lib_upper} ms-ROMAN dir-ltr" lang="{locale}" data-lang="{lib_upper}" dir="ltr">
@@ -493,7 +504,7 @@ fn render_index_page(book: &ImportedPublication) -> String {
       <div class="materialNav" role="navigation">
         <nav>
           <header>
-            <h1><a class="backNav" href="/imported/"><span class="icon"></span>{title}</a></h1>
+            <h1><a class="backNav" href="{back_href}"><span class="icon"></span>{title}</a></h1>
           </header>
           <ul class="directory thumbnails" role="directory">{directory_html}</ul>
         </nav>
@@ -701,9 +712,9 @@ fn render_chapter_page(book: &ImportedPublication, chapter_id: u64) -> Option<St
     Some(render_shell(&book.locale, &page_title, &header, &main))
 }
 
-fn render_book(book: &ImportedPublication, chapter: &str) -> Option<String> {
+fn render_book(book: &ImportedPublication, chapter: &str, back_override: Option<&str>) -> Option<String> {
     if chapter == "index" {
-        Some(render_index_page(book))
+        Some(render_index_page(book, back_override))
     } else {
         let id: u64 = chapter.parse().ok()?;
         render_chapter_page(book, id)
@@ -726,6 +737,9 @@ mod tests {
             locale: "es".into(),
             lib: "s".into(),
             region: 4,
+            category: Some("manual".into()),
+            categories: vec!["manual".into()],
+            publication_type: Some("Manual/Guidelines".into()),
             cover_data_url: Some("data:image/jpeg;base64,AAAA".into()),
             toc: vec![
                 TocEntry {
@@ -766,20 +780,21 @@ mod tests {
     #[test]
     fn renders_article_with_stable_document_and_language_identifiers() {
         let book = sample_book();
-        let index = render_book(&book, "index").unwrap();
+        let index = render_book(&book, "index", Some("/es/wol/library/r4/lp-s/biblioteca/pautas-y-manuales")).unwrap();
         assert!(index.contains("/imported/1-sfg-2025-0/1102025561"));
+        assert!(index.contains(r#"href="/es/wol/library/r4/lp-s/biblioteca/pautas-y-manuales""#));
         assert!(index.contains("publicationNav"));
         assert!(index.contains(r#"<li class="group"><div class="title">CAPÍTULOS</div>"#));
         assert!(index.contains("CAPÍTULO 1"));
 
-        let page = render_book(&book, "1102025561").unwrap();
+        let page = render_book(&book, "1102025561", None).unwrap();
         assert!(page.contains("docId-1102025561 pub-sfg"));
         assert!(page.contains("data-lang=\"s\""));
         assert!(page.contains("data-meps-lang=\"1\""));
         assert!(page.contains("data-pid=\"24\""));
         assert!(page.contains("REUNIONES DE ANCIANOS"));
         assert!(page.contains("/imported/1-sfg-2025-0/1102025558"));
-        assert!(render_book(&book, "999").is_none());
+        assert!(render_book(&book, "999", None).is_none());
     }
 
     #[test]
