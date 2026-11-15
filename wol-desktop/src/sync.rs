@@ -18,9 +18,14 @@ use crate::state::{
     SyncProvider, SyncState,
 };
 
-pub const GOOGLE_CLIENT_ID: &str =
-    "CONFIGURE_GOOGLE_CLIENT_ID";
-pub const GOOGLE_CLIENT_SECRET: &str = "CONFIGURE_GOOGLE_CLIENT_SECRET";
+fn google_credentials() -> Result<(String, String), String> {
+    let id = std::env::var("WOL_GOOGLE_CLIENT_ID").unwrap_or_default();
+    let secret = std::env::var("WOL_GOOGLE_CLIENT_SECRET").unwrap_or_default();
+    if id.trim().is_empty() || secret.trim().is_empty() {
+        return Err("Set WOL_GOOGLE_CLIENT_ID and WOL_GOOGLE_CLIENT_SECRET before starting OfflineWOL.".to_string());
+    }
+    Ok((id, secret))
+}
 pub const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/auth";
 pub const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
 pub const GOOGLE_DRIVE_SCOPE: &str = "https://www.googleapis.com/auth/drive.file";
@@ -885,6 +890,7 @@ impl SyncManager {
     }
 
     pub async fn connect_google_drive(&self, app: Option<&AppHandle>) -> Result<SyncStatus, String> {
+        let (client_id, client_secret) = google_credentials()?;
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
             .map_err(|e| format!("Failed to bind local OAuth callback port: {e}"))?;
@@ -906,7 +912,7 @@ impl SyncManager {
             url::Url::parse(GOOGLE_AUTH_URL).map_err(|e| format!("Invalid auth URL: {e}"))?;
         auth_url
             .query_pairs_mut()
-            .append_pair("client_id", GOOGLE_CLIENT_ID)
+            .append_pair("client_id", &client_id)
             .append_pair("redirect_uri", &redirect_uri)
             .append_pair("response_type", "code")
             .append_pair("scope", GOOGLE_DRIVE_SCOPE)
@@ -938,8 +944,8 @@ impl SyncManager {
             .post(GOOGLE_TOKEN_URL)
             .form(&[
                 ("code", code.as_str()),
-                ("client_id", GOOGLE_CLIENT_ID),
-                ("client_secret", GOOGLE_CLIENT_SECRET),
+                ("client_id", client_id.as_str()),
+                ("client_secret", client_secret.as_str()),
                 ("redirect_uri", redirect_uri.as_str()),
                 ("grant_type", "authorization_code"),
                 ("code_verifier", verifier.as_str()),
@@ -1020,6 +1026,8 @@ impl SyncManager {
             return Ok(cfg);
         }
 
+        let (client_id, client_secret) = google_credentials()?;
+
         #[derive(Deserialize)]
         struct RefreshResponse {
             access_token: String,
@@ -1030,8 +1038,8 @@ impl SyncManager {
             .client
             .post(GOOGLE_TOKEN_URL)
             .form(&[
-                ("client_id", GOOGLE_CLIENT_ID),
-                ("client_secret", GOOGLE_CLIENT_SECRET),
+                ("client_id", client_id.as_str()),
+                ("client_secret", client_secret.as_str()),
                 ("refresh_token", cfg.refresh_token.as_str()),
                 ("grant_type", "refresh_token"),
             ])

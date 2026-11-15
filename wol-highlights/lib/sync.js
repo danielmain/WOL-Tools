@@ -1,9 +1,15 @@
 (function (globalScope) {
   "use strict";
 
-  const GOOGLE_CLIENT_ID =
-    "CONFIGURE_GOOGLE_CLIENT_ID";
-  const GOOGLE_CLIENT_SECRET = "CONFIGURE_GOOGLE_CLIENT_SECRET";
+  async function googleCredentials(ext) {
+    const { wolGoogleOAuth } = await ext.storage.local.get("wolGoogleOAuth");
+    const clientId = String(wolGoogleOAuth?.clientId || "").trim();
+    const clientSecret = String(wolGoogleOAuth?.clientSecret || "").trim();
+    if (!clientId || !clientSecret) {
+      throw new Error("Configure Google OAuth credentials in extension local storage; see README.");
+    }
+    return { clientId, clientSecret };
+  }
   const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
   const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
   const GOOGLE_DRIVE_SCOPE = "https://www.googleapis.com/auth/drive.file";
@@ -346,15 +352,16 @@
     if (!resp.ok) throw new Error(`Nextcloud upload HTTP ${resp.status}`);
   }
 
-  async function googleEnsureToken(syncState) {
+  async function googleEnsureToken(syncState, ext) {
     const gd = syncState.googleDrive;
     if (!gd) throw new Error("Google Drive is not connected.");
     if (unixSecondsNow() + 60 < (gd.expiresAt || 0)) {
       return gd;
     }
+    const { clientId, clientSecret } = await googleCredentials(ext);
     const body = new URLSearchParams({
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       refresh_token: gd.refreshToken,
       grant_type: "refresh_token",
     });
@@ -550,7 +557,7 @@
           remote = await nextcloudDownload(cfg);
           uploadFn = (env) => nextcloudUpload(cfg, env);
         } else if (syncState.provider === "googledrive") {
-          const gd = await googleEnsureToken(syncState);
+          const gd = await googleEnsureToken(syncState, ext);
           remote = await googleDownload(gd);
           uploadFn = (env) => googleUpload(gd, env);
         }
@@ -627,13 +634,14 @@
   }
 
   async function connectGoogleDrive(ext) {
+    const { clientId, clientSecret } = await googleCredentials(ext);
     const redirectUri = "http://localhost";
     const verifier = randomHex(32);
     const challenge = await pkceChallenge(verifier);
     const stateToken = randomHex(16);
 
     const authUrl = new URL(GOOGLE_AUTH_URL);
-    authUrl.searchParams.set("client_id", GOOGLE_CLIENT_ID);
+    authUrl.searchParams.set("client_id", clientId);
     authUrl.searchParams.set("redirect_uri", redirectUri);
     authUrl.searchParams.set("response_type", "code");
     authUrl.searchParams.set("scope", GOOGLE_DRIVE_SCOPE);
@@ -719,8 +727,8 @@
 
     const tokenBody = new URLSearchParams({
       code,
-      client_id: GOOGLE_CLIENT_ID,
-      client_secret: GOOGLE_CLIENT_SECRET,
+      client_id: clientId,
+      client_secret: clientSecret,
       redirect_uri: redirectUri,
       grant_type: "authorization_code",
       code_verifier: verifier,

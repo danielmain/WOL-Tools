@@ -261,3 +261,17 @@ Highlights replicate native JW Library colors:
 ## License
 
 This project is licensed under the [MIT License](LICENSE). Embedded `sql.js` files are distributed under the MIT License by the sql.js authors.
+
+### Google Drive sync credentials
+
+Google Drive sync requires your own Google OAuth desktop client credentials. Create a new client and keep its credentials private; do not commit them or include them in extension packages. Desktop OAuth clients are public clients: a secret stored on a user's computer cannot be kept confidential from that user.
+
+For OfflineWOL, set `WOL_GOOGLE_CLIENT_ID` and `WOL_GOOGLE_CLIENT_SECRET` in the environment before launching the app. An ignored `.env` file can hold these values for local development, but must be loaded into the environment by your shell before starting the app.
+
+For the browser extension, set `wolGoogleOAuth` in the extension's local storage using its background/service-worker developer console (use `browser` on Firefox and `chrome` on Chromium):
+
+```js
+browser.storage.local.set({ wolGoogleOAuth: { clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" } });
+```
+
+These credentials remain in local extension storage. Reconfigure them on each browser installation. Google Drive sync reports an error when credentials are missing; Nextcloud sync does not require them.
