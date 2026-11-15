@@ -639,3 +639,175 @@ const initial = await currentIndex();
 renderIndex(initial);
 await refreshPage();
 await initSettings();
+await initCloudSync();
+
+// ----------------------------------------------------
+// CLOUD SYNC
+// ----------------------------------------------------
+async function initCloudSync() {
+  if (!tauriInvoke) return;
+  const disconnectedEl = document.querySelector("#sync-disconnected");
+  const connectedEl = document.querySelector("#sync-connected");
+  const btnGoogle = document.querySelector("#sync-btn-google");
+  const btnNcToggle = document.querySelector("#sync-btn-nextcloud-toggle");
+  const ncForm = document.querySelector("#sync-nextcloud-form");
+  const ncServer = document.querySelector("#nc-server");
+  const ncBrowserBtn = document.querySelector("#nc-browser-login");
+  const ncUsername = document.querySelector("#nc-username");
+  const ncPassword = document.querySelector("#nc-password");
+  const ncRemotePath = document.querySelector("#nc-remote-path");
+  const ncManualBtn = document.querySelector("#nc-manual-connect");
+  const providerBadge = document.querySelector("#sync-provider-badge");
+  const accountLabel = document.querySelector("#sync-account-label");
+  const syncNowBtn = document.querySelector("#sync-now-btn");
+  const disconnectBtn = document.querySelector("#sync-disconnect-btn");
+  const syncMeta = document.querySelector("#sync-meta");
+  const syncError = document.querySelector("#sync-error");
+
+  function renderSyncStatus(status) {
+    if (!status || !status.connected) {
+      disconnectedEl.hidden = false;
+      connectedEl.hidden = true;
+      return;
+    }
+    disconnectedEl.hidden = true;
+    connectedEl.hidden = false;
+    providerBadge.textContent = status.provider === "googledrive" ? "Google Drive" : "Nextcloud";
+    accountLabel.textContent = status.serverUrl
+      ? `${status.accountLabel || ""} @ ${status.serverUrl}`
+      : (status.accountLabel || "Connected");
+    const last = status.lastSyncedAt ? formatWhen(status.lastSyncedAt) : "Never";
+    syncMeta.textContent = status.syncing ? "Syncing…" : `Last synced: ${last}`;
+    if (status.lastError) {
+      syncError.textContent = `Last sync error: ${status.lastError}`;
+      syncError.hidden = false;
+    } else {
+      syncError.hidden = true;
+    }
+  }
+
+  async function refreshSyncStatus() {
+    try {
+      const status = await tauriInvoke("get_sync_status");
+      renderSyncStatus(status);
+    } catch (err) {
+      console.warn("[Manager] get_sync_status failed:", err);
+    }
+  }
+
+  window.__wolOnSyncUpdated = async () => {
+    const idx = await currentIndex();
+    renderIndex(idx);
+    await refreshSyncStatus();
+  };
+
+  btnNcToggle?.addEventListener("click", () => {
+    ncForm.hidden = !ncForm.hidden;
+  });
+
+  btnGoogle?.addEventListener("click", async () => {
+    btnGoogle.disabled = true;
+    setMessage("Opening Google sign-in in your browser…");
+    try {
+      const status = await tauriInvoke("connect_google_drive");
+      renderSyncStatus(status);
+      const idx = await currentIndex();
+      renderIndex(idx);
+      await refreshPage();
+      setMessage("Google Drive connected and synced!");
+    } catch (err) {
+      setMessage(`Google Drive sign-in failed: ${err}`, true);
+    } finally {
+      btnGoogle.disabled = false;
+    }
+  });
+
+  ncBrowserBtn?.addEventListener("click", async () => {
+    const serverUrl = ncServer.value.trim();
+    if (!serverUrl) {
+      setMessage("Please enter your Nextcloud server URL.", true);
+      return;
+    }
+    ncBrowserBtn.disabled = true;
+    setMessage("Opening Nextcloud sign-in in your browser…");
+    try {
+      const status = await tauriInvoke("connect_nextcloud_browser", {
+        serverUrl,
+        remotePath: ncRemotePath.value.trim() || null,
+      });
+      renderSyncStatus(status);
+      const idx = await currentIndex();
+      renderIndex(idx);
+      await refreshPage();
+      setMessage("Nextcloud connected and synced!");
+    } catch (err) {
+      setMessage(`Nextcloud sign-in failed: ${err}`, true);
+    } finally {
+      ncBrowserBtn.disabled = false;
+    }
+  });
+
+  ncManualBtn?.addEventListener("click", async () => {
+    const serverUrl = ncServer.value.trim();
+    const username = ncUsername.value.trim();
+    const password = ncPassword.value;
+    if (!serverUrl || !username || !password) {
+      setMessage("Please fill in Server URL, Username, and App Password.", true);
+      return;
+    }
+    ncManualBtn.disabled = true;
+    setMessage("Connecting to Nextcloud…");
+    try {
+      const status = await tauriInvoke("connect_nextcloud", {
+        serverUrl,
+        username,
+        password,
+        remotePath: ncRemotePath.value.trim() || null,
+      });
+      renderSyncStatus(status);
+      const idx = await currentIndex();
+      renderIndex(idx);
+      await refreshPage();
+      setMessage("Nextcloud connected and synced!");
+    } catch (err) {
+      setMessage(`Nextcloud connection failed: ${err}`, true);
+    } finally {
+      ncManualBtn.disabled = false;
+    }
+  });
+
+  syncNowBtn?.addEventListener("click", async () => {
+    syncNowBtn.disabled = true;
+    syncMeta.textContent = "Syncing…";
+    try {
+      const status = await tauriInvoke("sync_now");
+      renderSyncStatus(status);
+      if (status.changedLocal) {
+        const idx = await currentIndex();
+        renderIndex(idx);
+        await refreshPage();
+      }
+      setMessage("Sync complete.");
+    } catch (err) {
+      setMessage(`Sync failed: ${err}`, true);
+      await refreshSyncStatus();
+    } finally {
+      syncNowBtn.disabled = false;
+    }
+  });
+
+  disconnectBtn?.addEventListener("click", async () => {
+    if (!window.confirm("Disconnect cloud sync? Your local highlights will stay on this device.")) {
+      return;
+    }
+    try {
+      const status = await tauriInvoke("disconnect_sync");
+      renderSyncStatus(status);
+      setMessage("Cloud sync disconnected.");
+    } catch (err) {
+      setMessage(`Disconnect failed: ${err}`, true);
+    }
+  });
+
+  await refreshSyncStatus();
+}

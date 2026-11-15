@@ -9,6 +9,7 @@ use crate::crawler::{
 };
 use crate::languages::{self, LanguageInfo};
 use crate::state::{AppSettings, StateManager};
+use crate::sync::{SyncManager, SyncStatus};
 use crate::url_map::{map_wol_uri_to_canonical, CanonicalUrl};
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -44,8 +45,10 @@ pub fn set_marks(
     app: AppHandle,
     marks: Option<Value>,
     state_mgr: State<'_, StateManager>,
+    sync_mgr: State<'_, SyncManager>,
 ) -> Result<(), String> {
     state_mgr.set_marks(marks).map_err(|e| e.to_string())?;
+    sync_mgr.schedule_debounced_sync(app.clone());
 
     // Broadcast reapply to the main webview window
     if let Some(main_window) = app.get_webview_window("main") {
@@ -544,6 +547,58 @@ pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), St
             .map_err(|e| e.to_string())?;
     }
     Ok(())
+}
+
+#[tauri::command]
+pub fn get_sync_status(sync_mgr: State<'_, SyncManager>) -> Result<SyncStatus, String> {
+    sync_mgr.status()
+}
+
+#[tauri::command]
+pub async fn sync_now(
+    app: AppHandle,
+    sync_mgr: State<'_, SyncManager>,
+) -> Result<SyncStatus, String> {
+    sync_mgr.sync_now(Some(&app)).await
+}
+
+#[tauri::command]
+pub async fn connect_nextcloud(
+    app: AppHandle,
+    server_url: String,
+    username: String,
+    password: String,
+    remote_path: Option<String>,
+    sync_mgr: State<'_, SyncManager>,
+) -> Result<SyncStatus, String> {
+    sync_mgr
+        .connect_nextcloud(server_url, username, password, remote_path, Some(&app))
+        .await
+}
+
+#[tauri::command]
+pub async fn connect_nextcloud_browser(
+    app: AppHandle,
+    server_url: String,
+    remote_path: Option<String>,
+    sync_mgr: State<'_, SyncManager>,
+) -> Result<SyncStatus, String> {
+    sync_mgr
+        .connect_nextcloud_browser(server_url, remote_path, Some(&app))
+        .await
+}
+
+#[tauri::command]
+pub async fn connect_google_drive(
+    app: AppHandle,
+    sync_mgr: State<'_, SyncManager>,
+) -> Result<SyncStatus, String> {
+    sync_mgr.connect_google_drive(Some(&app)).await
+}
+
+#[tauri::command]
+pub fn disconnect_sync(sync_mgr: State<'_, SyncManager>) -> Result<SyncStatus, String> {
+    sync_mgr.disconnect()
 }
 
 #[cfg(test)]

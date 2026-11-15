@@ -674,3 +674,73 @@ html[data-theme="dark"] .btn-danger {
 html[data-theme="dark"] .btn-danger:hover {
   background: #b91c1c;
 }
+
+/* Cloud Sync */
+.sync-provider-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.sync-form {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.sync-nc-actions {
+  margin-bottom: 12px;
+}
+
+.sync-manual-details summary {
+  cursor: pointer;
+  font-size: 13px;
+  color: #475569;
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.sync-manual-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.sync-status-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.sync-account {
+  margin-left: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.sync-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.sync-error {
+  margin-top: 8px;
+  margin-bottom: 0;
+  font-size: 12.5px;
+  color: #dc2626;
+}
+
+html[data-theme="dark"] .sync-form {
+  border-top-color: #334155;
+}
+
+html[data-theme="dark"] .sync-manual-details summary {
+  color: #cbd5e1;
+}
+
+html[data-theme="dark"] .sync-error {
+  color: #f87171;
+}

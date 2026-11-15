@@ -7,6 +7,7 @@ pub mod jwlibrary_export;
 pub mod languages;
 pub mod rewrite;
 pub mod state;
+pub mod sync;
 pub mod url_map;
 
 use std::sync::Arc;
@@ -17,6 +18,7 @@ use cache::DiskCache;
 use crawler::Crawler;
 use handler::ProtocolHandler;
 use state::StateManager;
+use sync::SyncManager;
 
 pub fn dirs_fallback_app_data() -> std::path::PathBuf {
     if let Some(home) = std::env::var_os("HOME") {
@@ -55,6 +57,7 @@ pub fn run_app() {
     };
 
     let crawler = Crawler::new(cache.clone());
+    let sync_mgr = SyncManager::new(state_mgr.clone());
 
     let initial_marks = state_mgr
         .get_marks()
@@ -81,6 +84,7 @@ pub fn run_app() {
         .manage(state_mgr.clone())
         .manage(cache)
         .manage(crawler)
+        .manage(sync_mgr.clone())
         .invoke_handler(tauri::generate_handler![
             commands::get_marks,
             commands::set_marks,
@@ -105,6 +109,12 @@ pub fn run_app() {
             commands::save_library_offline,
             commands::cancel_library_offline,
             commands::open_manager_window,
+            commands::get_sync_status,
+            commands::sync_now,
+            commands::connect_nextcloud,
+            commands::connect_nextcloud_browser,
+            commands::connect_google_drive,
+            commands::disconnect_sync,
         ])
         .register_asynchronous_uri_scheme_protocol("wol", move |_app, request, responder| {
             let handler = handler.clone();
@@ -203,12 +213,49 @@ pub fn run_app() {
                 (WebviewUrl::App("setup.html".into()), "OfflineWOL — Setup")
             };
 
+            let navigation_app = app.handle().clone();
             let _win = WebviewWindowBuilder::new(app, "main", initial_url)
                 .title(initial_title)
                 .inner_size(1200.0, 800.0)
                 .theme(settings.theme.to_tauri_theme())
+                .initialization_script(r#"
+                    window.addEventListener('click', function (event) {
+                        if (event.button !== 0 || event.defaultPrevented) return;
+                        const element = event.target instanceof Element ? event.target : event.target?.parentElement;
+                        const link = element?.closest('a[href]');
+                        if (!link || link.hasAttribute('download')) return;
+                        const target = (link.getAttribute('target') || '').toLowerCase();
+                        if (target !== '_blank' && !link.hasAttribute('data-video')) return;
+                        let url;
+                        try { url = new URL(link.href, document.baseURI); } catch (_) { return; }
+                        if (!['http:', 'https:', 'wol:'].includes(url.protocol)) return;
+                        event.preventDefault();
+                        event.stopImmediatePropagation();
+                        window.location.assign(url.href);
+                    }, true);
+                "#)
                 .initialization_script(&init_script)
+                .on_new_window(move |url, _features| {
+                    if matches!(url.scheme(), "http" | "https" | "wol") {
+                        if let Some(window) = navigation_app.get_webview_window("main") {
+                            let _ = window.navigate(url);
+                        }
+                    }
+                    tauri::webview::NewWindowResponse::Deny
+                })
                 .build()?;
+
+            // Background cloud sync on startup and every 5 minutes
+            let bg_sync = sync_mgr.clone();
+            let bg_app = app.handle().clone();
+            tauri::async_runtime::spawn(async move {
+                tokio::time::sleep(std::time::Duration::from_secs(2)).await;
+                loop {
+                    let _ = bg_sync.sync_now(Some(&bg_app)).await;
+                    tokio::time::sleep(std::time::Duration::from_secs(300)).await;
+                }
+            });
+
             Ok(())
         });
 

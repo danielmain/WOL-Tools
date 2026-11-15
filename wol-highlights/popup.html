@@ -36,6 +36,59 @@
       </div>
     </section>
 
+    <section id="cloud-sync">
+      <h2>Cloud Sync</h2>
+      <p class="hint">Sync highlights, notes, and textbox answers automatically across all your apps.</p>
+
+      <div id="sync-disconnected">
+        <div class="sync-buttons">
+          <button id="sync-google" type="button" class="btn-primary">Sign in with Google Drive</button>
+          <button id="sync-nc-toggle" type="button" class="btn-secondary">Connect Nextcloud…</button>
+        </div>
+
+        <div id="sync-nc-form" hidden>
+          <label class="sync-label">
+            Nextcloud Server URL
+            <input id="nc-server" type="url" class="sync-input" placeholder="https://cloud.example.com">
+          </label>
+          <div class="sync-buttons" style="margin-top: 8px;">
+            <button id="nc-browser" type="button" class="btn-primary">Sign in via Browser</button>
+          </div>
+          <details class="sync-manual">
+            <summary>Or enter Username &amp; App Password</summary>
+            <label class="sync-label">
+              Username
+              <input id="nc-username" type="text" class="sync-input" placeholder="username">
+            </label>
+            <label class="sync-label">
+              App Password
+              <input id="nc-password" type="password" class="sync-input" placeholder="xxxx-xxxx-xxxx-xxxx">
+            </label>
+            <label class="sync-label">
+              Remote File Path
+              <input id="nc-remote-path" type="text" class="sync-input" value="OfflineWOL/wol-highlights-sync.json">
+            </label>
+            <button id="nc-manual" type="button" class="btn-secondary" style="margin-top: 8px;">Connect with App Password</button>
+          </details>
+        </div>
+      </div>
+
+      <div id="sync-connected" hidden>
+        <div class="sync-status-bar">
+          <div>
+            <span id="sync-badge" class="sync-badge">Connected</span>
+            <span id="sync-account" class="sync-account"></span>
+          </div>
+          <div class="sync-buttons">
+            <button id="sync-now" type="button" class="btn-secondary">Sync Now</button>
+            <button id="sync-disconnect" type="button">Disconnect</button>
+          </div>
+        </div>
+        <p id="sync-meta" class="hint"></p>
+        <p id="sync-err" class="sync-err" hidden></p>
+      </div>
+    </section>
+
     <section id="page">
       <h2>This page</h2>
       <p id="page-status">Open an article on wol.jw.org.</p>
@@ -44,6 +97,7 @@
     <p id="message" role="status"></p>
     <script src="lib/sql-wasm.js"></script>
     <script src="lib/backup.js"></script>
+    <script src="lib/sync.js"></script>
     <script type="module" src="popup.js"></script>
   </body>
 </html>

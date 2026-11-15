@@ -46,6 +46,11 @@ function symbolFromUrl() {
   return match ? decodeURIComponent(match[1]).toLowerCase() : null;
 }
 
+function bibleReferenceFromUrl() {
+  const match = location.pathname.match(/\/wol\/(?:b|binav)\/r\d+\/lp-[a-z0-9]+\/([^/]+)\/(\d+)\/(\d+)/i);
+  return match ? { pub: decodeURIComponent(match[1]).toLowerCase(), book: match[2], chapter: match[3] } : null;
+}
+
 function symbolFromArticle(article, index) {
   const known = new Set(Object.keys(index?.bible || {}).map((key) => key.split("|")[1]));
   for (const className of article.classList) {
@@ -358,6 +363,7 @@ function observe() {
     observer = new MutationObserver((mutations) => {
       let needsApply = false;
       for (const m of mutations) {
+        if (m.target instanceof Element && m.target.closest(".wol-note-card")) continue;
         if (m.type === "childList") {
           for (const node of m.addedNodes) {
             if (node instanceof Element) {
@@ -425,13 +431,22 @@ ext.runtime.onMessage.addListener((message, sender, sendResponse) => {
   return false;
 });
 
-console.log("[WOL Highlights Content] Initializing content script apply()...");
-apply().catch((error) => {
-  console.error("[WOL Highlights Content] Initial apply() failed:", error);
-  document.documentElement.dataset.wolHighlights = `error:${error && error.message}`;
-});
-observe();
-console.log("[WOL Highlights Content] MutationObserver listening for DOM changes.");
+function startHighlights() {
+  console.log("[WOL Highlights Content] Initializing content script apply()...");
+  apply().catch((error) => {
+    console.error("[WOL Highlights Content] Initial apply() failed:", error);
+    document.documentElement.dataset.wolHighlights = `error:${error && error.message}`;
+  });
+  observe();
+  console.log("[WOL Highlights Content] MutationObserver listening for DOM changes.");
+}
+
+// The desktop webview injects this script at document start, before the DOM exists.
+if (document.readyState === "loading") {
+  document.addEventListener("DOMContentLoaded", startHighlights, { once: true });
+} else {
+  startHighlights();
+}
 
 // ==========================================
 // Floating Selection Toolbar & Interactive Highlighting
@@ -746,26 +761,76 @@ function clearNoteCards(article) {
   }
 }
 
-function createNoteCardElement(notes) {
-  const items = (Array.isArray(notes) ? notes : [notes]).filter((n) => n && (n.title?.trim() || n.content?.trim()));
-  if (!items.length) return null;
+function createNoteCardElement(notes, scope, key, block) {
+  const items = Array.isArray(notes) ? notes : [notes];
   const card = document.createElement("div");
   card.className = "wol-note-card";
-  for (const note of items) {
-    if (note.title && note.title.trim()) {
-      const titleEl = document.createElement("div");
-      titleEl.className = "wol-note-card-title";
-      titleEl.textContent = note.title.trim();
-      card.appendChild(titleEl);
-    }
-    if (note.content && note.content.trim()) {
-      const bodyEl = document.createElement("div");
-      bodyEl.className = "wol-note-card-body";
-      bodyEl.textContent = note.content.trim();
-      card.appendChild(bodyEl);
-    }
-  }
-  return card;
+  items.forEach((note, position) => {
+    if (!note || !(note.title?.trim() || note.content?.trim())) return;
+    const item = document.createElement("div");
+    item.className = "wol-note-item";
+    const title = document.createElement("div");
+    title.className = "wol-note-card-title";
+    title.textContent = note.title || "";
+    const body = document.createElement("div");
+    body.className = "wol-note-card-body";
+    body.textContent = note.content || "";
+    const edit = document.createElement("button");
+    edit.type = "button";
+    edit.className = "wol-note-edit-button";
+    edit.setAttribute("aria-label", "Edit note");
+    edit.title = "Edit note";
+    edit.innerHTML = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L8 18l-4 1 1-4Z"/></svg>';
+    edit.addEventListener("click", () => {
+      const form = document.createElement("form");
+      form.className = "wol-note-edit";
+      const titleInput = document.createElement("input");
+      titleInput.value = note.title || "";
+      titleInput.placeholder = "Title (optional)";
+      titleInput.setAttribute("aria-label", "Note title");
+      const contentInput = document.createElement("textarea");
+      contentInput.value = note.content || "";
+      contentInput.placeholder = "Write your note…";
+      contentInput.setAttribute("aria-label", "Note content");
+      const save = document.createElement("button");
+      save.type = "submit";
+      save.className = "wol-note-save";
+      save.textContent = "Save";
+      const cancel = document.createElement("button");
+      cancel.type = "button";
+      cancel.className = "wol-note-cancel";
+      cancel.textContent = "Cancel";
+      const error = document.createElement("div");
+      error.className = "wol-note-error";
+      error.setAttribute("role", "alert");
+      cancel.addEventListener("click", () => form.replaceWith(item));
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        save.disabled = true;
+        try {
+          const marks = await getOrInitMarks();
+          const stored = marks.notes?.[scope]?.[key]?.[block];
+          const list = Array.isArray(stored) ? stored : [stored];
+          const target = note.guid ? list.find((entry) => entry?.guid === note.guid) : list[position];
+          if (!target) throw new Error("This note is no longer available. Reload the page and try again.");
+          target.title = titleInput.value || null;
+          target.content = contentInput.value;
+          target.lastModified = new Date().toISOString();
+          recalculateMetadata(marks);
+          await ext.storage.local.set({ wolMarks: marks });
+        } catch (err) {
+          error.textContent = err.message || "Could not save the note.";
+          save.disabled = false;
+        }
+      });
+      form.append(titleInput, contentInput, save, cancel, error);
+      item.replaceWith(form);
+      contentInput.focus();
+    });
+    item.append(title, body, edit);
+    card.appendChild(item);
+  });
+  return card.childElementCount ? card : null;
 }
 
 function renderBlockNotes(article, index, docId, consumedNotePids) {
@@ -777,7 +842,7 @@ function renderBlockNotes(article, index, docId, consumedNotePids) {
       if (consumedNotePids?.has(String(pid))) continue;
       const target = article.querySelector(`[data-pid="${CSS.escape(String(pid))}"]`);
       if (!target) continue;
-      const card = createNoteCardElement(notes);
+      const card = createNoteCardElement(notes, "docs", docId, pid);
       if (card) {
         target.insertAdjacentElement("afterend", card);
         rendered += 1;
@@ -793,7 +858,7 @@ function renderBlockNotes(article, index, docId, consumedNotePids) {
         const spans = article.querySelectorAll(`span.v[id^="v${ref.book}-${ref.chapter}-${verse}-"]`);
         const target = spans.length ? spans[spans.length - 1] : null;
         if (!target) continue;
-        const card = createNoteCardElement(notes);
+        const card = createNoteCardElement(notes, "bible", key, verse);
         if (card) {
           target.insertAdjacentElement("afterend", card);
           rendered += 1;
@@ -812,7 +877,6 @@ function enableAndBindTextareas(article, index, docId) {
   let notesApplied = 0;
   const consumedNotePids = new Set();
 
-  const docNotes = (index?.notes?.docs && docId) ? index.notes.docs[docId] : null;
 
   for (const textarea of textareas) {
     // 1. Enable textarea unconditionally
@@ -837,40 +901,6 @@ function enableAndBindTextareas(article, index, docId) {
       }
     }
 
-    // 2b. Fallback: match in Note table by candidate PIDs
-    if (!foundText && docNotes) {
-      for (const pid of candidatePids) {
-        const entry = docNotes[pid];
-        if (entry) {
-          if (Array.isArray(entry) && entry.length > 0) {
-            const withContent = entry.find((n) => (n.content && n.content.trim()) || (n.title && n.title.trim())) || entry[0];
-            const title = withContent?.title?.trim() || "";
-            const content = withContent?.content?.trim() || "";
-            if (title && content && title !== content) {
-              foundText = `${title}\n\n${content}`;
-            } else if (content || title) {
-              foundText = content || title;
-            }
-            if (foundText) {
-              matchedPid = pid;
-              break;
-            }
-          } else if (typeof entry === "object" && (entry.content || entry.title)) {
-            const title = entry.title?.trim() || "";
-            const content = entry.content?.trim() || "";
-            if (title && content && title !== content) {
-              foundText = `${title}\n\n${content}`;
-            } else if (content || title) {
-              foundText = content || title;
-            }
-            if (foundText) {
-              matchedPid = pid;
-              break;
-            }
-          }
-        }
-      }
-    }
 
     if (foundText !== null) {
       if (document.activeElement !== textarea && textarea.value !== foundText) {

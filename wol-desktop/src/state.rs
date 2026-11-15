@@ -2,6 +2,7 @@ use std::fs::{self, File};
 use std::io::Write;
 use std::path::{Path, PathBuf};
 use std::sync::{Arc, Mutex};
+use std::time::{SystemTime, UNIX_EPOCH};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -89,6 +90,109 @@ pub fn default_cookies() -> std::collections::HashMap<String, String> {
     map
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Default)]
+#[serde(rename_all = "lowercase")]
+pub enum SyncProvider {
+    #[default]
+    None,
+    Nextcloud,
+    #[serde(rename = "googledrive")]
+    GoogleDrive,
+}
+
+fn default_remote_path() -> String {
+    "OfflineWOL/wol-highlights-sync.json".to_string()
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct NextcloudSyncConfig {
+    pub server_url: String,
+    pub username: String,
+    pub password: String,
+    #[serde(default = "default_remote_path")]
+    pub remote_path: String,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, Default)]
+#[serde(rename_all = "camelCase")]
+pub struct GoogleDriveSyncConfig {
+    pub access_token: String,
+    pub refresh_token: String,
+    pub expires_at: u64,
+    #[serde(default)]
+    pub file_id: Option<String>,
+    #[serde(default)]
+    pub email: Option<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SyncState {
+    #[serde(default)]
+    pub provider: SyncProvider,
+    #[serde(default)]
+    pub device_id: String,
+    #[serde(default)]
+    pub local_updated_at: Option<String>,
+    #[serde(default)]
+    pub last_synced_at: Option<String>,
+    #[serde(default)]
+    pub last_error: Option<String>,
+    #[serde(default)]
+    pub nextcloud: Option<NextcloudSyncConfig>,
+    #[serde(default)]
+    pub google_drive: Option<GoogleDriveSyncConfig>,
+}
+
+impl Default for SyncState {
+    fn default() -> Self {
+        Self {
+            provider: SyncProvider::None,
+            device_id: uuid::Uuid::new_v4().to_string(),
+            local_updated_at: None,
+            last_synced_at: None,
+            last_error: None,
+            nextcloud: None,
+            google_drive: None,
+        }
+    }
+}
+
+pub fn unix_seconds_now() -> u64 {
+    SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map(|d| d.as_secs())
+        .unwrap_or(0)
+}
+
+pub fn now_iso_utc() -> String {
+    let dur = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap_or_default();
+    let secs = dur.as_secs();
+    let millis = dur.subsec_millis();
+    let days = (secs / 86_400) as i64;
+    let rem = secs % 86_400;
+    let hour = rem / 3_600;
+    let minute = (rem % 3_600) / 60;
+    let second = rem % 60;
+
+    // Howard Hinnant's civil_from_days algorithm (UTC)
+    let z = days + 719_468;
+    let era = if z >= 0 { z } else { z - 146_096 } / 146_097;
+    let doe = (z - era * 146_097) as u64;
+    let yoe = (doe - doe / 1_460 + doe / 36_524 - doe / 146_096) / 365;
+    let y = (yoe as i64) + era * 400;
+    let doy = doe - (365 * yoe + yoe / 4 - yoe / 100);
+    let mp = (5 * doy + 2) / 153;
+    let day = doy - (153 * mp + 2) / 5 + 1;
+    let month = if mp < 10 { mp + 3 } else { mp - 9 };
+    let year = if month <= 2 { y + 1 } else { y };
+
+    format!("{year:04}-{month:02}-{day:02}T{hour:02}:{minute:02}:{second:02}.{millis:03}Z")
+}
+
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct AppStateData {
     pub version: u32,
@@ -97,6 +201,8 @@ pub struct AppStateData {
     pub wol_marks: Option<Value>,
     #[serde(default = "default_cookies")]
     pub cookies: std::collections::HashMap<String, String>,
+    #[serde(default)]
+    pub sync: SyncState,
 }
 
 impl Default for AppStateData {
@@ -106,6 +212,7 @@ impl Default for AppStateData {
             settings: AppSettings::default(),
             wol_marks: None,
             cookies: default_cookies(),
+            sync: SyncState::default(),
         }
     }
 }
@@ -139,6 +246,9 @@ impl StateManager {
 
         if data.cookies.is_empty() {
             data.cookies = default_cookies();
+        }
+        if data.sync.device_id.trim().is_empty() {
+            data.sync.device_id = uuid::Uuid::new_v4().to_string();
         }
 
         // Backfill base_host for legacy state.json files that already have a full home URL.
@@ -190,8 +300,38 @@ impl StateManager {
     pub fn set_marks(&self, marks: Option<Value>) -> Result<(), StateError> {
         let mut lock = self.data.lock().map_err(|_| StateError::LockPoisoned)?;
         lock.wol_marks = marks;
+        lock.sync.local_updated_at = Some(now_iso_utc());
         self.save_locked(&lock)?;
         Ok(())
+    }
+
+    pub fn set_marks_from_sync(
+        &self,
+        marks: Option<Value>,
+        synced_at: String,
+    ) -> Result<(), StateError> {
+        let mut lock = self.data.lock().map_err(|_| StateError::LockPoisoned)?;
+        lock.wol_marks = marks;
+        lock.sync.local_updated_at = Some(synced_at.clone());
+        lock.sync.last_synced_at = Some(synced_at);
+        lock.sync.last_error = None;
+        self.save_locked(&lock)?;
+        Ok(())
+    }
+
+    pub fn get_sync_state(&self) -> Result<SyncState, StateError> {
+        let lock = self.data.lock().map_err(|_| StateError::LockPoisoned)?;
+        Ok(lock.sync.clone())
+    }
+
+    pub fn update_sync_state<F>(&self, f: F) -> Result<SyncState, StateError>
+    where
+        F: FnOnce(&mut SyncState),
+    {
+        let mut lock = self.data.lock().map_err(|_| StateError::LockPoisoned)?;
+        f(&mut lock.sync);
+        self.save_locked(&lock)?;
+        Ok(lock.sync.clone())
     }
 
     pub fn get_settings(&self) -> Result<AppSettings, StateError> {

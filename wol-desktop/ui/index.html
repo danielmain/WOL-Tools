@@ -69,6 +69,65 @@
         </div>
       </section>
 
+      <section id="cloud-sync-card" class="card sync-card">
+        <div class="card-header">
+          <div>
+            <h2>Cloud Sync</h2>
+            <p class="card-subtitle">Automatically sync highlights, notes, and textbox answers across all your devices without manual backups.</p>
+          </div>
+        </div>
+
+        <div id="sync-disconnected">
+          <div class="sync-provider-tabs">
+            <button id="sync-btn-google" type="button" class="btn-primary">Sign in with Google Drive</button>
+            <button id="sync-btn-nextcloud-toggle" type="button" class="btn-secondary">Connect Nextcloud…</button>
+          </div>
+
+          <div id="sync-nextcloud-form" class="sync-form" hidden>
+            <div class="form-group">
+              <label for="nc-server">Nextcloud Server URL</label>
+              <input id="nc-server" type="url" class="form-control" placeholder="https://cloud.example.com">
+            </div>
+            <div class="sync-nc-actions">
+              <button id="nc-browser-login" type="button" class="btn-primary">Sign in via Browser (Recommended)</button>
+            </div>
+            <details class="sync-manual-details">
+              <summary>Or enter Username &amp; App Password manually</summary>
+              <div class="sync-manual-grid">
+                <div class="form-group">
+                  <label for="nc-username">Username</label>
+                  <input id="nc-username" type="text" class="form-control" placeholder="username">
+                </div>
+                <div class="form-group">
+                  <label for="nc-password">App Password</label>
+                  <input id="nc-password" type="password" class="form-control" placeholder="xxxx-xxxx-xxxx-xxxx">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="nc-remote-path">Remote File Path</label>
+                <input id="nc-remote-path" type="text" class="form-control" value="OfflineWOL/wol-highlights-sync.json">
+              </div>
+              <button id="nc-manual-connect" type="button" class="btn-secondary">Connect with App Password</button>
+            </details>
+          </div>
+        </div>
+
+        <div id="sync-connected" hidden>
+          <div class="sync-status-row">
+            <div>
+              <span id="sync-provider-badge" class="badge badge-html">Connected</span>
+              <span id="sync-account-label" class="sync-account"></span>
+            </div>
+            <div class="sync-actions">
+              <button id="sync-now-btn" type="button" class="btn-primary">Sync Now</button>
+              <button id="sync-disconnect-btn" type="button" class="btn-danger-outline">Disconnect</button>
+            </div>
+          </div>
+          <p id="sync-meta" class="hint" style="margin-top: 8px; margin-bottom: 0;"></p>
+          <p id="sync-error" class="sync-error" hidden></p>
+        </div>
+      </section>
+
       <section id="page" class="card card-compact">
         <h2>Main Window</h2>
         <p id="page-status">Open an article in the main window.</p>

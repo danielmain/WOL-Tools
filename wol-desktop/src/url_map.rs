@@ -82,7 +82,8 @@ fn resolve_host_and_path<'a>(
     }
 
     // Subresources referenced from root on the configured base host
-    if path.starts_with("/assets/")
+    if path == "/wol/ls"
+        || path.starts_with("/assets/")
         || path.starts_with("/icon/")
         || path.starts_with("/download/")
         || path.starts_with("/img/")
@@ -149,6 +150,15 @@ mod tests {
         assert_eq!(
             map_wol_uri_to_canonical(&uri_icon, BASE_HOST).unwrap().as_str(),
             "https://wol.example.org/icon/favicon.ico"
+        );
+    }
+
+    #[test]
+    fn maps_root_localization_endpoint() {
+        let uri = Uri::from_str("wol://es/wol/ls?locale=es&type=documentOptions&wtlocale=S").unwrap();
+        assert_eq!(
+            map_wol_uri_to_canonical(&uri, BASE_HOST).unwrap().as_str(),
+            "https://wol.example.org/wol/ls?locale=es&type=documentOptions&wtlocale=S"
         );
     }
 

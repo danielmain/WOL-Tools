@@ -393,3 +393,192 @@ const initial = await currentIndex();
 console.log("[WOL Highlights Popup] Initial stored index:", initial ? { fileName: initial.fileName, highlights: initial.highlightCount } : "None");
 renderIndex(initial);
 await refreshPage();
+await initCloudSync();
+
+async function sendSyncMessage(type, payload) {
+  const resp = await ext.runtime.sendMessage({ type, payload });
+  if (!resp || !resp.ok) {
+    throw new Error(resp?.error || "Sync request failed.");
+  }
+  return resp.data;
+}
+
+async function requestOriginPermission(serverUrl) {
+  if (!ext.permissions?.request || !globalThis.WOLSync) return;
+  try {
+    const normalized = globalThis.WOLSync.normalizeNextcloudServerUrl(serverUrl);
+    const origin = new URL(normalized).origin;
+    await ext.permissions.request({ origins: [`${origin}/*`] });
+  } catch (err) {
+    console.warn("[WOL Highlights Popup] Optional host permission request:", err);
+  }
+}
+
+async function initCloudSync() {
+  const disconnectedEl = document.querySelector("#sync-disconnected");
+  const connectedEl = document.querySelector("#sync-connected");
+  const btnGoogle = document.querySelector("#sync-google");
+  const btnNcToggle = document.querySelector("#sync-nc-toggle");
+  const ncForm = document.querySelector("#sync-nc-form");
+  const ncServer = document.querySelector("#nc-server");
+  const ncBrowser = document.querySelector("#nc-browser");
+  const ncUsername = document.querySelector("#nc-username");
+  const ncPassword = document.querySelector("#nc-password");
+  const ncRemotePath = document.querySelector("#nc-remote-path");
+  const ncManual = document.querySelector("#nc-manual");
+  const syncBadge = document.querySelector("#sync-badge");
+  const syncAccount = document.querySelector("#sync-account");
+  const syncNowBtn = document.querySelector("#sync-now");
+  const disconnectBtn = document.querySelector("#sync-disconnect");
+  const syncMeta = document.querySelector("#sync-meta");
+  const syncErr = document.querySelector("#sync-err");
+
+  function renderSyncStatus(status) {
+    if (!status || !status.connected) {
+      disconnectedEl.hidden = false;
+      connectedEl.hidden = true;
+      return;
+    }
+    disconnectedEl.hidden = true;
+    connectedEl.hidden = false;
+    syncBadge.textContent = status.provider === "googledrive" ? "Google Drive" : "Nextcloud";
+    syncAccount.textContent = status.serverUrl
+      ? `${status.accountLabel || ""} @ ${status.serverUrl}`
+      : (status.accountLabel || "Connected");
+    const last = status.lastSyncedAt ? formatWhen(status.lastSyncedAt) : "Never";
+    syncMeta.textContent = status.syncing ? "Syncing…" : `Last synced: ${last}`;
+    if (status.lastError) {
+      syncErr.textContent = `Last sync error: ${status.lastError}`;
+      syncErr.hidden = false;
+    } else {
+      syncErr.hidden = true;
+    }
+  }
+
+  async function refreshSyncStatus() {
+    try {
+      const status = await sendSyncMessage("wol-sync-status");
+      renderSyncStatus(status);
+    } catch (err) {
+      console.warn("[WOL Highlights Popup] sync status error:", err);
+    }
+  }
+
+  ext.storage.onChanged.addListener(async (changes, area) => {
+    if (area !== "local") return;
+    if (changes.wolMarks) {
+      renderIndex(await currentIndex());
+    }
+    if (changes.wolSync) {
+      await refreshSyncStatus();
+    }
+  });
+
+  btnNcToggle?.addEventListener("click", () => {
+    ncForm.hidden = !ncForm.hidden;
+  });
+
+  btnGoogle?.addEventListener("click", async () => {
+    btnGoogle.disabled = true;
+    setMessage("Opening Google sign-in…");
+    try {
+      const status = await sendSyncMessage("wol-sync-google");
+      renderSyncStatus(status);
+      renderIndex(await currentIndex());
+      await refreshPage();
+      setMessage("Google Drive connected and synced!");
+    } catch (err) {
+      setMessage(err.message || "Google Drive sign-in failed.", true);
+    } finally {
+      btnGoogle.disabled = false;
+    }
+  });
+
+  ncBrowser?.addEventListener("click", async () => {
+    const serverUrl = ncServer.value.trim();
+    if (!serverUrl) {
+      setMessage("Please enter your Nextcloud server URL.", true);
+      return;
+    }
+    ncBrowser.disabled = true;
+    setMessage("Opening Nextcloud sign-in…");
+    try {
+      await requestOriginPermission(serverUrl);
+      const status = await sendSyncMessage("wol-sync-nextcloud-browser", {
+        serverUrl,
+        remotePath: ncRemotePath.value.trim() || null,
+      });
+      renderSyncStatus(status);
+      renderIndex(await currentIndex());
+      await refreshPage();
+      setMessage("Nextcloud connected and synced!");
+    } catch (err) {
+      setMessage(err.message || "Nextcloud sign-in failed.", true);
+    } finally {
+      ncBrowser.disabled = false;
+    }
+  });
+
+  ncManual?.addEventListener("click", async () => {
+    const serverUrl = ncServer.value.trim();
+    const username = ncUsername.value.trim();
+    const password = ncPassword.value;
+    if (!serverUrl || !username || !password) {
+      setMessage("Please fill in Server URL, Username, and App Password.", true);
+      return;
+    }
+    ncManual.disabled = true;
+    setMessage("Connecting to Nextcloud…");
+    try {
+      await requestOriginPermission(serverUrl);
+      const status = await sendSyncMessage("wol-sync-nextcloud", {
+        serverUrl,
+        username,
+        password,
+        remotePath: ncRemotePath.value.trim() || null,
+      });
+      renderSyncStatus(status);
+      renderIndex(await currentIndex());
+      await refreshPage();
+      setMessage("Nextcloud connected and synced!");
+    } catch (err) {
+      setMessage(err.message || "Nextcloud connection failed.", true);
+    } finally {
+      ncManual.disabled = false;
+    }
+  });
+
+  syncNowBtn?.addEventListener("click", async () => {
+    syncNowBtn.disabled = true;
+    syncMeta.textContent = "Syncing…";
+    try {
+      const status = await sendSyncMessage("wol-sync-now");
+      renderSyncStatus(status);
+      if (status.changedLocal) {
+        renderIndex(await currentIndex());
+        await refreshPage();
+      }
+      setMessage("Sync complete.");
+    } catch (err) {
+      setMessage(err.message || "Sync failed.", true);
+      await refreshSyncStatus();
+    } finally {
+      syncNowBtn.disabled = false;
+    }
+  });
+
+  disconnectBtn?.addEventListener("click", async () => {
+    if (!window.confirm("Disconnect cloud sync? Your local highlights will stay in the browser.")) {
+      return;
+    }
+    try {
+      const status = await sendSyncMessage("wol-sync-disconnect");
+      renderSyncStatus(status);
+      setMessage("Cloud sync disconnected.");
+    } catch (err) {
+      setMessage(err.message || "Disconnect failed.", true);
+    }
+  });
+
+  await refreshSyncStatus();
+}

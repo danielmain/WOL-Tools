@@ -274,7 +274,8 @@ pub fn build_injected_script_with_theme(
   }}
 
   function injectNavPill() {{
-    if (window.location.protocol !== "wol:" || window.top !== window.self) return;
+    if (window.top !== window.self) return;
+    if (!["wol:", "http:", "https:"].includes(window.location.protocol)) return;
     if (document.getElementById("wol-desktop-nav-pill")) return;
 
     if (!document.getElementById("wol-desktop-nav-css")) {{
@@ -705,6 +706,12 @@ pub fn build_injected_script_with_theme(
     pill.appendChild(sep);
     pill.appendChild(fwdBtn);
 
+    // Other sites only need history controls; the remaining controls are for WOL.
+    if (window.location.protocol !== "wol:") {{
+      if (document.body) document.body.appendChild(pill);
+      return;
+    }}
+
     const settingsSep = document.createElement("span");
     settingsSep.className = "wol-nav-sep";
     settingsSep.setAttribute("aria-hidden", "true");
@@ -1124,91 +1131,11 @@ pub fn build_injected_script_with_theme(
       }};
     }}
 
-    function syncNavState() {{
-      if (window.navigation && typeof window.navigation.canGoBack === "boolean") {{
-        backBtn.disabled = !window.navigation.canGoBack;
-        fwdBtn.disabled = !window.navigation.canGoForward;
-      }}
-    }}
-
-    syncNavState();
-    window.addEventListener("pageshow", syncNavState);
-    window.addEventListener("popstate", syncNavState);
-    if (window.navigation && window.navigation.addEventListener) {{
-      window.navigation.addEventListener("currententrychange", syncNavState);
-    }}
-
     if (document.body) {{
       document.body.appendChild(pill);
       document.body.appendChild(popover);
     }}
 
-    // Two-finger touchpad horizontal swipe support (back / forward)
-    if (!window.__wolSwipeNavInstalled) {{
-      window.__wolSwipeNavInstalled = true;
-      let swipeDeltaX = 0;
-      let swipeResetTimer = null;
-      let swipeCooldownUntil = 0;
-
-      function canScrollHorizontally(target, deltaX) {{
-        let el = target && target.nodeType === 1 ? target : null;
-        while (el && el !== document.documentElement) {{
-          if (el.scrollWidth > el.clientWidth + 1) {{
-            const style = window.getComputedStyle(el);
-            const overflowX = style.overflowX;
-            if (overflowX === "auto" || overflowX === "scroll") {{
-              if (deltaX < 0 && el.scrollLeft > 0) return true;
-              if (deltaX > 0 && el.scrollLeft + el.clientWidth < el.scrollWidth - 1) return true;
-            }}
-          }}
-          el = el.parentElement;
-        }}
-        if (document.documentElement.scrollWidth > document.documentElement.clientWidth + 1) {{
-          if (deltaX < 0 && window.scrollX > 0) return true;
-          if (deltaX > 0 && window.scrollX + window.innerWidth < document.documentElement.scrollWidth - 1) return true;
-        }}
-        return false;
-      }}
-
-      function triggerSwipe(direction) {{
-        const btn = direction === "back" ? backBtn : fwdBtn;
-        if (btn.disabled) return;
-        btn.style.background = "rgba(128, 128, 128, 0.22)";
-        setTimeout(function() {{ btn.style.background = ""; }}, 180);
-        if (direction === "back") {{
-          window.history.back();
-        }} else {{
-          window.history.forward();
-        }}
-      }}
-
-      window.addEventListener("wheel", function(e) {{
-        const now = Date.now();
-        if (now < swipeCooldownUntil) return;
-        if (Math.abs(e.deltaX) <= Math.abs(e.deltaY) * 1.5 || Math.abs(e.deltaX) < 2) {{
-          swipeDeltaX = 0;
-          return;
-        }}
-        if (canScrollHorizontally(e.target, e.deltaX)) {{
-          swipeDeltaX = 0;
-          return;
-        }}
-
-        swipeDeltaX += e.deltaX;
-        if (swipeResetTimer) clearTimeout(swipeResetTimer);
-        swipeResetTimer = setTimeout(function() {{ swipeDeltaX = 0; }}, 220);
-
-        if (swipeDeltaX <= -90) {{
-          swipeDeltaX = 0;
-          swipeCooldownUntil = now + 600;
-          triggerSwipe("back");
-        }} else if (swipeDeltaX >= 90) {{
-          swipeDeltaX = 0;
-          swipeCooldownUntil = now + 600;
-          triggerSwipe("forward");
-        }}
-      }}, {{ passive: true }});
-    }}
   }}
 
   // --- Dark Reader Theme Controller ---

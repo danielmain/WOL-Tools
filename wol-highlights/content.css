@@ -223,3 +223,138 @@ body.wol-dark-mode .wol-note-card {
 }
 
 
+
+.wol-note-item + .wol-note-item {
+  border-top: 1px solid #d0d7de;
+  margin-top: 8px;
+  padding-top: 8px;
+}
+
+.wol-note-edit input, .wol-note-edit textarea {
+  box-sizing: border-box;
+  display: block;
+  width: 100%;
+  margin-bottom: 8px;
+  color: inherit;
+  background: transparent;
+}
+
+.wol-note-edit textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.wol-note-card button {
+  margin: 6px 8px 0 0;
+}
+
+.wol-note-item {
+  position: relative;
+  padding-inline-end: 34px;
+}
+
+.wol-note-card .wol-note-edit-button {
+  position: absolute;
+  inset-block-start: 0;
+  inset-inline-end: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.65;
+}
+
+.wol-note-card .wol-note-edit-button:hover,
+.wol-note-card .wol-note-edit-button:focus-visible {
+  border-color: currentColor;
+  opacity: 1;
+}
+
+.wol-note-card .wol-note-edit {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+
+.wol-note-card .wol-note-edit input,
+.wol-note-card .wol-note-edit textarea {
+  flex: 1 0 100% !important;
+  box-sizing: border-box !important;
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 9px 11px !important;
+  border: 1px solid #b8c4d1 !important;
+  border-radius: 6px !important;
+  background: #fff !important;
+  color: #24292f !important;
+  font: inherit !important;
+  line-height: 1.45 !important;
+}
+
+.wol-note-card .wol-note-edit textarea {
+  min-height: 120px !important;
+  resize: vertical !important;
+}
+
+.wol-note-card .wol-note-edit input:focus,
+.wol-note-card .wol-note-edit textarea:focus {
+  border-color: #4a7ab5 !important;
+  outline: 2px solid rgba(74, 122, 181, 0.25) !important;
+  outline-offset: 0 !important;
+}
+
+.wol-note-card .wol-note-edit button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  min-height: 34px !important;
+  margin: 2px 0 0 !important;
+  padding: 6px 16px !important;
+  border: 1px solid #b8c4d1 !important;
+  border-radius: 6px !important;
+  background: #fff !important;
+  color: #24292f !important;
+  font: inherit !important;
+  font-weight: 600 !important;
+  cursor: pointer !important;
+}
+
+.wol-note-card .wol-note-edit .wol-note-save {
+  border-color: #37699f !important;
+  background: #37699f !important;
+  color: #fff !important;
+}
+
+.wol-note-card .wol-note-edit button:hover { filter: brightness(0.92); }
+.wol-note-card .wol-note-edit button:focus-visible { outline: 2px solid #4a7ab5 !important; outline-offset: 2px !important; }
+.wol-note-card .wol-note-edit button:disabled { opacity: 0.6; cursor: wait !important; }
+.wol-note-card .wol-note-error { flex-basis: 100%; color: #b42318; }
+
+@media (prefers-color-scheme: dark) {
+  .wol-note-card .wol-note-edit input,
+  .wol-note-card .wol-note-edit textarea,
+  .wol-note-card .wol-note-edit .wol-note-cancel {
+    background: #252a32 !important;
+    border-color: #596575 !important;
+    color: #e6edf3 !important;
+  }
+  .wol-note-card .wol-note-error { color: #ff9b91; }
+}
+
+body.wol-dark-mode .wol-note-card .wol-note-edit input,
+body.wol-dark-mode .wol-note-card .wol-note-edit textarea,
+body.wol-dark-mode .wol-note-card .wol-note-edit .wol-note-cancel {
+  background: #252a32 !important;
+  border-color: #596575 !important;
+  color: #e6edf3 !important;
+}
+body.wol-dark-mode .wol-note-card .wol-note-error { color: #ff9b91; }
