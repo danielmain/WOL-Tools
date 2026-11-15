@@ -133,6 +133,16 @@ Key architectural decisions (do not reopen without cause):
   is what makes highlights visible in the TUI. Don't reintroduce a strip-ANSI pass.
 - **TUI edits are real edits.** `1`-`6`, `0`/`x` and the note editor write straight through
   `State::set_stored_index`, so the desktop app and extension see them immediately.
+- **`wol` with no subcommand opens the TUI, desktop-style.** Startup target is
+  `settings.home` → the configured language's home (`wol_core::languages::home_url`) → the
+  language picker on a fresh install. The picker saves `baseHost`/`language`/`region`/`home`
+  exactly like `wol-desktop/ui/manager.js`, so both front-ends agree.
+- **WOL navigation pages are cards/anchors, not study paragraphs.** `dom` seeds a block's
+  style from the block element itself (so `<a>` roots keep their `href`), collapses
+  whitespace in text nodes, and trims block tails; `render::article::is_nav_link` turns
+  identifier-less all-link blocks into a bulleted link list. `Tab` in the TUI browses those
+  links (`Reader::step_link`/`nearest_link`). Do not "simplify" the whitespace handling —
+  pretty-printed card markup otherwise renders blank lines and loses hrefs.
 - **`--no-color` / `NO_COLOR` / piped output** fall back to `⟦…⟧` highlight markers; keep that
   path working (it is what the tests assert on).
 

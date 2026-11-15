@@ -55,6 +55,9 @@ pub enum BlockKind {
 pub struct Link {
     pub href: String,
     pub text: String,
+    /// Index into [`Document::nodes`] of the block this link lives in, so a UI
+    /// can scroll to it (`links()[i].node` → rendered line).
+    pub node: usize,
 }
 
 /// A textarea (`.gen-field`) whose value comes from `InputField` rows.
@@ -182,13 +185,14 @@ fn finalize(document: &mut Document) {
         }
     }
     // Links are collected after the fact so heading anchors and footnotes show up.
-    for node in &document.nodes {
+    for (index, node) in document.nodes.iter().enumerate() {
         if let Node_::Block(block) = node {
             for piece in &block.pieces {
                 if let Some(href) = &piece.href {
                     links.push(Link {
                         href: href.clone(),
                         text: slice_utf16(&block.text, piece.start, piece.end),
+                        node: index,
                     });
                 }
             }
@@ -353,7 +357,12 @@ impl<'a> Collector<'a> {
         identifier: Option<String>,
     ) -> Option<Block> {
         let mut sink = TextSink::default();
-        collect_text(element, &Style::default(), &mut sink, self.warnings);
+        // Seed the style from the block element itself so a block that *is* a
+        // link (`<li><a href>…</a></li>` on WOL navigation pages) keeps its
+        // `href`; otherwise nav pages render as unlinked text.
+        let base = style_for(&element, &Style::default());
+        collect_text(element, &base, &mut sink, self.warnings);
+        sink.trim_end();
 
         if sink.text.is_empty() && sink.pieces.is_empty() {
             return None;
@@ -396,15 +405,60 @@ struct TextSink {
 }
 
 impl TextSink {
+    /// Drop trailing whitespace (WOL cards end with indentation before `</a>`).
+    /// Tokens are unaffected — whitespace never forms one.
+    fn trim_end(&mut self) {
+        let kept_bytes = self.text.trim_end().len();
+        if kept_bytes == self.text.len() {
+            return;
+        }
+        let kept_units = tokenize::utf16_len_of(&self.text[..kept_bytes]);
+        self.text.truncate(kept_bytes);
+        for piece in &mut self.pieces {
+            piece.end = piece.end.min(kept_units);
+        }
+        self.pieces.retain(|piece| piece.start < piece.end);
+    }
+
+    /// Append one text node.
+    ///
+    /// Whitespace is collapsed to single spaces (and the block never starts
+    /// with one). WOL navigation cards are pretty-printed with newlines and
+    /// deep indentation inside the anchor, which would otherwise wrap into
+    /// blank lines. This cannot shift token coordinates: the tokenizer skips
+    /// whitespace entirely, so token indices are identical either way.
     fn push(&mut self, value: &str, style: &Style) {
-        // Whitespace-only nodes never affect token coordinates (the tokenizer
-        // skips them), so dropping them keeps pieces text-free of separators
-        // without shifting any token index.
-        if value.trim().is_empty() {
+        if value.is_empty() {
+            return;
+        }
+        let mut collapsed = String::with_capacity(value.len());
+        let mut previous_space = false;
+        for character in value.chars() {
+            if character.is_whitespace() {
+                if !previous_space {
+                    collapsed.push(' ');
+                }
+                previous_space = true;
+            } else {
+                collapsed.push(character);
+                previous_space = false;
+            }
+        }
+        if self.text.is_empty() {
+            // No leading separator at the start of a block.
+            let trimmed = collapsed.trim_start();
+            if trimmed.is_empty() {
+                return;
+            }
+            collapsed = trimmed.to_string();
+        } else if collapsed.starts_with(' ') && self.text.ends_with(' ') {
+            collapsed.remove(0);
+        }
+        if collapsed.is_empty() {
             return;
         }
         let start = tokenize::utf16_len_of(&self.text);
-        self.text.push_str(value);
+        self.text.push_str(&collapsed);
         let end = tokenize::utf16_len_of(&self.text);
         self.pieces.push(TextPiece {
             start,
@@ -548,8 +602,8 @@ mod tests {
         assert_eq!(second.tokens.len(), tokenize::tokenize("God is love.").len());
 
         let third = document.block("3").expect("paragraph 3");
-        // a.cl and .fn skipped, normal links kept.
-        assert_eq!(third.text, "See  and link.");
+        // a.cl and .fn skipped, normal links kept, whitespace collapsed.
+        assert_eq!(third.text, "See and link.");
     }
 
     #[test]

@@ -19,13 +19,16 @@ pub async fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
         None => Context::open()?,
     };
 
-    match &cli.command {
+    let command = cli.command.clone().unwrap_or(Command::Tui { target: None });
+
+    match &command {
         Command::Read {
             target,
             refresh,
             no_gutter,
             no_notes,
             legend,
+            links,
             output,
         } => {
             read(
@@ -36,6 +39,7 @@ pub async fn run(cli: &Cli) -> Result<(), Box<dyn std::error::Error>> {
                 !*no_gutter,
                 !*no_notes,
                 *legend,
+                *links,
                 output.as_deref(),
             )
             .await
@@ -104,6 +108,7 @@ async fn read(
     gutter: bool,
     notes: bool,
     legend: bool,
+    links: bool,
     output: Option<&Path>,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let theme = theme(cli);
@@ -137,6 +142,22 @@ async fn read(
         theme.paint(crate::render::StyleRole::Dim, page.source.label()),
         theme.paint(crate::render::StyleRole::Dim, page.canonical.as_str())
     ));
+    if links {
+        lines.push(String::new());
+        lines.push(theme.paint(
+            crate::render::StyleRole::Accent,
+            &format!("Links ({})", document.links.len()),
+        ));
+        for (index, link) in document.links.iter().enumerate() {
+            let label: String = link.text.trim().chars().take(60).collect();
+            lines.push(format!(
+                "  {:>3}. {}{}",
+                index + 1,
+                theme.paint(crate::render::StyleRole::Body, &label),
+                theme.paint(crate::render::StyleRole::Dim, &format!("  {}", link.href)),
+            ));
+        }
+    }
     if legend {
         lines.push(String::new());
         lines.push(theme.paint(crate::render::StyleRole::Accent, "Highlight colours"));

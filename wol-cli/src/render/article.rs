@@ -349,6 +349,13 @@ fn block_prefix(block: &Block, theme: &Theme, options: RenderOptions) -> String 
             theme.paint(StyleRole::Scripture, &label)
         }
         BlockKind::Paragraph => {
+            // Navigation pages (library index, year lists) are just anchors:
+            // render them as a compact bulleted link list instead of pretending
+            // they are numbered study paragraphs.
+            if is_nav_link(block) {
+                let bullet = if theme.glyphs == super::Glyphs::Ascii { "- " } else { "• " };
+                return format!("  {}", theme.paint(StyleRole::Link, bullet));
+            }
             if !options.gutter {
                 return "    ".to_string();
             }
@@ -360,6 +367,17 @@ fn block_prefix(block: &Block, theme: &Theme, options: RenderOptions) -> String 
             }
         }
     }
+}
+
+/// A paragraph that is nothing but one or more links (WOL navigation pages).
+pub fn is_nav_link(block: &Block) -> bool {
+    block.kind == BlockKind::Paragraph
+        && block
+            .identifier
+            .as_deref()
+            .is_none_or(|identifier| identifier.is_empty())
+        && !block.pieces.is_empty()
+        && block.pieces.iter().all(|piece| piece.href.is_some())
 }
 
 /// Turn a block into styled runs: highlights win over emphasis, emphasis over body.

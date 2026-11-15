@@ -134,3 +134,69 @@ fn token_helpers_expose_the_current_paragraph() {
     assert_eq!(tokens.first().map(String::as_str), Some("Jehovah"));
     assert!(reader.total_tokens() > 10);
 }
+
+const NAV_HTML: &str = r##"
+<div id="article">
+  <ul>
+    <li><a href="/es/wol/library/r4/lp-s/biblioteca">Biblioteca</a></li>
+    <li><a href="/es/wol/library/r4/lp-s/reuniones">Reuniones</a></li>
+    <li><a href="/es/wol/library/r4/lp-s/atras">La Atalaya</a></li>
+  </ul>
+</div>
+"##;
+
+fn nav_reader() -> Reader {
+    let mut document = wol_core::dom::parse_document(NAV_HTML);
+    document.source_url = Some("https://wol.jw.org/es/wol/h/r4/lp-s".to_string());
+    Reader::new(
+        document,
+        StoredIndex::default(),
+        &Theme::new(ColorDepth::None, Glyphs::Unicode),
+        RenderOptions {
+            width: 60,
+            ..RenderOptions::default()
+        },
+    )
+}
+
+#[test]
+fn nav_pages_expose_one_link_per_entry() {
+    let reader = nav_reader();
+    assert_eq!(reader.links().len(), 3);
+    assert_eq!(reader.links()[0].text.trim(), "Biblioteca");
+    assert!(reader.links()[0].href.contains("/biblioteca"));
+    // Every link points at a block that produced a rendered line.
+    for link in reader.links() {
+        assert!(reader.line_of_node(link.node).is_some(), "{link:?} has no line");
+    }
+}
+
+#[test]
+fn link_cursor_wraps_and_scrolls() {
+    let mut reader = nav_reader();
+    let (first, link) = reader.step_link(0, 1).expect("second link");
+    assert_eq!(first, 1);
+    assert!(link.href.contains("/reuniones"));
+
+    // j from the last link wraps to the first.
+    let (wrapped, _) = reader.step_link(2, 1).expect("wrapped link");
+    assert_eq!(wrapped, 0);
+    let (back, _) = reader.step_link(0, -1).expect("previous link");
+    assert_eq!(back, 2);
+}
+
+#[test]
+fn nearest_link_and_link_at_top_agree_on_nav_pages() {
+    let mut reader = nav_reader();
+    assert_eq!(reader.nearest_link(), Some(0));
+    assert_eq!(reader.link_at_top(), Some(0));
+    assert_eq!(reader.focus_link(2).map(|link| link.text.trim().to_string()), Some("La Atalaya".to_string()));
+}
+
+#[test]
+fn pages_without_links_report_none() {
+    let reader = reader();
+    assert!(reader.links().is_empty());
+    assert_eq!(reader.nearest_link(), None);
+    assert_eq!(reader.link_at_top(), None);
+}

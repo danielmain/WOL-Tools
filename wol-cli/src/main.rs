@@ -45,11 +45,13 @@ pub struct Cli {
     #[arg(long, global = true, value_name = "DIR")]
     pub data_dir: Option<std::path::PathBuf>,
 
+    /// Subcommand to run. With none, `wol` opens the interactive reader on the
+    /// configured language home page (like launching OfflineWOL).
     #[command(subcommand)]
-    pub command: Command,
+    pub command: Option<Command>,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 pub enum Command {
     /// Fetch (or load from cache) a page and print it with highlights.
     Read {
@@ -67,6 +69,9 @@ pub enum Command {
         /// Print the highlight colour legend after the article.
         #[arg(long)]
         legend: bool,
+        /// List the page's links (targets for `wol tui`).
+        #[arg(long)]
+        links: bool,
         /// Save the rendered text to a file instead of stdout/$PAGER.
         #[arg(long, short, value_name = "FILE")]
         output: Option<std::path::PathBuf>,
@@ -106,9 +111,9 @@ pub enum Command {
         command: SyncCommand,
     },
 
-    /// Open the full-screen interactive reader.
+    /// Open the full-screen interactive reader (default when no subcommand is given).
     Tui {
-        /// Optional page to open immediately.
+        /// Optional page to open immediately (defaults to the configured home page).
         target: Option<String>,
     },
 
@@ -122,7 +127,7 @@ pub enum ExportFormat {
     Json,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 pub enum CacheCommand {
     /// Show cache size, entry count and cap.
     Status,
@@ -151,7 +156,7 @@ pub enum CacheCommand {
     Prune,
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Clone, Subcommand)]
 pub enum SyncCommand {
     /// Show provider, connection state and last sync result.
     Status,

@@ -4,7 +4,7 @@
 //! math, search) is unit-testable; `tui/mod.rs` only maps key events onto it.
 
 use wol_core::backup::{Span, StoredIndex};
-use wol_core::dom::{Block, BlockKind, Document, Node_};
+use wol_core::dom::{Block, BlockKind, Document, Link, Node_};
 use wol_core::highlight;
 
 use crate::render::article::{guess_document_id, RenderOptions};
@@ -380,6 +380,61 @@ impl Reader {
             self.scroll_to(line);
             self.cursor_token = 0;
         }
+    }
+
+    /// Every link on the page, in document order.
+    pub fn links(&self) -> &[Link] {
+        &self.document.links
+    }
+
+    /// First line rendered for `node`, or `None` when it produced no text.
+    pub fn line_of_node(&self, node: usize) -> Option<usize> {
+        self.lines
+            .iter()
+            .position(|entry| entry.block == Some(node))
+    }
+
+    /// Scroll to a link and return it.
+    pub fn focus_link(&mut self, index: usize) -> Option<Link> {
+        let link = self.document.links.get(index)?.clone();
+        if let Some(line) = self.line_of_node(link.node) {
+            self.scroll_to(line);
+        }
+        Some(link)
+    }
+
+    /// Index of the first link in the block under the viewport top.
+    pub fn link_at_top(&self) -> Option<usize> {
+        let block = self.active_block_index()?;
+        self.document.links.iter().position(|link| link.node == block)
+    }
+
+    /// Index of the link closest to the current scroll position (for `Tab`).
+    pub fn nearest_link(&self) -> Option<usize> {
+        let target = self.scroll;
+        self.document
+            .links
+            .iter()
+            .enumerate()
+            .filter_map(|(index, link)| {
+                self.line_of_node(link.node)
+                    .map(|line| (index, line.abs_diff(target)))
+            })
+            .min_by_key(|(_, distance)| *distance)
+            .map(|(index, _)| index)
+    }
+
+    /// Move the link cursor by `delta`, scrolling to the new link.
+    ///
+    /// Wraps around the ends so `j` on the last link returns to the top.
+    pub fn step_link(&mut self, index: usize, delta: isize) -> Option<(usize, Link)> {
+        let total = self.document.links.len();
+        if total == 0 {
+            return None;
+        }
+        let next = (index as isize + delta).rem_euclid(total as isize) as usize;
+        let link = self.focus_link(next)?;
+        Some((next, link))
     }
 
     /// Highlighted runs for the paragraph under the cursor (for the footnote drawer).

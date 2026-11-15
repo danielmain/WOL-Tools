@@ -1,19 +1,21 @@
 //! Full-screen interactive reader (ratatui + crossterm).
 //!
 //! Keys (Vim-flavoured):
-//!   j/k, Ctrl-d/Ctrl-u, g/G  scroll        J/K      next/previous paragraph
-//!   h/l, Left/Right          move token   v        visual selection
-//!   1-6                     apply colour  0/x      remove highlight
+//!   j/k, Ctrl-d/Ctrl-u, g/G  scroll         J/K      next/previous paragraph
+//!   h/l, Left/Right          move token    v        visual selection
+//!   1-6                      apply colour  0/x      remove highlight
 //!   n                        edit note     b        sidebar    tab (in sidebar)
 //!   / n N, Ctrl-n            search        f        references drawer
-//!   Enter                    follow link   H/L      history
-//!   r                        refresh       q        quit
+//!   Tab                      browse links  Enter    follow link
+//!   Backspace, H/L           history       gh       home page
+//!   Ctrl-l                   language      r        refresh       q quit
 
+pub mod languages;
 pub mod notes;
 pub mod reader;
 pub mod sidebar;
 
-use std::io;
+use std::io::{self, IsTerminal as _};
 use std::time::Duration;
 
 use crossterm::event::{self, Event, KeyCode, KeyEvent, KeyModifiers};
@@ -27,12 +29,15 @@ use ratatui::widgets::{Block, Borders, Clear, List, ListItem, Paragraph, Wrap};
 use ratatui::Terminal;
 
 use wol_core::dom::parse_document;
+use wol_core::languages::{default_language, find_by_locale, find_by_symbol, LanguageInfo};
+use wol_core::state::AppSettings;
 
 use crate::context::Context;
 use crate::render::article::RenderOptions;
 use crate::render::{ColorDepth, Glyphs, Theme};
 use crate::Cli;
 
+use self::languages::LanguagePicker;
 use self::notes::{EditorKey, EditorOutcome, NoteEditor};
 use self::reader::Reader;
 use self::sidebar::Sidebar;
@@ -44,6 +49,7 @@ enum Mode {
     Searching(String),
     Palette,
     References,
+    Languages(LanguagePicker),
 }
 
 struct App {
@@ -58,6 +64,9 @@ struct App {
     message: Option<String>,
     pending_g: bool,
     focus_sidebar: bool,
+    /// `Tab` mode: `j`/`k` walk the page's links instead of the text.
+    link_focus: bool,
+    link_index: usize,
 }
 
 pub async fn run(
@@ -65,13 +74,35 @@ pub async fn run(
     context: &Context,
     target: Option<&str>,
 ) -> Result<(), Box<dyn std::error::Error>> {
-    let target = target
-        .map(str::to_string)
-        .or_else(|| latest_cached(&context))
-        .ok_or("nothing to open: pass a URL/ref (e.g. `wol tui /en/wol/d/r1/lp-e/2025441`)")?;
+    if !io::stdout().is_terminal() {
+        return Err("the interactive reader needs a terminal — use `wol read <target>` instead".into());
+    }
+    let settings = context.state.get_settings().unwrap_or_default();
+    let target = match target {
+        Some(target) => Some(target.to_string()),
+        None => startup_target(&context, &settings),
+    };
 
     let theme = Theme::new(ColorDepth::detect(cli.no_color), Glyphs::detect(cli.ascii));
-    let (document, current) = load(&context, &target, cli.offline, false).await?;
+    // Without a target there is no language configured yet: open the picker on an
+    // empty page instead of failing, exactly like the desktop setup screen.
+    let (document, current, mode, message) = match target {
+        Some(target) => match load(&context, &target, cli.offline, false).await {
+            Ok((document, canonical)) => (document, canonical, Mode::Reading, None),
+            Err(err) => (
+                parse_document(""),
+                target.clone(),
+                Mode::Reading,
+                Some(format!("could not open {target}: {err} — Ctrl-l picks a language, gh the home page")),
+            ),
+        },
+        None => (
+            parse_document(""),
+            String::new(),
+            Mode::Languages(LanguagePicker::new()),
+            Some("choose your language (type to filter, Enter to confirm)".to_string()),
+        ),
+    };
     let marks = context
         .state
         .get_stored_index()
@@ -91,13 +122,15 @@ pub async fn run(
         theme,
         reader,
         sidebar: Sidebar::default(),
-        mode: Mode::Reading,
-        history: vec![current.clone()],
+        mode,
+        history: if current.is_empty() { Vec::new() } else { vec![current.clone()] },
         history_index: 0,
         current,
-        message: None,
+        message,
         pending_g: false,
         focus_sidebar: false,
+        link_focus: false,
+        link_index: 0,
     };
     app.resize(crate::width_for(cli));
 
@@ -114,13 +147,57 @@ pub async fn run(
     result.map_err(|err| err.into())
 }
 
-fn latest_cached(context: &Context) -> Option<String> {
-    context
-        .cache
-        .list_entries(1, 0, Some("/wol/d/"))
-        .ok()
-        .and_then(|entries| entries.into_iter().next())
-        .map(|entry| entry.url.as_str().to_string())
+/// Where `wol` / `wol tui` starts: the configured home page, else the home page
+/// of the configured language, else `None` (first run → language picker).
+fn startup_target(context: &Context, settings: &AppSettings) -> Option<String> {
+    startup_target_for(settings, &context.base_host())
+}
+
+fn startup_target_for(settings: &AppSettings, base_host: &str) -> Option<String> {
+    if !settings.home.trim().is_empty() {
+        return Some(settings.home.clone());
+    }
+    let language = configured_language(settings)?;
+    Some(language.home_url(base_host))
+}
+
+fn configured_language(settings: &AppSettings) -> Option<&'static LanguageInfo> {
+    let value = settings.language.trim();
+    if value.is_empty() {
+        return None;
+    }
+    find_by_locale(value).or_else(|| find_by_symbol(value))
+}
+
+/// Open the configured home page (`gh`): settings first, then the language table.
+async fn open_home(app: &mut App) -> io::Result<()> {
+    let target = home_target(app);
+    navigate(app, &target).await
+}
+
+/// `gh` / fallback target: settings home, else the configured language's home,
+/// else the built-in default language (Spanish).
+fn home_target(app: &App) -> String {
+    let settings = app.context.state.get_settings().unwrap_or_default();
+    startup_target_for(&settings, &app.context.base_host())
+        .unwrap_or_else(|| default_language().home_url(&app.context.base_host()))
+}
+
+/// Persist the chosen language the way the desktop settings UI does, then open
+/// that language's home page.
+async fn choose_language(app: &mut App, language: &'static LanguageInfo) -> io::Result<()> {
+    let mut settings = app.context.state.get_settings().unwrap_or_default();
+    settings.base_host = Some(app.context.base_host());
+    settings.language = language.locale.clone();
+    settings.region = language.region;
+    settings.home = language.home_url(&app.context.base_host());
+    let home = settings.home.clone();
+    if let Err(err) = app.context.state.set_settings(settings) {
+        app.set_message(format!("could not save the language: {err}"));
+        return Ok(());
+    }
+    app.mode = Mode::Reading;
+    navigate(app, &home).await
 }
 
 async fn load(
@@ -279,6 +356,33 @@ async fn handle_key(app: &mut App, key: KeyEvent) -> io::Result<bool> {
             app.mode = Mode::Reading;
             return Ok(true);
         }
+        Mode::Languages(mut picker) => {
+            match key.code {
+                KeyCode::Esc => app.mode = Mode::Reading,
+                KeyCode::Enter => {
+                    if let Some(language) = picker.selected_language() {
+                        app.mode = Mode::Reading;
+                        choose_language(app, language).await?;
+                        return Ok(true);
+                    }
+                    app.set_message("no language matches that filter");
+                }
+                KeyCode::Up => picker.move_by(-1),
+                KeyCode::Down => picker.move_by(1),
+                KeyCode::PageUp => picker.move_by(-(languages::PAGE as isize)),
+                KeyCode::PageDown => picker.move_by(languages::PAGE as isize),
+                KeyCode::Backspace => picker.pop(),
+                KeyCode::Char('u') if key.modifiers.contains(KeyModifiers::CONTROL) => picker.clear(),
+                KeyCode::Char(character) if !key.modifiers.contains(KeyModifiers::CONTROL) => {
+                    picker.push(character)
+                }
+                _ => {}
+            }
+            if !matches!(app.mode, Mode::Reading) {
+                app.mode = Mode::Languages(picker);
+            }
+            return Ok(true);
+        }
         Mode::Reading => {}
     }
 
@@ -319,6 +423,33 @@ async fn handle_key(app: &mut App, key: KeyEvent) -> io::Result<bool> {
         return Ok(true);
     }
 
+    // Link browsing (`Tab`): j/k walk the page's links, Enter follows them.
+    if app.link_focus {
+        match key.code {
+            KeyCode::Tab | KeyCode::Esc | KeyCode::Char('b') => {
+                app.link_focus = false;
+                app.set_message("link browsing off");
+                return Ok(true);
+            }
+            KeyCode::Char('q') => return Ok(false),
+            KeyCode::Char('j') | KeyCode::Down => step_link(app, 1),
+            KeyCode::Char('k') | KeyCode::Up => step_link(app, -1),
+            KeyCode::Enter => {
+                if let Some(link) = app.reader.links().get(app.link_index).cloned() {
+                    app.link_focus = false;
+                    navigate(app, &link.href).await?;
+                }
+                return Ok(true);
+            }
+            KeyCode::Backspace => {
+                go_back(app).await?;
+                return Ok(true);
+            }
+            _ => {}
+        }
+        return Ok(true);
+    }
+
     match key.code {
         KeyCode::Char('q') => return Ok(false),
         KeyCode::Char('c') if key.modifiers.contains(KeyModifiers::CONTROL) => return Ok(false),
@@ -333,6 +464,15 @@ async fn handle_key(app: &mut App, key: KeyEvent) -> io::Result<bool> {
         KeyCode::PageDown | KeyCode::Char(' ') => app.reader.scroll_by(viewport as isize, viewport),
         KeyCode::PageUp => app.reader.scroll_by(-(viewport as isize), viewport),
         KeyCode::Char('G') => app.reader.bottom(viewport),
+        KeyCode::Tab => enter_link_focus(app),
+        KeyCode::Char('l') if key.modifiers.contains(KeyModifiers::CONTROL) => {
+            app.mode = Mode::Languages(LanguagePicker::new());
+        }
+        KeyCode::Backspace => go_back(app).await?,
+        KeyCode::Char('h') if app.pending_g => {
+            app.pending_g = false;
+            open_home(app).await?;
+        }
         KeyCode::Char('g') => {
             if app.pending_g {
                 app.reader.top();
@@ -409,6 +549,8 @@ async fn handle_key(app: &mut App, key: KeyEvent) -> io::Result<bool> {
         KeyCode::Enter => {
             if let Some(link) = current_link(app) {
                 navigate(app, &link).await?;
+            } else {
+                app.set_message("no link under the cursor — Tab browses links");
             }
         }
         KeyCode::Char('L') => {
@@ -519,6 +661,59 @@ async fn refresh_current(app: &mut App) -> io::Result<()> {
     Ok(())
 }
 
+/// `Tab`: start browsing the page's links from wherever the viewport is.
+fn enter_link_focus(app: &mut App) {
+    if app.reader.links().is_empty() {
+        app.set_message("this page has no links");
+        return;
+    }
+    let index = app
+        .reader
+        .nearest_link()
+        .or_else(|| app.reader.link_at_top())
+        .unwrap_or(0);
+    app.link_index = index;
+    if let Some(link) = app.reader.focus_link(index) {
+        app.link_focus = true;
+        app.set_message(format!("link {}/{} · {} → {}", index + 1, app.reader.links().len(), label_of(&link), link.href));
+    } else {
+        app.set_message("this page has no links");
+    }
+}
+
+fn step_link(app: &mut App, delta: isize) {
+    let index = app.link_index;
+    if let Some((next, link)) = app.reader.step_link(index, delta) {
+        app.link_index = next;
+        app.set_message(format!(
+            "link {}/{} · {} → {}",
+            next + 1,
+            app.reader.links().len(),
+            label_of(&link),
+            link.href
+        ));
+    }
+}
+
+fn label_of(link: &wol_core::dom::Link) -> String {
+    let text = link.text.trim();
+    if text.is_empty() {
+        link.href.clone()
+    } else {
+        text.chars().take(60).collect()
+    }
+}
+
+async fn go_back(app: &mut App) -> io::Result<()> {
+    if app.history_index == 0 {
+        app.set_message("no earlier page in this session");
+        return Ok(());
+    }
+    app.history_index -= 1;
+    let target = app.history[app.history_index].clone();
+    navigate_to(app, &target).await
+}
+
 fn terminal_viewport() -> usize {
     crossterm::terminal::size()
         .map(|(_, rows)| usize::from(rows).saturating_sub(4))
@@ -562,11 +757,22 @@ fn draw(frame: &mut ratatui::Frame<'_>, app: &App) {
         draw_reader(frame, app, body_area);
     }
 
-    let status = app.reader.status(&app.theme);
-    let hint = app
-        .message
-        .clone()
-        .unwrap_or_else(|| "j/k scroll · v select · 1-6 highlight · n note · b sidebar · / search · q quit".into());
+    let mut status = app.reader.status(&app.theme);
+    if app.link_focus {
+        status.push_str(&format!(
+            "  ·  link {}/{}",
+            app.link_index + 1,
+            app.reader.links().len()
+        ));
+    }
+    let hint = app.message.clone().unwrap_or_else(|| {
+        if app.link_focus {
+            "j/k link · Enter open · Backspace back · Esc close".into()
+        } else {
+            "j/k scroll · Tab links · v select · 1-6 highlight · n note · b sidebar · gh home · q quit"
+                .into()
+        }
+    });
     frame.render_widget(
         Paragraph::new(TuiLine::from(vec![
             TuiSpan::styled(status, Style::default().fg(Color::DarkGray)),
@@ -581,17 +787,35 @@ fn draw(frame: &mut ratatui::Frame<'_>, app: &App) {
         Mode::Searching(buffer) => draw_search(frame, area, buffer),
         Mode::Palette => draw_palette(frame, area, app),
         Mode::References => draw_references(frame, area, app),
+        Mode::Languages(picker) => draw_languages(frame, area, picker),
         Mode::Reading => {}
     }
 }
 
 fn draw_reader(frame: &mut ratatui::Frame<'_>, app: &App, area: Rect) {
     let viewport = usize::from(area.height.saturating_sub(2));
-    let lines: Vec<TuiLine<'_>> = app
+    let marked = app
+        .link_focus
+        .then(|| app.reader.links().get(app.link_index))
+        .flatten()
+        .and_then(|link| app.reader.line_of_node(link.node));
+    let marker = Style::default()
+        .fg(Color::Cyan)
+        .add_modifier(Modifier::BOLD);
+    let lines: Vec<TuiLine<'static>> = app
         .reader
         .viewport(viewport)
         .iter()
-        .map(|line| ansi_to_tui_line(&line.text))
+        .enumerate()
+        .map(|(offset, line)| {
+            let mut rendered = ansi_to_tui_line(&line.text);
+            if marked == Some(app.reader.scroll + offset) {
+                rendered
+                    .spans
+                    .insert(0, TuiSpan::styled("▸ ", marker));
+            }
+            rendered
+        })
         .collect();
     let widget = Paragraph::new(lines)
         .block(Block::default().borders(Borders::NONE))
@@ -671,6 +895,52 @@ fn draw_palette(frame: &mut ratatui::Frame<'_>, area: Rect, app: &App) {
     }
     frame.render_widget(
         Paragraph::new(lines).block(Block::default().borders(Borders::ALL).title(" colour ")),
+        popup,
+    );
+}
+
+fn draw_languages(frame: &mut ratatui::Frame<'_>, area: Rect, picker: &LanguagePicker) {
+    let popup = centered(area, 70, 70);
+    frame.render_widget(Clear, popup);
+    let mut lines: Vec<TuiLine<'_>> = vec![
+        TuiLine::from(vec![
+            TuiSpan::styled("filter: ", Style::default().fg(Color::DarkGray)),
+            TuiSpan::raw(picker.filter.clone()),
+            TuiSpan::styled("▏", Style::default().fg(Color::Cyan)),
+        ]),
+        TuiLine::from(""),
+    ];
+    if picker.visible().is_empty() {
+        lines.push(TuiLine::from(vec![TuiSpan::styled(
+            "no language matches — Backspace clears a character",
+            Style::default().fg(Color::DarkGray),
+        )]));
+    }
+    for (language, selected) in picker.visible() {
+        let label = format!(
+            "{:<6} {:<28} {}  ·  r{}",
+            language.symbol, language.name, language.locale, language.region
+        );
+        let style = if selected {
+            Style::default()
+                .bg(Color::Cyan)
+                .fg(Color::Black)
+                .add_modifier(Modifier::BOLD)
+        } else {
+            Style::default()
+        };
+        lines.push(TuiLine::from(TuiSpan::styled(label, style)));
+    }
+    let (position, total) = picker.position();
+    lines.push(TuiLine::from(""));
+    lines.push(TuiLine::from(vec![TuiSpan::styled(
+        format!("{position}/{total} · type to filter · ↑/↓ move · Enter confirm · Esc cancel"),
+        Style::default().fg(Color::DarkGray),
+    )]));
+    frame.render_widget(
+        Paragraph::new(lines)
+            .block(Block::default().borders(Borders::ALL).title(" language "))
+            .wrap(Wrap { trim: false }),
         popup,
     );
 }
@@ -905,6 +1175,44 @@ mod tests {
         let spans = styles(&line);
         assert_eq!(spans[0].1.bg, Some(Color::Rgb(1, 2, 3)));
         assert_eq!(spans[1].1, Style::default());
+    }
+
+    #[test]
+    fn startup_target_uses_the_configured_home_page() {
+        let settings = AppSettings {
+            language: "es".into(),
+            home: "https://wol.jw.org/es/wol/library/r4/lp-s/biblioteca".into(),
+            ..AppSettings::default()
+        };
+        assert_eq!(
+            startup_target_for(&settings, "wol.jw.org").as_deref(),
+            Some("https://wol.jw.org/es/wol/library/r4/lp-s/biblioteca")
+        );
+    }
+
+    #[test]
+    fn startup_target_falls_back_to_the_language_home() {
+        let settings = AppSettings {
+            language: "es".into(),
+            ..AppSettings::default()
+        };
+        assert_eq!(
+            startup_target_for(&settings, "wol.jw.org").as_deref(),
+            Some("https://wol.jw.org/es/wol/h/r4/lp-s")
+        );
+
+        // A language symbol (not a locale) also resolves.
+        let by_symbol = AppSettings {
+            language: "S".into(),
+            ..AppSettings::default()
+        };
+        assert!(startup_target_for(&by_symbol, "wol.jw.org")
+            .is_some_and(|target| target.contains("/wol/h/")));
+    }
+
+    #[test]
+    fn startup_target_is_none_on_a_fresh_install() {
+        assert!(startup_target_for(&AppSettings::default(), "wol.jw.org").is_none());
     }
 
     #[test]

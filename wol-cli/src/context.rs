@@ -292,10 +292,14 @@ mod tests {
         (Context::open_in(dir.clone()).expect("context"), dir)
     }
 
+    /// Unique scratch-directory suffix. The clock alone collides when tests run
+    /// in parallel threads, which made `canonicalizes_*` flaky.
     fn uuid_like() -> String {
+        use std::sync::atomic::{AtomicU64, Ordering};
         use std::time::{SystemTime, UNIX_EPOCH};
+        static COUNTER: AtomicU64 = AtomicU64::new(0);
         let nanos = SystemTime::now().duration_since(UNIX_EPOCH).unwrap().as_nanos();
-        format!("{nanos}")
+        format!("{nanos}-{}", COUNTER.fetch_add(1, Ordering::Relaxed))
     }
 
     #[test]

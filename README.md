@@ -147,16 +147,29 @@ It shares `wol-core` with the desktop app, so it reads and writes the **same dat
 Windows): one cache, one `wolMarks` set, one sync configuration. Use `--data-dir <DIR>` to
 point at a scratch copy (handy for testing).
 
+Running `wol` with no subcommand opens the interactive reader — the terminal
+equivalent of launching OfflineWOL. On first run it asks for your language
+(type to filter ~1000 languages, `Enter` to confirm) and remembers it in the same
+`settings.json` the desktop app uses; afterwards it opens straight to your home
+page and you can browse WOL with the arrow keys.
+
 ```bash
+wol                                       # interactive reader at your home page
+wol tui /es/wol/library/r4/lp-s/biblioteca   # ...or start somewhere specific
 wol info                                  # data dir, cache size, loaded highlights
 wol import ~/Downloads/UserdataBackup.jwlibrary
 wol read /en/wol/d/r1/lp-e/2025441        # cache-first; ⟦…⟧ marks in --no-color mode
+wol read /es/wol/library/r4/lp-s/biblioteca --links   # list a page's link targets
 wol read /en/wol/d/r1/lp-e/2025441 --refresh --legend
 wol cache status | wol cache list --limit 20 | wol cache crawl /en/wol/d/r1/lp-e/2025441
 wol export out.jwlibrary                  # or --format json for the extension's marks.json
 wol sync status | wol sync push
-wol tui                                   # full-screen reader
 ```
+
+Browsing works exactly like the website: the library index, publication and year
+lists are server-rendered link pages, so `Tab` turns the cursor into a link cursor
+and `Enter` opens the entry (`Backspace` goes back). Article pages get the full
+reader: highlights, notes, visual selection and search.
 
 Global flags: `--no-color` (also honours `NO_COLOR`), `--ascii`, `--width <COLUMNS>`,
 `--offline` (never touch the network), `--data-dir <DIR>`.
@@ -168,12 +181,13 @@ paths (`/en/wol/d/r1/lp-e/2025441`), or a bare document id (`2025441`).
 
 | Key | Action |
 |---|---|
-| `j` / `k`, `↓` / `↑` | Scroll one line |
+| `j` / `k`, `↓` / `↑` | Scroll one line (move the link cursor while browsing links) |
 | `Ctrl-d` / `Ctrl-u` | Scroll half a page |
 | `Space` / `PgDn`, `PgUp` | Scroll a full page |
 | `gg` / `G` | Jump to top / bottom |
 | `J` / `K` | Next / previous paragraph |
 | `h` / `l`, `←` / `→` | Move the token cursor |
+| `Tab` | Toggle link browsing: `j`/`k` walk the page's links, `Enter` opens, `Esc` leaves |
 | `v` | Start/cancel a visual selection |
 | `1`–`6` | Apply that highlight colour to the selection |
 | `p` | Open the colour picker (legend from `--legend`) |
@@ -183,7 +197,9 @@ paths (`/en/wol/d/r1/lp-e/2025441`), or a bare document id (`2025441`).
 | `N` / `Ctrl-n` | Previous / next search hit |
 | `f` | References & notes drawer for the current paragraph |
 | `Enter` | Follow the link under the cursor |
-| `H` / `L` | History back / forward |
+| `Backspace`, `H` / `L` | History back / forward |
+| `gh` | Home page for the configured language |
+| `Ctrl-l` | Change language (opens the picker, saved to shared settings) |
 | `r` | Re-fetch the page from the network |
 | `b` | Toggle the sidebar (cached pages · contents · highlights) |
 | `Tab` (in sidebar) | Cycle sidebar tabs · `j`/`k` move · `Enter` opens/jumps |
