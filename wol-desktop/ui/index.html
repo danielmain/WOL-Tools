@@ -137,6 +137,12 @@
     <!-- SETTINGS TAB -->
     <main id="tab-settings" class="tab-pane">
       <section class="card">
+        <h2>Imported Publications</h2>
+        <p class="hint">Load a JWPUB to add its articles to Publications.</p>
+        <label class="file"><input id="import-jwpub" type="file" accept=".jwpub"><span>Load JWPUB…</span></label>
+        <p id="import-jwpub-status" role="status"></p>
+      </section>
+      <section class="card">
         <h2>Library &amp; Language</h2>
         <div class="form-group">
           <label for="setting-lang">Primary Language</label>

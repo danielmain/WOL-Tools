@@ -1204,7 +1204,7 @@ pub fn build_injected_script_with_theme(
     );
 
     format!(
-        "{DARKREADER_JS}\n{shim}\n{TOKENIZE_JS}\n{LANGUAGES_JS}\n{HIGHLIGHT_JS}\n{CONTENT_JS}\n"
+        "{DARKREADER_JS}\n{shim}\n{}\n{TOKENIZE_JS}\n{LANGUAGES_JS}\n{HIGHLIGHT_JS}\n{CONTENT_JS}\n", include_str!("../ui/imported-library.js")
     )
 }
 

@@ -122,6 +122,8 @@ npm run desktop:test  # Run Rust unit & integration tests
 
 OfflineWOL intercepts `wol.jw.org` navigation via a custom `wol://` protocol, caches visited pages and subresources on disk (stale-while-revalidate with LRU eviction and a Cache Inspector UI), and shares the same `wolMarks` JSON format as the browser extension.
 
+To add a local publication, open **Highlights & Settings → Settings → Load JWPUB**, select a `.jwpub` file, then open the Publications library and choose **Imported publications**. Imported articles are stored separately from the offline cache. Select text to create a highlight or use the note button to add a paragraph note. Load a JW Library backup to see existing study data, and export a backup from the Highlights & Backups tab.
+
 ---
 
 ## Usage Guide

@@ -94,6 +94,12 @@ impl ProtocolHandler {
         uri: &tauri::http::Uri,
         _method: &tauri::http::Method,
     ) -> Response<Vec<u8>> {
+        if uri.path() == "/imported" || uri.path().starts_with("/imported/") {
+            return match crate::publications::render(uri) {
+                Some(html) => build_response(StatusCode::OK, "text/html; charset=utf-8", html.into_bytes()),
+                None => build_response(StatusCode::NOT_FOUND, "text/plain; charset=utf-8", b"Publication not found".to_vec()),
+            };
+        }
         let Some(base_host) = self.effective_base_host() else {
             return Response::builder()
                 .status(StatusCode::BAD_REQUEST)

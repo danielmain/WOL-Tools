@@ -5,6 +5,7 @@ pub mod crawler;
 pub mod handler;
 pub mod jwlibrary_export;
 pub mod languages;
+pub mod publications;
 pub mod rewrite;
 pub mod state;
 pub mod sync;
@@ -87,6 +88,8 @@ pub fn run_app() {
         .manage(sync_mgr.clone())
         .invoke_handler(tauri::generate_handler![
             commands::get_marks,
+            publications::list_imported_publications,
+            publications::save_imported_publication,
             commands::set_marks,
             commands::export_marks_to_file,
             commands::get_cookies,

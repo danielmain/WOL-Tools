@@ -89,7 +89,12 @@ function recordDocMeta(marks, docId, article) {
   if (mepsLanguage === null) {
     const langSym = pageLanguage(article);
     const parsedLang = languageId(langSym);
-    if (parsedLang !== null) mepsLanguage = parsedLang;
+    if (parsedLang !== null) {
+      mepsLanguage = parsedLang;
+    } else if (article.dataset?.mepsLang) {
+      const raw = Number.parseInt(article.dataset.mepsLang, 10);
+      if (Number.isFinite(raw)) mepsLanguage = raw;
+    }
   }
 
   const title = existing.title || (document.title ? document.title.trim() : null) || null;
@@ -498,9 +503,51 @@ function createToolbar() {
   });
   toolbar.appendChild(removeBtn);
 
+  const noteBtn = document.createElement("button");
+  noteBtn.type = "button";
+  noteBtn.className = "wol-hl-btn wol-hl-btn-note";
+  noteBtn.title = "Add a note to this paragraph";
+  noteBtn.setAttribute("aria-label", noteBtn.title);
+  noteBtn.textContent = "✎";
+  noteBtn.addEventListener("mousedown", (e) => e.preventDefault());
+  noteBtn.addEventListener("click", (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    addNoteToActiveSelection().catch((error) => console.error("Could not save note:", error));
+  });
+  toolbar.appendChild(noteBtn);
+
   document.body.appendChild(toolbar);
   toolbarElement = toolbar;
   return toolbar;
+}
+
+async function addNoteToActiveSelection() {
+  const article = document.querySelector("#article");
+  const docId = documentIdFromUrl();
+  const node = activeMark || activeRange?.startContainer;
+  const element = node instanceof Element ? node : node?.parentElement;
+  const paragraph = element?.closest("[data-pid]");
+  if (!article || !docId || !paragraph || !article.contains(paragraph)) return;
+  const pid = paragraph.dataset.pid;
+  const content = window.prompt("Note for this paragraph:");
+  if (!content || !content.trim()) return;
+  const marks = await getOrInitMarks();
+  recordDocMeta(marks, docId, article);
+  if (!marks.notes.docs) marks.notes.docs = {};
+  if (!marks.notes.docs[docId]) marks.notes.docs[docId] = {};
+  const existing = marks.notes.docs[docId][pid];
+  if (!Array.isArray(existing)) marks.notes.docs[docId][pid] = existing ? [existing] : [];
+  const now = new Date().toISOString();
+  marks.notes.docs[docId][pid].push({
+    guid: generateUUID(), title: null, content: content.trim(), created: now,
+    lastModified: now, blockType: 1, blockIdentifier: Number(pid),
+    userMarkId: null, locationId: null,
+  });
+  recalculateMetadata(marks);
+  hideToolbar();
+  await ext.storage.local.set({ wolMarks: marks });
+  await apply(true);
 }
 
 function showToolbar(range) {

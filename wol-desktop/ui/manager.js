@@ -1,5 +1,20 @@
 // Bridge setup for Tauri environment
 const tauriInvoke = window.__TAURI_INTERNALS__?.invoke;
+import { importJwpub } from "./jwpub-import.mjs";
+
+document.querySelector("#import-jwpub")?.addEventListener("change", async (event) => {
+  const file = event.target.files?.[0];
+  if (!file) return;
+  const status = document.querySelector("#import-jwpub-status");
+  status.textContent = "Importing publication…";
+  try {
+    const book = await importJwpub(new Uint8Array(await file.arrayBuffer()), window.initSqlJs);
+    await tauriInvoke("save_imported_publication", { publication: book });
+    status.textContent = `Imported ${book.title} (${book.chapters.length} articles). Open Publications in the main window.`;
+  } catch (error) {
+    status.textContent = `Could not import publication: ${error.message}`;
+  } finally { event.target.value = ""; }
+});
 
 export const bridge = {
   storage: {
