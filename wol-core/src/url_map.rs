@@ -2,6 +2,12 @@ use std::fmt;
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 
+pub use url::Url;
+
+/// Alias kept so callers can keep thinking in terms of "URIs" (`Url` parses both
+/// absolute URLs and `wol://host/path` custom-protocol URIs).
+pub type Uri = Url;
+
 #[derive(Debug, Clone, PartialEq, Eq, Hash, PartialOrd, Ord, Serialize, Deserialize)]
 pub struct CanonicalUrl(String);
 
@@ -34,16 +40,16 @@ pub enum UrlMappingError {
 
 /// Map a wol:// request URI to its canonical upstream https:// URL using the configured `base_host`.
 pub fn map_wol_uri_to_canonical(
-    uri: &tauri::http::Uri,
+    uri: &Url,
     base_host: &str,
 ) -> Result<CanonicalUrl, UrlMappingError> {
-    let scheme = uri.scheme_str().unwrap_or("");
+    let scheme = uri.scheme();
     if scheme != "wol" {
         return Err(UrlMappingError::UnsupportedScheme(scheme.to_string()));
     }
 
     let host = uri
-        .host()
+        .host_str()
         .ok_or_else(|| UrlMappingError::MissingHost(uri.to_string()))?;
 
     let path = uri.path();
@@ -117,7 +123,6 @@ fn sort_query_string(query: &str) -> String {
 mod tests {
     use super::*;
     use std::str::FromStr;
-    use tauri::http::Uri;
 
     const BASE_HOST: &str = "wol.example.org";
 

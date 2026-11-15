@@ -1,6 +1,7 @@
 use std::fs;
 use std::str::FromStr;
-use tauri::http::{Method, StatusCode, Uri};
+use wol_core::http_types::{Method, StatusCode};
+use wol_core::url_map::Url as Uri;
 use wol_desktop::cache::DiskCache;
 use wol_desktop::handler::ProtocolHandler;
 use wol_desktop::url_map::map_wol_uri_to_canonical;
@@ -21,11 +22,7 @@ async fn spike_go_no_go_lifecycle() {
     let resp = handler.handle_request(&home_uri, &Method::GET).await;
     assert_eq!(resp.status(), StatusCode::OK);
 
-    let content_type = resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap_or("");
+    let content_type = resp.headers().get("content-type").unwrap_or("");
     assert!(content_type.contains("text/html"));
 
     let body_str = String::from_utf8(resp.body().clone()).expect("valid utf8 html");
@@ -55,11 +52,7 @@ async fn spike_go_no_go_lifecycle() {
     let asset_uri = Uri::from_str(asset_wol_url).expect("valid asset uri");
     let asset_resp = handler.handle_request(&asset_uri, &Method::GET).await;
     assert_eq!(asset_resp.status(), StatusCode::OK);
-    let asset_type = asset_resp
-        .headers()
-        .get("content-type")
-        .and_then(|v| v.to_str().ok())
-        .unwrap();
+    let asset_type = asset_resp.headers().get("content-type").unwrap();
     assert!(asset_type.contains("text/css"));
 
     // Verify cache has entries in index.db

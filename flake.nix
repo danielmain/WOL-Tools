@@ -48,10 +48,42 @@
         };
       in
       {
+        packages = {
+          default = self.packages.${system}.wol;
+
+          # `wol` — the pure-terminal OfflineWOL reader (wol-cli crate).
+          # Only the CLI is built; the Tauri desktop app stays out of the closure.
+          wol = pkgs.rustPlatform.buildRustPackage {
+            pname = "wol";
+            version = (nixpkgs.lib.importTOML ./Cargo.toml).workspace.package.version;
+            src = ./.;
+            cargoLock.lockFile = ./Cargo.lock;
+            cargoBuildFlags = [ "-p" "wol-cli" ];
+            cargoTestFlags = [ "-p" "wol-cli" ];
+            doCheck = true;
+            # buildRustPackage's default install expects the binary to be named
+            # after `pname`; the crate ships `wol` from the `wol-cli` package.
+            installPhase = ''
+              runHook preInstall
+              install -Dm755 "$(find target -maxdepth 3 -type f -name wol -perm -u+x | head -n 1)" "$out/bin/wol"
+              runHook postInstall
+            '';
+            meta = {
+              description = "OfflineWOL in your terminal: cached wol.jw.org reading with JW Library highlights";
+              homepage = "https://github.com/danielmain/wol-highlights";
+              license = nixpkgs.lib.licenses.mit;
+              mainProgram = "wol";
+              platforms = nixpkgs.lib.platforms.unix;
+            };
+          };
+        };
+
         devShells.default = pkgs.mkShell {
           packages = [
             pkgs.nodejs
             webExt
+            pkgs.cargo
+            pkgs.rustc
             pkgs.jq
             pkgs.zip
             pkgs.unzip
@@ -64,6 +96,9 @@
         apps = rec {
           deploy = flake-utils.lib.mkApp {
             drv = deployApp;
+          };
+          wol = flake-utils.lib.mkApp {
+            drv = self.packages.${system}.wol;
           };
           default = deploy;
         };

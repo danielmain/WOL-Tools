@@ -8,12 +8,13 @@
 
 ## 1. What This Repository Is
 
-This repository bridges **JW Library** personal study data with **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**, and now ships two components that share the same core highlight/backup JS engine:
+This repository bridges **JW Library** personal study data with **Watchtower Online Library ([wol.jw.org](https://wol.jw.org))**, and ships three components over two shared engines:
 
 1. **Browser Extension (`wol-highlights/`)** — A shipped MV3 WebExtension (Firefox / Chrome / Edge / Brave / Safari) that parses `.jwlibrary` / `userData.db` / JSON backups client-side and paints/creates/edits highlights and study notes on `wol.jw.org`.
 2. **Desktop App (`wol-desktop/`, "OfflineWOL")** — A Rust + Tauri 2 desktop app that opens `wol.jw.org` in a native webview via a custom `wol://` protocol, caches visited pages automatically for offline reading, and integrates the extension's highlight, note, and dark-mode logic.
+3. **Terminal CLI (`wol-cli/`, binary `wol`)** — A pure-terminal reader (clap + ratatui) sharing `wol-core` with the desktop app: same cache directory, same `wolMarks`, same `.jwlibrary` import/export and sync engine, no webview.
 
-**Key concept**: `.jwlibrary` backups do **not** contain publication text. They contain `userData.db` (SQLite) rows of *(location, word-token range, color 1–6)*. Both the extension and desktop app tokenize the live WOL DOM with identical rules and paint the matching ranges.
+**Key concept**: `.jwlibrary` backups do **not** contain publication text. They contain `userData.db` (SQLite) rows of *(location, word-token range, color 1–6)*. The extension (JS) and `wol-core` (Rust) tokenize the text with **identical rules** and paint the matching ranges; `wol-core/tests/tokenize_parity.rs` enforces that parity against `lib/tokenize.js`.
 
 ---
 
@@ -23,6 +24,8 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 |---|---|
 | Browser extension (`wol-highlights/`) | ✅ Shipped MV3 extension (~2.5k lines of JS) |
 | Desktop app (`wol-desktop/`) | ✅ Core Tauri app implemented (§1–§5 in `TODO.md`, 4 integration test suites) |
+| Shared engine (`wol-core/`) | ✅ Tauri-free; 68 unit tests + tokenizer parity suite |
+| Terminal CLI (`wol-cli/`) | ✅ `read`/`import`/`export`/`cache`/`sync`/`tui`/`info` (see `CLI_PLAN.md`) |
 | Packaging & store scripts (`scripts/`, `safari/`) | ✅ Working (`npm run build`, `npm run lint`, `npm run publish`) |
 
 ---
@@ -31,13 +34,15 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 
 ```text
 .
-├── .github/workflows/       # GitHub Actions (release.yml: OfflineWOL builds for macOS/Linux/Windows x86_64 & aarch64)
+├── .github/workflows/       # GitHub Actions (release.yml: OfflineWOL + `wol` CLI builds, all targets)
 ├── AGENTS.md                # Unified AI agent & developer reference (this file)
 ├── README.md                # User-facing documentation
 ├── TODO.md                  # Tauri desktop migration plan & verified WOL research
+├── CLI_PLAN.md              # Terminal CLI / `wol-core` plan (renderer & TUI spec)
+├── Cargo.toml               # Cargo workspace root (members: wol-core, wol-desktop, wol-cli)
 ├── usermark.md              # Authoritative spec: UserMark schema, tokens, WOL DOM mapping
-├── flake.nix                # Nix devShell & AMO deployment app
-├── package.json             # Extension & desktop scripts (build, lint, start, desktop:*)
+├── flake.nix                # Nix devShell, `wol` package/app, AMO deployment app
+├── package.json             # Extension, desktop & CLI scripts (build, lint, cli, desktop:*)
 ├── scripts/                 # Version bump & multi-store publishing (Firefox, Chrome, Edge)
 ├── safari/                  # Native Safari Web Extension Xcode project (macOS & iOS)
 ├── wol-highlights/          # MV3 Browser Extension source
@@ -53,20 +58,39 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 │   │   ├── sql-wasm.js      # sql.js Emscripten loader
 │   │   └── sql-wasm.wasm    # sql.js WebAssembly binary
 │   └── test/run.html        # In-browser parser & DOM highlight test runner
+├── wol-core/                # GUI-agnostic engine (no Tauri, no terminal deps)
+│   └── src/
+│       ├── cache.rs         # SQLite metadata + atomic disk blob cache (LRU eviction)
+│       ├── handler.rs       # Fetch, cache, stale-while-revalidate (http_types abstraction)
+│       ├── crawler.rs       # Background prefetch / crawl helpers
+│       ├── url_map.rs       # Canonical URL <-> wol:// mapping (uses the `url` crate)
+│       ├── rewrite.rs       # HTML URL rewriting (wol.jw.org & b.jw-cdn.org -> wol://)
+│       ├── state.rs         # Persistent settings, wolMarks, cookies
+│       ├── sync.rs          # Sync engine (SyncListener callback, no AppHandle)
+│       ├── publications.rs  # JWPUB publication store
+│       ├── jwlibrary_export.rs # wolMarks -> .jwlibrary (schema v16) writer
+│       ├── backup.rs        # .jwlibrary/userData.db/JSON -> wolMarks importer
+│       ├── tokenize.rs      # Rust port of lib/tokenize.js (UTF-16 token parity)
+│       ├── dom.rs           # #article parser -> blocks/tokens (ignore rules of highlight.js)
+│       ├── highlight.rs     # Token-range add/remove helpers shared by CLI & TUI
+│       ├── http_types.rs    # Response/Method/StatusCode/Headers abstraction
+│       ├── dirs.rs          # Shared app data directory resolution
+│       └── languages.rs     # Language table (languages.json)
+├── wol-cli/                 # Terminal CLI + TUI (binary: `wol`)
+│   └── src/
+│       ├── main.rs          # clap commands & global flags
+│       ├── context.rs       # Cache-first loading, canonicalization, --offline
+│       ├── commands.rs      # read/import/export/cache/sync/info
+│       ├── render/          # Theme (TrueColor/256/none), article, tables, legend
+│       └── tui/             # ratatui event loop, reader, sidebar, note editor
 └── wol-desktop/             # Rust + Tauri 2 Desktop App ("OfflineWOL")
-    ├── Cargo.toml           # Rust dependencies (tauri 2, tokio, reqwest, rusqlite, etc.)
+    ├── Cargo.toml           # Depends on wol-core + tauri 2
     ├── tauri.conf.json      # Tauri app config (productName: OfflineWOL)
     ├── src/
     │   ├── lib.rs           # App setup, custom wol:// protocol, menu, windows
-    │   ├── handler.rs       # Custom protocol handler (fetch, cache, revalidate)
-    │   ├── rewrite.rs       # HTML URL rewriting (wol.jw.org & b.jw-cdn.org -> wol://)
-    │   ├── url_map.rs       # Canonical URL <-> wol:// mapping & cache key normalization
-    │   ├── cache.rs         # SQLite metadata + atomic disk blob cache (LRU eviction)
-    │   ├── crawler.rs       # Background prefetch / crawl helpers
     │   ├── bridge.rs        # window.__wolBridge injection & theme/cookie/marks sync
     │   ├── commands.rs      # Tauri IPC commands for manager UI
-    │   ├── state.rs         # Persistent app settings, marks, cookies
-    │   └── languages.rs     # Language table (languages.json)
+    │   └── main.rs
     ├── tests/               # Acceptance & integration tests (cargo test)
     └── ui/                  # Manager & setup HTML/CSS/JS + reused wol-highlights/lib/*
 ```
@@ -89,10 +113,28 @@ Key architectural decisions (do not reopen without cause):
 ### Desktop Gotchas
 - **Cache keys must include language and region.** `/es/wol/d/r4/lp-s/X` and `/en/wol/d/r1/lp-e/X` are different documents. Canonicalize as `https://wol.jw.org<path>?<sorted-query>` — never key on `wol://`.
 - **Do not guess JW CDN paths.** `app.jw-cdn.org/pub-media/...` returns **403** to direct requests. Use the endpoints the page calls (`GETPUBMEDIALINKS`, `GETPUBMEDIA` on `b.jw-cdn.org/apis/...`).
-- **`wol-highlights/lib/languages.js` only maps `{E: 0, S: 1}`** (MEPS IDs). Non-EN/ES Bible-chapter matching requires the full language table (`wol-desktop/src/languages.json`).
+- **`wol-highlights/lib/languages.js` only maps `{E: 0, S: 1}`** (MEPS IDs). Non-EN/ES Bible-chapter matching requires the full language table (`wol-core/src/languages.json`).
 - **Bound background work.** A page references ~220 subresources; keep concurrency bounded and deduplicate in-flight URLs.
 - **Never cache non-2xx or `Set-Cookie` responses.** Serve stored `Content-Type`, don't guess from file extensions.
 - The extension's `!important` CSS rules are fine inside a Tauri `WebviewWindow`.
+
+### Core / CLI split (`wol-core/`, `wol-cli/`)
+
+- **`wol-core` must stay GUI- and terminal-agnostic.** No Tauri, no clap, no ratatui. Tauri
+  coupling was removed deliberately: `url_map` uses `url::Url`, `handler` speaks
+  `http_types::{Response, Method, StatusCode, Headers}`, `sync` reports progress through a
+  `SyncListener` callback and is driven by `SyncManager::new_shared()`. Adding a Tauri type
+  back into `wol-core` re-breaks mobile/UniFFI plans.
+- **One data directory, three front-ends.** `wol-core::dirs` resolves the shared app data dir;
+  the CLI defaults to it and accepts `--data-dir` for scratch copies. Never write state
+  anywhere else, or the desktop app and CLI stop seeing each other's marks.
+- **`wol-cli` rendering is pre-wrapped ANSI text.** `render::article` emits styled, wrapped
+  lines; the TUI converts those SGR sequences into ratatui styles (`ansi_to_tui_line`), which
+  is what makes highlights visible in the TUI. Don't reintroduce a strip-ANSI pass.
+- **TUI edits are real edits.** `1`-`6`, `0`/`x` and the note editor write straight through
+  `State::set_stored_index`, so the desktop app and extension see them immediately.
+- **`--no-color` / `NO_COLOR` / piped output** fall back to `⟦…⟧` highlight markers; keep that
+  path working (it is what the tests assert on).
 
 ---
 
@@ -154,7 +196,17 @@ interface StoredIndex {
 - **After editing shared JS in `wol-highlights/`**:
   - Run `npm run lint` and `npm run build` to verify the browser extension still lints and packages cleanly.
   - Check `wol-highlights/test/run.html` if tokenization or highlight placement changed.
-- **After editing `wol-desktop/`**:
-  - Run `npm run desktop:test` (`cargo test --manifest-path wol-desktop/Cargo.toml`).
+- **After editing `wol-core/`, `wol-desktop/` or `wol-cli/`**:
+  - Run `npm run desktop:test` (`cargo test --workspace`) — covers core, desktop and CLI.
+  - Run `npm run cli:test` for a fast `wol-cli`-only loop.
+- **After touching tokenization (`wol-core/src/tokenize.rs` or `wol-highlights/lib/tokenize.js`)**:
+  - Run `npm run test:tokenize` to prove the Rust port still matches the shipped JS
+    tokenizer on the fixture corpus; add cases to
+    `wol-core/tests/fixtures/tokenize_cases.json` and refresh with
+    `npm run test:tokenize:update`, then `cargo test -p wol-core --test tokenize_parity`.
+- **After touching `.jwlibrary` export/import**:
+  - Run `node --test wol-highlights/test/cli-export.test.mjs` (needs `cargo build -p wol-cli`
+    first, or set `WOL_BIN`), which round-trips a CLI-exported backup through
+    `wol-highlights/lib/backup.js`.
 - **Git commits & pushes**:
   - When asked to commit and push, always stage and commit **all** modified and untracked files in the working tree (`git add -A`) and push to **both** remotes (`git push github master:main` and `git push origin master`).

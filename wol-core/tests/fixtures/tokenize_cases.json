@@ -1,0 +1,719 @@
+{
+  "note": "Tokenization parity fixtures. `topics[].tokens` are generated from `topics[].text` by wol-highlights/lib/tokenize.js — run `npm run test:tokenize` (or `node wol-highlights/test/tokenize-parity.mjs --update`) after editing, never hand-edit the token arrays.",
+  "word": "WORD = /[\\p{L}\\p{N}\\p{Pc}]/u",
+  "space": "SPACE = /[\\s\\u00A0\\u1680\\u2000-\\u200A\\u2028\\u2029\\u202F\\u205F\\u3000\\uFEFF]/u",
+  "topics": [
+    {
+      "name": "2025441-para-7-english",
+      "text": "JACOB’S sons are gathered around him, listening carefully as their elderly father blesses each of them. As discussed in the preceding article, Jacob’s words to Reuben, Simeon, Levi, and Judah intrigued—and perhaps even surprised—his sons.",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 5
+        },
+        {
+          "start": 5,
+          "end": 6
+        },
+        {
+          "start": 6,
+          "end": 7
+        },
+        {
+          "start": 8,
+          "end": 12
+        },
+        {
+          "start": 13,
+          "end": 16
+        },
+        {
+          "start": 17,
+          "end": 25
+        },
+        {
+          "start": 26,
+          "end": 32
+        },
+        {
+          "start": 33,
+          "end": 36
+        },
+        {
+          "start": 36,
+          "end": 37
+        },
+        {
+          "start": 38,
+          "end": 47
+        },
+        {
+          "start": 48,
+          "end": 57
+        },
+        {
+          "start": 58,
+          "end": 60
+        },
+        {
+          "start": 61,
+          "end": 66
+        },
+        {
+          "start": 67,
+          "end": 74
+        },
+        {
+          "start": 75,
+          "end": 81
+        },
+        {
+          "start": 82,
+          "end": 89
+        },
+        {
+          "start": 90,
+          "end": 94
+        },
+        {
+          "start": 95,
+          "end": 97
+        },
+        {
+          "start": 98,
+          "end": 102
+        },
+        {
+          "start": 102,
+          "end": 103
+        },
+        {
+          "start": 104,
+          "end": 106
+        },
+        {
+          "start": 107,
+          "end": 116
+        },
+        {
+          "start": 117,
+          "end": 119
+        },
+        {
+          "start": 120,
+          "end": 123
+        },
+        {
+          "start": 124,
+          "end": 133
+        },
+        {
+          "start": 134,
+          "end": 141
+        },
+        {
+          "start": 141,
+          "end": 142
+        },
+        {
+          "start": 143,
+          "end": 148
+        },
+        {
+          "start": 148,
+          "end": 149
+        },
+        {
+          "start": 149,
+          "end": 150
+        },
+        {
+          "start": 151,
+          "end": 156
+        },
+        {
+          "start": 157,
+          "end": 159
+        },
+        {
+          "start": 160,
+          "end": 166
+        },
+        {
+          "start": 166,
+          "end": 167
+        },
+        {
+          "start": 168,
+          "end": 174
+        },
+        {
+          "start": 174,
+          "end": 175
+        },
+        {
+          "start": 176,
+          "end": 180
+        },
+        {
+          "start": 180,
+          "end": 181
+        },
+        {
+          "start": 182,
+          "end": 185
+        },
+        {
+          "start": 186,
+          "end": 191
+        },
+        {
+          "start": 192,
+          "end": 201
+        },
+        {
+          "start": 201,
+          "end": 202
+        },
+        {
+          "start": 202,
+          "end": 205
+        },
+        {
+          "start": 206,
+          "end": 213
+        },
+        {
+          "start": 214,
+          "end": 218
+        },
+        {
+          "start": 219,
+          "end": 228
+        },
+        {
+          "start": 228,
+          "end": 229
+        },
+        {
+          "start": 229,
+          "end": 232
+        },
+        {
+          "start": 233,
+          "end": 237
+        },
+        {
+          "start": 237,
+          "end": 238
+        }
+      ]
+    },
+    {
+      "name": "2025441-para-7-russian",
+      "text": "«Почему?» — спросил он.",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 7
+        },
+        {
+          "start": 7,
+          "end": 8
+        },
+        {
+          "start": 8,
+          "end": 9
+        },
+        {
+          "start": 10,
+          "end": 11
+        },
+        {
+          "start": 12,
+          "end": 19
+        },
+        {
+          "start": 20,
+          "end": 22
+        },
+        {
+          "start": 22,
+          "end": 23
+        }
+      ]
+    },
+    {
+      "name": "nwtsty-exodus-verses",
+      "text": "And they said: “Why should we go?” 6:6",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 3
+        },
+        {
+          "start": 4,
+          "end": 8
+        },
+        {
+          "start": 9,
+          "end": 13
+        },
+        {
+          "start": 13,
+          "end": 14
+        },
+        {
+          "start": 15,
+          "end": 16
+        },
+        {
+          "start": 16,
+          "end": 19
+        },
+        {
+          "start": 20,
+          "end": 26
+        },
+        {
+          "start": 27,
+          "end": 29
+        },
+        {
+          "start": 30,
+          "end": 32
+        },
+        {
+          "start": 32,
+          "end": 33
+        },
+        {
+          "start": 33,
+          "end": 34
+        },
+        {
+          "start": 35,
+          "end": 36
+        },
+        {
+          "start": 36,
+          "end": 37
+        },
+        {
+          "start": 37,
+          "end": 38
+        }
+      ]
+    },
+    {
+      "name": "soft-hyphen-and-zero-width",
+      "text": "co­op­er­ate​now",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 3,
+          "end": 5
+        },
+        {
+          "start": 5,
+          "end": 6
+        },
+        {
+          "start": 6,
+          "end": 8
+        },
+        {
+          "start": 8,
+          "end": 9
+        },
+        {
+          "start": 9,
+          "end": 12
+        },
+        {
+          "start": 12,
+          "end": 13
+        },
+        {
+          "start": 13,
+          "end": 16
+        }
+      ]
+    },
+    {
+      "name": "unicode-spaces",
+      "text": "a b c　d﻿e",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 4,
+          "end": 5
+        },
+        {
+          "start": 6,
+          "end": 7
+        },
+        {
+          "start": 8,
+          "end": 9
+        }
+      ]
+    },
+    {
+      "name": "connector-punctuation",
+      "text": "snake_case a_b c-d",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 10
+        },
+        {
+          "start": 11,
+          "end": 14
+        },
+        {
+          "start": 15,
+          "end": 16
+        },
+        {
+          "start": 16,
+          "end": 17
+        },
+        {
+          "start": 17,
+          "end": 18
+        }
+      ]
+    },
+    {
+      "name": "combining-marks",
+      "text": "école ä",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 6
+        },
+        {
+          "start": 7,
+          "end": 8
+        },
+        {
+          "start": 8,
+          "end": 9
+        }
+      ]
+    },
+    {
+      "name": "astral-emoji",
+      "text": "a🙂b",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 3,
+          "end": 4
+        }
+      ]
+    },
+    {
+      "name": "astral-letter",
+      "text": "a𠀀b",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 3,
+          "end": 4
+        }
+      ]
+    },
+    {
+      "name": "astral-math-letters",
+      "text": "𝕏yz 𝟙a",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 4
+        },
+        {
+          "start": 5,
+          "end": 6
+        },
+        {
+          "start": 6,
+          "end": 7
+        },
+        {
+          "start": 7,
+          "end": 8
+        }
+      ]
+    },
+    {
+      "name": "cjk-bmp",
+      "text": "耶和華說：「我是。」",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 4
+        },
+        {
+          "start": 4,
+          "end": 5
+        },
+        {
+          "start": 5,
+          "end": 6
+        },
+        {
+          "start": 6,
+          "end": 8
+        },
+        {
+          "start": 8,
+          "end": 9
+        },
+        {
+          "start": 9,
+          "end": 10
+        }
+      ]
+    },
+    {
+      "name": "right-to-left-hebrew",
+      "text": "שָׁלוֹם עֲלֵיכֶם (בְּרֵאשִׁית 1:1)",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 3,
+          "end": 5
+        },
+        {
+          "start": 5,
+          "end": 6
+        },
+        {
+          "start": 6,
+          "end": 7
+        },
+        {
+          "start": 8,
+          "end": 9
+        },
+        {
+          "start": 9,
+          "end": 10
+        },
+        {
+          "start": 10,
+          "end": 11
+        },
+        {
+          "start": 11,
+          "end": 12
+        },
+        {
+          "start": 12,
+          "end": 14
+        },
+        {
+          "start": 14,
+          "end": 15
+        },
+        {
+          "start": 15,
+          "end": 16
+        },
+        {
+          "start": 17,
+          "end": 18
+        },
+        {
+          "start": 18,
+          "end": 19
+        },
+        {
+          "start": 19,
+          "end": 20
+        },
+        {
+          "start": 20,
+          "end": 21
+        },
+        {
+          "start": 21,
+          "end": 22
+        },
+        {
+          "start": 22,
+          "end": 23
+        },
+        {
+          "start": 23,
+          "end": 25
+        },
+        {
+          "start": 25,
+          "end": 26
+        },
+        {
+          "start": 26,
+          "end": 27
+        },
+        {
+          "start": 27,
+          "end": 29
+        },
+        {
+          "start": 30,
+          "end": 31
+        },
+        {
+          "start": 31,
+          "end": 32
+        },
+        {
+          "start": 32,
+          "end": 33
+        },
+        {
+          "start": 33,
+          "end": 34
+        }
+      ]
+    },
+    {
+      "name": "roman-numeral-number",
+      "text": "Ⅻ ⅰ Ⅷ",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 4,
+          "end": 5
+        }
+      ]
+    },
+    {
+      "name": "empty",
+      "text": "",
+      "tokens": []
+    },
+    {
+      "name": "whitespace-only",
+      "text": " \t\n 　﻿",
+      "tokens": []
+    },
+    {
+      "name": "nel-u0085",
+      "text": "ab",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        }
+      ]
+    },
+    {
+      "name": "control-characters",
+      "text": "a\u001cb\u001f",
+      "tokens": [
+        {
+          "start": 0,
+          "end": 1
+        },
+        {
+          "start": 1,
+          "end": 2
+        },
+        {
+          "start": 2,
+          "end": 3
+        },
+        {
+          "start": 3,
+          "end": 4
+        }
+      ]
+    }
+  ]
+}

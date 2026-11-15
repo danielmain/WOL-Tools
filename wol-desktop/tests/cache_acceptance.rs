@@ -1,6 +1,7 @@
 use std::fs;
 use std::str::FromStr;
-use tauri::http::{Method, StatusCode, Uri};
+use wol_core::http_types::{Method, StatusCode};
+use wol_core::url_map::Url as Uri;
 use wol_desktop::cache::DiskCache;
 use wol_desktop::handler::ProtocolHandler;
 use wol_desktop::url_map::{map_wol_uri_to_canonical, CanonicalUrl};

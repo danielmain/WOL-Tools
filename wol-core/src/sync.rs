@@ -8,7 +8,6 @@ use reqwest::{Client, Method, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use sha2::{Digest, Sha256};
-use tauri::{AppHandle, Manager};
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
 use tokio::net::TcpListener;
 use tokio::sync::{Mutex, Notify};
@@ -527,6 +526,10 @@ pub fn open_system_browser(url: &str) -> Result<(), String> {
     }
 }
 
+/// Invoked after a sync run that changed local marks, so a front-end can refresh
+/// its views (the desktop app re-applies highlights in both webview windows).
+pub type SyncListener = Arc<dyn Fn() + Send + Sync>;
+
 #[derive(Clone)]
 pub struct SyncManager {
     state: StateManager,
@@ -535,6 +538,9 @@ pub struct SyncManager {
     syncing: Arc<AtomicBool>,
     debounce_notify: Arc<Notify>,
     debounce_started: Arc<AtomicBool>,
+    listener: Arc<std::sync::Mutex<Option<SyncListener>>>,
+    /// Handle to this very instance, so background tasks can own a `'static` clone.
+    self_ref: std::sync::OnceLock<Arc<SyncManager>>,
 }
 
 impl SyncManager {
@@ -551,6 +557,22 @@ impl SyncManager {
             syncing: Arc::new(AtomicBool::new(false)),
             debounce_notify: Arc::new(Notify::new()),
             debounce_started: Arc::new(AtomicBool::new(false)),
+            listener: Arc::new(std::sync::Mutex::new(None)),
+            self_ref: std::sync::OnceLock::new(),
+        }
+    }
+
+    /// Register a callback fired whenever a sync changes local marks.
+    pub fn set_listener(&self, listener: Option<SyncListener>) {
+        if let Ok(mut slot) = self.listener.try_lock() {
+            *slot = listener;
+        }
+    }
+
+    fn notify_listener(&self) {
+        let listener = self.listener.try_lock().ok().and_then(|slot| slot.clone());
+        if let Some(listener) = listener {
+            listener();
         }
     }
 
@@ -608,7 +630,18 @@ impl SyncManager {
         }
     }
 
-    pub fn schedule_debounced_sync(&self, app: AppHandle) {
+    /// Build a manager that knows its own `Arc`, enabling debounced/background sync.
+    pub fn new_shared(state: StateManager) -> Arc<Self> {
+        let manager = Arc::new(Self::new(state));
+        let _ = manager.self_ref.set(Arc::clone(&manager));
+        manager
+    }
+
+    fn owned_handle(&self) -> Option<Arc<Self>> {
+        self.self_ref.get().map(Arc::clone)
+    }
+
+    pub fn schedule_debounced_sync(&self) {
         let is_configured = self
             .state
             .get_sync_state()
@@ -618,8 +651,16 @@ impl SyncManager {
         }
 
         if !self.debounce_started.swap(true, Ordering::SeqCst) {
-            let mgr = self.clone();
-            tauri::async_runtime::spawn(async move {
+            // Only an `Arc`-owned manager can spawn its background loop safely.
+            let Some(mgr) = self.owned_handle() else {
+                self.debounce_started.store(false, Ordering::SeqCst);
+                return;
+            };
+            if tokio::runtime::Handle::try_current().is_err() {
+                self.debounce_started.store(false, Ordering::SeqCst);
+                return;
+            }
+            tokio::spawn(async move {
                 loop {
                     mgr.debounce_notify.notified().await;
                     // Coalesce rapid edits for 3 seconds
@@ -633,7 +674,7 @@ impl SyncManager {
                             break;
                         }
                     }
-                    let _ = mgr.sync_now(Some(&app)).await;
+                    let _ = mgr.sync_now().await;
                 }
             });
         }
@@ -660,7 +701,6 @@ impl SyncManager {
         username: String,
         password: String,
         remote_path: Option<String>,
-        app: Option<&AppHandle>,
     ) -> Result<SyncStatus, String> {
         let server_url = normalize_nextcloud_server_url(&server_url)?;
         let username = username.trim().to_string();
@@ -692,14 +732,13 @@ impl SyncManager {
             })
             .map_err(|e| e.to_string())?;
 
-        self.sync_now(app).await
+        self.sync_now().await
     }
 
     pub async fn connect_nextcloud_browser(
         &self,
         server_url: String,
         remote_path: Option<String>,
-        app: Option<&AppHandle>,
     ) -> Result<SyncStatus, String> {
         let server_url = normalize_nextcloud_server_url(&server_url)?;
         let remote_path = remote_path
@@ -773,7 +812,7 @@ impl SyncManager {
                             s.last_error = None;
                         })
                         .map_err(|e| e.to_string())?;
-                    return self.sync_now(app).await;
+                    return self.sync_now().await;
                 }
             }
         }
@@ -889,7 +928,7 @@ impl SyncManager {
         Ok(())
     }
 
-    pub async fn connect_google_drive(&self, app: Option<&AppHandle>) -> Result<SyncStatus, String> {
+    pub async fn connect_google_drive(&self) -> Result<SyncStatus, String> {
         let (client_id, client_secret) = google_credentials()?;
         let listener = TcpListener::bind("127.0.0.1:0")
             .await
@@ -986,7 +1025,7 @@ impl SyncManager {
             })
             .map_err(|e| e.to_string())?;
 
-        self.sync_now(app).await
+        self.sync_now().await
     }
 
     async fn fetch_google_user_email(&self, access_token: &str) -> Result<String, String> {
@@ -1208,23 +1247,23 @@ impl SyncManager {
         Ok(())
     }
 
-    pub async fn sync_now(&self, app: Option<&AppHandle>) -> Result<SyncStatus, String> {
+    pub async fn sync_now(&self) -> Result<SyncStatus, String> {
         let _guard = self.sync_lock.lock().await;
         self.syncing.store(true, Ordering::Relaxed);
-        eprintln!("[CloudSync] Starting sync");
-        let result = self.sync_now_inner(app).await;
+        crate::log_line!("[CloudSync] Starting sync");
+        let result = self.sync_now_inner().await;
         self.syncing.store(false, Ordering::Relaxed);
         match &result {
-            Ok(status) => eprintln!("[CloudSync] Finished: changed_local={}", status.changed_local),
+            Ok(status) => crate::log_line!("[CloudSync] Finished: changed_local={}", status.changed_local),
             Err(err) => {
-                eprintln!("[CloudSync] Failed: {err}");
+                crate::log_line!("[CloudSync] Failed: {err}");
                 let _ = self.state.update_sync_state(|s| s.last_error = Some(err.clone()));
             }
         }
         result
     }
 
-    async fn sync_now_inner(&self, app: Option<&AppHandle>) -> Result<SyncStatus, String> {
+    async fn sync_now_inner(&self) -> Result<SyncStatus, String> {
         let sync_state = self.state.get_sync_state().map_err(|e| e.to_string())?;
         if sync_state.provider == SyncProvider::None {
             return Ok(self.build_status(&sync_state, false));
@@ -1281,18 +1320,7 @@ impl SyncManager {
         match res {
             Ok(changed_local) => {
                 if changed_local {
-                    if let Some(app_handle) = app {
-                        if let Some(main_win) = app_handle.get_webview_window("main") {
-                            let _ = main_win.eval(
-                                "if (window.__wolDispatchMessage) { window.__wolDispatchMessage({ type: 'wol-reapply' }); }",
-                            );
-                        }
-                        if let Some(mgr_win) = app_handle.get_webview_window("manager") {
-                            let _ = mgr_win.eval(
-                                "if (window.__wolOnSyncUpdated) { window.__wolOnSyncUpdated(); }",
-                            );
-                        }
-                    }
+                    self.notify_listener();
                 }
                 let updated = self.state.get_sync_state().map_err(|e| e.to_string())?;
                 Ok(self.build_status(&updated, changed_local))
@@ -1327,7 +1355,7 @@ impl SyncManager {
             remote_updated,
         );
 
-        eprintln!("[CloudSync] Decision: {:?}, local_data={}, remote_present={}", action, local_has_data, remote.is_some());
+        crate::log_line!("[CloudSync] Decision: {:?}, local_data={}, remote_present={}", action, local_has_data, remote.is_some());
         match action {
             SyncAction::NoOp => {
                 let now = now_iso_utc();

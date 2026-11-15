@@ -1,6 +1,7 @@
 use std::fs;
 use std::str::FromStr;
-use tauri::http::{Method, StatusCode, Uri};
+use wol_core::http_types::{Method, StatusCode};
+use wol_core::url_map::Url as Uri;
 use wol_desktop::bridge::build_injected_script;
 use wol_desktop::cache::DiskCache;
 use wol_desktop::handler::ProtocolHandler;

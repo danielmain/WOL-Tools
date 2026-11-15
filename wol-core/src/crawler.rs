@@ -119,7 +119,7 @@ pub fn extract_subresource_urls(html: &str, base_host: &str) -> Vec<CanonicalUrl
         {
             Some(format!("https://{base_host}{raw}"))
         } else if raw.starts_with("wol://") {
-            if let Ok(uri) = raw.parse::<tauri::http::Uri>() {
+            if let Ok(uri) = raw.parse::<crate::url_map::Url>() {
                 crate::url_map::map_wol_uri_to_canonical(&uri, base_host)
                     .ok()
                     .map(|c| c.as_str().to_string())

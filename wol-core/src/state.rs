@@ -35,14 +35,6 @@ impl ThemeMode {
             ThemeMode::Dark => "dark",
         }
     }
-
-    pub fn to_tauri_theme(self) -> Option<tauri::Theme> {
-        match self {
-            ThemeMode::System => None,
-            ThemeMode::Light => Some(tauri::Theme::Light),
-            ThemeMode::Dark => Some(tauri::Theme::Dark),
-        }
-    }
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -303,6 +295,29 @@ impl StateManager {
         lock.sync.local_updated_at = Some(now_iso_utc());
         self.save_locked(&lock)?;
         Ok(())
+    }
+
+    /// Typed view of `wolMarks`; unreadable payloads report `None` instead of failing.
+    pub fn get_stored_index(&self) -> Result<Option<crate::backup::StoredIndex>, StateError> {
+        let raw = self.get_marks()?;
+        Ok(raw.and_then(|value| serde_json::from_value(value).ok()))
+    }
+
+    /// Persist a typed `wolMarks` index (bumping `local_updated_at`).
+    pub fn set_stored_index(&self, index: &crate::backup::StoredIndex) -> Result<(), StateError> {
+        let value = serde_json::to_value(index)?;
+        self.set_marks(Some(value))
+    }
+
+    /// Recompute the rolling counters (`highlightCount`, `colorCounts`, …) so the
+    /// CLI can edit marks without trusting stale values.
+    pub fn refresh_stored_index(&self) -> Result<Option<crate::backup::StoredIndex>, StateError> {
+        let Some(index) = self.get_stored_index()? else {
+            return Ok(None);
+        };
+        let refreshed = crate::backup::recount(&index);
+        self.set_stored_index(&refreshed)?;
+        Ok(Some(refreshed))
     }
 
     pub fn set_marks_from_sync(

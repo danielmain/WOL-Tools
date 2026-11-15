@@ -48,7 +48,7 @@ pub fn set_marks(
     sync_mgr: State<'_, SyncManager>,
 ) -> Result<(), String> {
     state_mgr.set_marks(marks).map_err(|e| e.to_string())?;
-    sync_mgr.schedule_debounced_sync(app.clone());
+    sync_mgr.schedule_debounced_sync();
 
     // Broadcast reapply to the main webview window
     if let Some(main_window) = app.get_webview_window("main") {
@@ -166,6 +166,27 @@ pub fn dispatch_tab_message(
 }
 
 #[tauri::command]
+pub fn list_imported_publications_command() -> Vec<serde_json::Value> {
+    wol_core::publications::list_imported_publications()
+}
+
+#[tauri::command]
+pub fn save_imported_publication_command(
+    publication: wol_core::publications::ImportedPublication,
+) -> Result<(), String> {
+    wol_core::publications::save_imported_publication(publication)
+}
+
+/// Convert a core `ThemeMode` into Tauri's theme (the core crate stays Tauri-free).
+pub fn theme_to_tauri(theme: wol_core::state::ThemeMode) -> Option<tauri::Theme> {
+    match theme {
+        wol_core::state::ThemeMode::System => None,
+        wol_core::state::ThemeMode::Light => Some(tauri::Theme::Light),
+        wol_core::state::ThemeMode::Dark => Some(tauri::Theme::Dark),
+    }
+}
+
+#[tauri::command]
 pub fn get_settings(state_mgr: State<'_, StateManager>) -> Result<AppSettings, String> {
     state_mgr.get_settings().map_err(|e| e.to_string())
 }
@@ -179,7 +200,7 @@ pub fn save_settings(
     let theme = settings.theme;
     state_mgr.set_settings(settings).map_err(|e| e.to_string())?;
 
-    let tauri_theme = theme.to_tauri_theme();
+    let tauri_theme = theme_to_tauri(theme);
     let theme_str = theme.as_str();
 
     if let Some(main_window) = app.get_webview_window("main") {
@@ -287,7 +308,7 @@ pub async fn setup_from_url(
         // Follow redirect (e.g. https://<host>/es -> https://<host>/es/wol/h/r4/lp-s)
         let client = reqwest::Client::builder()
             .timeout(std::time::Duration::from_secs(15))
-            .user_agent(crate::handler::DEFAULT_USER_AGENT)
+            .user_agent(wol_core::handler::DEFAULT_USER_AGENT)
             .build()
             .map_err(|e| format!("Failed to create HTTP client: {e}"))?;
 
@@ -446,7 +467,7 @@ fn resolve_to_canonical(raw_url: &str, state_mgr: &StateManager) -> Result<Canon
             .ok()
             .and_then(|s| s.base_host)
             .ok_or_else(|| "Library URL not configured yet.".to_string())?;
-        let uri: tauri::http::Uri = raw_url.parse().map_err(|e| format!("invalid URI: {e}"))?;
+        let uri: wol_core::url_map::Url = raw_url.parse().map_err(|e| format!("invalid URI: {e}"))?;
         map_wol_uri_to_canonical(&uri, &base_host).map_err(|e| e.to_string())
     } else {
         Ok(CanonicalUrl::new(raw_url.to_string()))
@@ -533,7 +554,7 @@ pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), St
         let tauri_theme = app
             .try_state::<StateManager>()
             .and_then(|s| s.get_settings().ok())
-            .and_then(|s| s.theme.to_tauri_theme());
+            .and_then(|s| theme_to_tauri(s.theme));
         let app_url = match target_tab {
             Some(tab_id) => format!("index.html#{tab_id}"),
             None => "index.html".to_string(),
@@ -556,15 +577,13 @@ pub fn get_sync_status(sync_mgr: State<'_, SyncManager>) -> Result<SyncStatus, S
 
 #[tauri::command]
 pub async fn sync_now(
-    app: AppHandle,
     sync_mgr: State<'_, SyncManager>,
 ) -> Result<SyncStatus, String> {
-    sync_mgr.sync_now(Some(&app)).await
+    sync_mgr.sync_now().await
 }
 
 #[tauri::command]
 pub async fn connect_nextcloud(
-    app: AppHandle,
     server_url: String,
     username: String,
     password: String,
@@ -572,28 +591,26 @@ pub async fn connect_nextcloud(
     sync_mgr: State<'_, SyncManager>,
 ) -> Result<SyncStatus, String> {
     sync_mgr
-        .connect_nextcloud(server_url, username, password, remote_path, Some(&app))
+        .connect_nextcloud(server_url, username, password, remote_path)
         .await
 }
 
 #[tauri::command]
 pub async fn connect_nextcloud_browser(
-    app: AppHandle,
     server_url: String,
     remote_path: Option<String>,
     sync_mgr: State<'_, SyncManager>,
 ) -> Result<SyncStatus, String> {
     sync_mgr
-        .connect_nextcloud_browser(server_url, remote_path, Some(&app))
+        .connect_nextcloud_browser(server_url, remote_path)
         .await
 }
 
 #[tauri::command]
 pub async fn connect_google_drive(
-    app: AppHandle,
     sync_mgr: State<'_, SyncManager>,
 ) -> Result<SyncStatus, String> {
-    sync_mgr.connect_google_drive(Some(&app)).await
+    sync_mgr.connect_google_drive().await
 }
 
 #[tauri::command]

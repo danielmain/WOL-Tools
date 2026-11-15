@@ -288,6 +288,11 @@ impl DiskCache {
         Ok(())
     }
 
+    /// Evict least-recently-used entries until the cache fits its cap.
+    pub fn prune_to_cap(&self) -> Result<(), CacheError> {
+        self.evict_if_over_cap()
+    }
+
     pub fn cap_bytes(&self) -> u64 {
         self.cap_bytes
     }

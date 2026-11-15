@@ -69,7 +69,7 @@ pub struct ImportedPublication {
 }
 
 fn directory() -> PathBuf {
-    crate::dirs_fallback_app_data().join("publications")
+    crate::dirs::app_data_dir_or_env().join("publications")
 }
 
 fn valid_id(id: &str) -> bool {
@@ -123,10 +123,10 @@ fn hex_val(b: u8) -> Option<u8> {
     }
 }
 
-fn query_param(uri: &tauri::http::Uri, key: &str) -> Option<String> {
+fn query_param(uri: &crate::url_map::Url, key: &str) -> Option<String> {
     let query = uri.query()?;
     for pair in query.split('&') {
-        let (k, v) = pair.split_once('=')?;
+        let (k, v) = pair.split_once('=').unwrap_or((pair, ""));
         if k == key {
             return Some(percent_decode(v));
         }
@@ -152,7 +152,6 @@ pub fn list() -> Vec<ImportedPublication> {
     books
 }
 
-#[tauri::command]
 pub fn list_imported_publications() -> Vec<serde_json::Value> {
     list()
         .into_iter()
@@ -176,7 +175,6 @@ pub fn list_imported_publications() -> Vec<serde_json::Value> {
         .collect()
 }
 
-#[tauri::command]
 pub fn save_imported_publication(publication: ImportedPublication) -> Result<(), String> {
     if !valid_id(&publication.id) || publication.chapters.is_empty() {
         return Err("Invalid publication".into());
@@ -193,7 +191,7 @@ pub fn save_imported_publication(publication: ImportedPublication) -> Result<(),
     fs::rename(tmp, dest).map_err(|e| e.to_string())
 }
 
-pub fn render(uri: &tauri::http::Uri) -> Option<String> {
+pub fn render(uri: &crate::url_map::Url) -> Option<String> {
     let path = uri.path();
     if path == "/imported" || path == "/imported/" {
         let books = list();

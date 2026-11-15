@@ -1,0 +1,26 @@
+[package]
+name = "wol-core"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "GUI-agnostic engine for OfflineWOL: cache, sync, .jwlibrary import/export, tokenization and DOM parsing."
+
+[lib]
+name = "wol_core"
+path = "src/lib.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+tokio.workspace = true
+reqwest.workspace = true
+thiserror.workspace = true
+rusqlite.workspace = true
+sha2.workspace = true
+url.workspace = true
+regex.workspace = true
+zip.workspace = true
+uuid.workspace = true
+scraper = "0.21"
+unicode-general-category = "1.1.0"

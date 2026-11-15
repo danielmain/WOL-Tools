@@ -35,6 +35,7 @@ package-lock.json
 *.xpi
 dist/
 build/
+target/
 wol-desktop/target/
 
 # JW Library User Data & Backups (private user data and sqlite databases)

@@ -4,6 +4,7 @@ A privacy-first **cross-browser WebExtension** and **Rust/Tauri desktop app (`Of
 
 - **Browser Extension (`wol-highlights/`)**: Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, and **Apple Safari (macOS & iOS)**.
 - **Desktop App (`wol-desktop/`)**: Native **OfflineWOL** desktop reader built with Rust + Tauri 2 that automatically caches visited pages as you browse for offline reading, with built-in highlight/note sync and dark mode.
+- **Terminal CLI (`wol-cli/`)**: `wol` — the same reader in any terminal. Cached articles with highlights, notes, search and highlight editing, backed by the **same cache, `wolMarks` and sync state** as the desktop app (`wol-core/`).
 
 ---
 
@@ -61,9 +62,13 @@ nix run .#deploy
 
 | Command | Action |
 |---|---|
-| `npm run desktop` | Runs the OfflineWOL Tauri desktop app (`cargo run`) |
+| `npm run desktop` | Runs the OfflineWOL Tauri desktop app (`cargo run -p wol-desktop`) |
 | `npm run desktop:dev` | Runs OfflineWOL in Tauri dev mode (`cargo tauri dev`) |
-| `npm run desktop:test` | Runs the Rust/Tauri test suite (`cargo test`) |
+| `npm run desktop:test` | Runs the whole Rust workspace test suite (`cargo test --workspace`) |
+| `npm run cli` | Runs the terminal reader (`cargo run -p wol-cli -- …`) |
+| `npm run cli:test` | Runs the `wol-cli` unit tests |
+| `npm run test:tokenize` | Verifies the Rust tokenizer against the shipped `lib/tokenize.js` fixtures |
+| `npm run test:tokenize:update` | Regenerates `wol-core/tests/fixtures/tokenize_cases.json` from `lib/tokenize.js` |
 | `npm start` | Launches Firefox with extension pre-loaded, live-reloading, and opened to `wol.jw.org` |
 | `npm run start:chrome` | Launches Chrome/Chromium with extension pre-loaded and live-reloading |
 | `npm run build` | Builds packages for Chrome/Chromium, Firefox (`dist/*.xpi`), and Safari macOS |
@@ -123,6 +128,69 @@ npm run desktop:test  # Run Rust unit & integration tests
 OfflineWOL intercepts `wol.jw.org` navigation via a custom `wol://` protocol, caches visited pages and subresources on disk (stale-while-revalidate with LRU eviction and a Cache Inspector UI), and shares the same `wolMarks` JSON format as the browser extension.
 
 To add a local publication, open **Highlights & Settings → Settings → Load JWPUB**, select a `.jwpub` file, then open the Publications library and choose **Imported publications**. Imported articles are stored separately from the offline cache. Select text to create a highlight or use the note button to add a paragraph note. Load a JW Library backup to see existing study data, and export a backup from the Highlights & Backups tab.
+
+### Option E: Terminal CLI (`wol`)
+
+The `wol` binary is the terminal version of OfflineWOL. Prebuilt portable archives
+(`wol-<version>-<target>.tar.gz` / `.zip`) are attached to the same GitHub Releases as
+OfflineWOL; or build it from source:
+
+```bash
+cargo build --release -p wol-cli     # -> target/release/wol
+npm run cli -- --help                # or: cargo run -p wol-cli -- --help
+nix build .#wol && ./result/bin/wol  # Nix users
+```
+
+It shares `wol-core` with the desktop app, so it reads and writes the **same data directory**
+(`~/Library/Application Support/com.offlinewol.desktop` on macOS,
+`~/.local/share/com.offlinewol.desktop` on Linux, `%APPDATA%\com.offlinewol.desktop` on
+Windows): one cache, one `wolMarks` set, one sync configuration. Use `--data-dir <DIR>` to
+point at a scratch copy (handy for testing).
+
+```bash
+wol info                                  # data dir, cache size, loaded highlights
+wol import ~/Downloads/UserdataBackup.jwlibrary
+wol read /en/wol/d/r1/lp-e/2025441        # cache-first; ⟦…⟧ marks in --no-color mode
+wol read /en/wol/d/r1/lp-e/2025441 --refresh --legend
+wol cache status | wol cache list --limit 20 | wol cache crawl /en/wol/d/r1/lp-e/2025441
+wol export out.jwlibrary                  # or --format json for the extension's marks.json
+wol sync status | wol sync push
+wol tui                                   # full-screen reader
+```
+
+Global flags: `--no-color` (also honours `NO_COLOR`), `--ascii`, `--width <COLUMNS>`,
+`--offline` (never touch the network), `--data-dir <DIR>`.
+
+Accepted targets: full `https://wol.jw.org/...` URLs, `wol://…` addresses, site-relative
+paths (`/en/wol/d/r1/lp-e/2025441`), or a bare document id (`2025441`).
+
+#### TUI keys
+
+| Key | Action |
+|---|---|
+| `j` / `k`, `↓` / `↑` | Scroll one line |
+| `Ctrl-d` / `Ctrl-u` | Scroll half a page |
+| `Space` / `PgDn`, `PgUp` | Scroll a full page |
+| `gg` / `G` | Jump to top / bottom |
+| `J` / `K` | Next / previous paragraph |
+| `h` / `l`, `←` / `→` | Move the token cursor |
+| `v` | Start/cancel a visual selection |
+| `1`–`6` | Apply that highlight colour to the selection |
+| `p` | Open the colour picker (legend from `--legend`) |
+| `0` / `x` | Remove highlights from the selection |
+| `n` | Edit the note for the current paragraph (`Enter` saves, empty removes) |
+| `/` then `Enter` | Search the rendered text |
+| `N` / `Ctrl-n` | Previous / next search hit |
+| `f` | References & notes drawer for the current paragraph |
+| `Enter` | Follow the link under the cursor |
+| `H` / `L` | History back / forward |
+| `r` | Re-fetch the page from the network |
+| `b` | Toggle the sidebar (cached pages · contents · highlights) |
+| `Tab` (in sidebar) | Cycle sidebar tabs · `j`/`k` move · `Enter` opens/jumps |
+| `q` / `Ctrl-c` | Quit |
+
+Highlight and note edits are written straight back to `wolMarks`, so the desktop app and the
+browser extension pick them up on their next read.
 
 ---
 
@@ -204,13 +272,15 @@ Highlights replicate native JW Library colors:
 
 ```text
 .
-├── .github/workflows/       # CI/CD workflows (release.yml for OfflineWOL desktop builds)
+├── .github/workflows/       # CI/CD workflows (release.yml: OfflineWOL + `wol` CLI builds)
 ├── .gitignore               # Ignored build outputs, local test databases, and secrets
 ├── AGENTS.md                # Unified technical guide and operational rules for AI agents
 ├── README.md                # Project documentation (this file)
 ├── TODO.md                  # Tauri desktop migration plan and WOL research notes
-├── flake.nix                # Nix Flake devShell & AMO deployment app
-├── package.json             # Build, lint, dev runner, desktop, bump, and publish scripts
+├── CLI_PLAN.md              # Terminal CLI / wol-core plan (phases, renderer, TUI spec)
+├── Cargo.toml               # Cargo workspace: wol-core, wol-desktop, wol-cli
+├── flake.nix                # Nix Flake devShell, `wol` package/app, AMO deployment app
+├── package.json             # Build, lint, dev runner, desktop, CLI, bump, publish scripts
 ├── usermark.md              # Deep dive into UserMark schema, tokens, and WOL DOM mapping
 ├── scripts/                 # Cross-browser build & automated store publishing tools
 │   ├── bump-version.js      # Version bumper across manifest, package.json, and Safari
@@ -222,6 +292,12 @@ Highlights replicate native JW Library colors:
 │   └── auth-chrome.js       # Interactive OAuth2 generator for Chrome Web Store
 ├── safari/                  # Native Safari Web Extension Xcode project (macOS & iOS)
 │   └── WOL Highlights/      # Xcode project referencing wol-highlights/ assets
+├── wol-core/                # GUI-agnostic engine shared by desktop & CLI
+│   ├── src/                 # cache, handler, crawler, url_map, state, sync, backup (wolMarks),
+│   │                        #   tokenize, dom, highlight, jwlibrary export, languages
+│   └── tests/               # tokenizer parity fixtures replayed against lib/tokenize.js
+├── wol-cli/                 # `wol` terminal reader (clap CLI + ratatui TUI)
+│   └── src/                 # main.rs, context.rs, commands.rs, render/, tui/
 ├── wol-desktop/             # Rust + Tauri 2 OfflineWOL desktop app
 │   ├── Cargo.toml           # Rust crate manifest
 │   ├── tauri.conf.json      # Tauri configuration

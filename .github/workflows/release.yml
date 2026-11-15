@@ -67,3 +67,76 @@ jobs:
           releaseDraft: false
           prerelease: false
           args: ${{ matrix.target && format('--target {0}', matrix.target) || '' }}
+
+  publish-cli:
+    name: wol CLI (${{ matrix.target }})
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: ubuntu-22.04
+            target: x86_64-unknown-linux-gnu
+          - platform: ubuntu-22.04-arm
+            target: aarch64-unknown-linux-gnu
+          - platform: macos-latest
+            target: x86_64-apple-darwin
+          - platform: macos-latest
+            target: aarch64-apple-darwin
+          - platform: windows-latest
+            target: x86_64-pc-windows-msvc
+          - platform: windows-11-arm
+            target: aarch64-pc-windows-msvc
+
+    runs-on: ${{ matrix.platform }}
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install Linux dependencies
+        if: startsWith(matrix.platform, 'ubuntu')
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libssl-dev pkg-config
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: .
+
+      - name: Build wol CLI
+        run: cargo build --release --locked -p wol-cli --target ${{ matrix.target }}
+
+      - name: Package portable binary
+        id: package
+        shell: bash
+        run: |
+          set -euo pipefail
+          version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)"
+          echo "release_tag=v${version}" >> "$GITHUB_OUTPUT"
+          base="wol-${version}-${{ matrix.target }}"
+          bin_dir="target/${{ matrix.target }}/release"
+          mkdir -p "dist/${base}"
+          cp README.md "dist/${base}/"
+          if [[ "${{ matrix.target }}" == *windows* ]]; then
+            cp "${bin_dir}/wol.exe" "dist/${base}/"
+            (cd dist && 7z a "${base}.zip" "${base}" >/dev/null)
+          else
+            cp "${bin_dir}/wol" "dist/${base}/"
+            tar -czf "dist/${base}.tar.gz" -C dist "${base}"
+          fi
+
+      - name: Upload CLI binary to the release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.package.outputs.release_tag }}
+          name: OfflineWOL ${{ steps.package.outputs.release_tag }}
+          files: |
+            dist/wol-*.tar.gz
+            dist/wol-*.zip
+          fail_on_unmatched_files: false

@@ -1,4 +1,4 @@
-use tauri::http::{Response, StatusCode};
+pub use crate::http_types::{builder as response_builder, Headers, Method, Response, StatusCode};
 
 use crate::cache::DiskCache;
 use crate::rewrite::{rewrite_css, rewrite_html};
@@ -91,8 +91,8 @@ impl ProtocolHandler {
 
     pub async fn handle_request(
         &self,
-        uri: &tauri::http::Uri,
-        _method: &tauri::http::Method,
+        uri: &crate::url_map::Url,
+        _method: &Method,
     ) -> Response<Vec<u8>> {
         if uri.path() == "/imported" || uri.path().starts_with("/imported/") {
             return match crate::publications::render(uri) {
@@ -101,31 +101,31 @@ impl ProtocolHandler {
             };
         }
         let Some(base_host) = self.effective_base_host() else {
-            return Response::builder()
+            return response_builder()
                 .status(StatusCode::BAD_REQUEST)
                 .header("Content-Type", "text/plain; charset=utf-8")
                 .body(Vec::from("Library URL not configured yet."))
-                .unwrap_or_else(|_| default_error_response());
+                .unwrap_or_else(|_: std::convert::Infallible| default_error_response());
         };
 
         let canonical_url = match map_wol_uri_to_canonical(uri, &base_host) {
             Ok(url) => url,
             Err(err) => {
-                eprintln!("[ProtocolHandler] URL mapping error: {err} for URI: {uri}");
-                return Response::builder()
+                crate::log_line!("[ProtocolHandler] URL mapping error: {err} for URI: {uri}");
+                return response_builder()
                     .status(StatusCode::BAD_REQUEST)
                     .header("Content-Type", "text/plain; charset=utf-8")
                     .body(Vec::from(format!("Bad request: {err}")))
-                    .unwrap_or_else(|_| default_error_response());
+                    .unwrap_or_else(|_: std::convert::Infallible| default_error_response());
             }
         };
 
-        let host = uri.host().unwrap_or(&base_host);
+        let host = uri.host_str().unwrap_or(base_host.as_str());
 
         // 1. Check disk cache
         match self.cache.get(&canonical_url) {
             Ok(Some((entry, bytes))) => {
-                println!(
+                crate::log_line!(
                     "[ProtocolHandler] Cache HIT: {} ({} bytes, type={})",
                     canonical_url,
                     bytes.len(),
@@ -137,7 +137,7 @@ impl ProtocolHandler {
                 let host_string = host.to_string();
                 let etag_clone = entry.etag.clone();
                 let last_mod_clone = entry.last_modified.clone();
-                tauri::async_runtime::spawn(async move {
+                let _ = tokio::spawn(async move {
                     let _ = this
                         .revalidate_in_background(
                             url_clone,
@@ -161,10 +161,10 @@ impl ProtocolHandler {
                 return build_response(StatusCode::OK, &entry.content_type, bytes_to_serve);
             }
             Ok(None) => {
-                println!("[ProtocolHandler] Cache MISS: {}", canonical_url);
+                crate::log_line!("[ProtocolHandler] Cache MISS: {}", canonical_url);
             }
             Err(err) => {
-                eprintln!("[ProtocolHandler] Cache read error: {err}");
+                crate::log_line!("[ProtocolHandler] Cache read error: {err}");
             }
         }
 
@@ -174,18 +174,18 @@ impl ProtocolHandler {
                 build_response(status, &content_type, bytes)
             }
             Err(err) => {
-                eprintln!(
+                crate::log_line!(
                     "[ProtocolHandler] Upstream fetch failed for {canonical_url}: {err}"
                 );
                 if uri.path().contains("/wol/") && !uri.path().contains("/wol/mp/") {
                     // Friendly offline page for HTML document navigations
                     build_offline_miss_page(&canonical_url)
                 } else {
-                    Response::builder()
+                    response_builder()
                         .status(StatusCode::GATEWAY_TIMEOUT)
                         .header("Content-Type", "text/plain; charset=utf-8")
                         .body(Vec::from(format!("Network unavailable: {err}")))
-                        .unwrap_or_else(|_| default_error_response())
+                        .unwrap_or_else(|_: std::convert::Infallible| default_error_response())
                 }
             }
         }
@@ -201,7 +201,7 @@ impl ProtocolHandler {
             .unwrap_or(StatusCode::INTERNAL_SERVER_ERROR);
 
         if !status.is_success() {
-            eprintln!(
+            crate::log_line!(
                 "[fetch_upstream] Non-success status: {} for URL: {}, headers: {:?}",
                 status,
                 url,
@@ -257,11 +257,37 @@ impl ProtocolHandler {
                 last_modified.as_deref(),
                 &bytes_to_serve,
             ) {
-                eprintln!("[ProtocolHandler] Failed to save {url} to cache: {e}");
+                crate::log_line!("[ProtocolHandler] Failed to save {url} to cache: {e}");
             }
         }
 
         Ok((status, content_type, bytes_to_serve))
+    }
+
+    /// Public stale-while-revalidate entry point: re-fetch `url` with the stored
+    /// validators and refresh the cache when it changed.
+    pub async fn revalidate(&self, url: &CanonicalUrl) -> Result<bool, reqwest::Error> {
+        let (etag, last_modified) = match self.cache.get(url) {
+            Ok(Some((entry, _))) => (entry.etag, entry.last_modified),
+            Ok(None) => (None, None),
+            Err(_) => (None, None),
+        };
+        let host = self
+            .effective_base_host()
+            .or_else(|| url::Url::parse(url.as_str()).ok().and_then(|u| u.host_str().map(str::to_string)))
+            .unwrap_or_else(|| "wol.jw.org".to_string());
+        match self
+            .revalidate_in_background(
+                url.clone(),
+                host,
+                etag.as_deref(),
+                last_modified.as_deref(),
+            )
+            .await
+        {
+            Ok(()) => Ok(true),
+            Err(()) => Ok(false),
+        }
     }
 
     async fn revalidate_in_background(
@@ -284,7 +310,7 @@ impl ProtocolHandler {
             Err(_) => return Ok(()),
         };
 
-        if resp.status() == reqwest::StatusCode::NOT_MODIFIED {
+        if resp.status() == StatusCode::NOT_MODIFIED {
             let _ = self.cache.touch(&url);
             return Ok(());
         }
@@ -342,12 +368,12 @@ impl ProtocolHandler {
 }
 
 fn build_response(status: StatusCode, content_type: &str, body: Vec<u8>) -> Response<Vec<u8>> {
-    Response::builder()
+    response_builder()
         .status(status)
         .header("Content-Type", content_type)
         .header("Access-Control-Allow-Origin", "*")
         .body(body)
-        .unwrap_or_else(|_| default_error_response())
+        .unwrap_or_else(|_: std::convert::Infallible| default_error_response())
 }
 
 fn build_offline_miss_page(url: &CanonicalUrl) -> Response<Vec<u8>> {
@@ -401,19 +427,21 @@ fn build_offline_miss_page(url: &CanonicalUrl) -> Response<Vec<u8>> {
 </html>"#
     );
 
-    Response::builder()
+    response_builder()
         .status(StatusCode::OK)
         .header("Content-Type", "text/html; charset=utf-8")
         .body(html.into_bytes())
-        .unwrap_or_else(|_| default_error_response())
+        .unwrap_or_else(|_: std::convert::Infallible| default_error_response())
 }
 
 fn default_error_response() -> Response<Vec<u8>> {
-    Response::builder()
+    response_builder()
         .status(StatusCode::INTERNAL_SERVER_ERROR)
         .header("Content-Type", "text/plain")
         .body(Vec::from("Internal server error"))
-        .unwrap()
+        .unwrap_or_else(|_: std::convert::Infallible| {
+            Response::new(StatusCode::INTERNAL_SERVER_ERROR, Headers::new(), Vec::new())
+        })
 }
 
 pub fn inject_cookies_into_html(
