@@ -20,9 +20,11 @@ use crate::render::{ColorDepth, Glyphs, Theme};
     name = "wol",
     version,
     about = "OfflineWOL in your terminal — cached wol.jw.org reading with JW Library highlights",
-    long_about = "Read Watchtower Online Library articles and Bible chapters in the terminal, \
-with the highlights and study notes from your .jwlibrary backup. Pages are served from the \
-same cache OfflineWOL uses, so anything you browsed on the desktop is instantly readable."
+    long_about = "Browse Watchtower Online Library in the terminal: the library index, \
+publications and articles, with the highlights and study notes from your .jwlibrary backup. \
+Pages are served from the same cache OfflineWOL uses, so anything you browsed on the desktop \
+is instantly readable. Run without a subcommand to open the interactive reader at your \
+configured home page."
 )]
 pub struct Cli {
     /// Disable ANSI colour (also respects NO_COLOR).

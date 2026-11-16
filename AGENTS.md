@@ -25,7 +25,7 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 | Browser extension (`wol-highlights/`) | ✅ Shipped MV3 extension (~2.5k lines of JS) |
 | Desktop app (`wol-desktop/`) | ✅ Core Tauri app implemented (§1–§5 in `TODO.md`, 4 integration test suites) |
 | Shared engine (`wol-core/`) | ✅ Tauri-free; 68 unit tests + tokenizer parity suite |
-| Terminal CLI (`wol-cli/`) | ✅ `read`/`import`/`export`/`cache`/`sync`/`tui`/`info` (see `CLI_PLAN.md`) |
+| Terminal CLI (`wol-cli/`) | ✅ 57 unit tests; `read`/`import`/`export`/`cache`/`sync`/`tui`/`info`, `wol` alone opens the TUI at the language home and browses links (see `CLI_PLAN.md`) |
 | Packaging & store scripts (`scripts/`, `safari/`) | ✅ Working (`npm run build`, `npm run lint`, `npm run publish`) |
 
 ---
@@ -82,7 +82,7 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 │       ├── context.rs       # Cache-first loading, canonicalization, --offline
 │       ├── commands.rs      # read/import/export/cache/sync/info
 │       ├── render/          # Theme (TrueColor/256/none), article, tables, legend
-│       └── tui/             # ratatui event loop, reader, sidebar, note editor
+│       └── tui/             # ratatui event loop, reader, sidebar, notes, language picker
 └── wol-desktop/             # Rust + Tauri 2 Desktop App ("OfflineWOL")
     ├── Cargo.toml           # Depends on wol-core + tauri 2
     ├── tauri.conf.json      # Tauri app config (productName: OfflineWOL)
@@ -125,9 +125,11 @@ Key architectural decisions (do not reopen without cause):
   `http_types::{Response, Method, StatusCode, Headers}`, `sync` reports progress through a
   `SyncListener` callback and is driven by `SyncManager::new_shared()`. Adding a Tauri type
   back into `wol-core` re-breaks mobile/UniFFI plans.
-- **One data directory, three front-ends.** `wol-core::dirs` resolves the shared app data dir;
-  the CLI defaults to it and accepts `--data-dir` for scratch copies. Never write state
-  anywhere else, or the desktop app and CLI stop seeing each other's marks.
+- **One data directory, three front-ends.** `wol-core::dirs::app_data_dir()` resolves the
+  shared app data dir (`~/Library/Application Support/com.offlinewol.desktop`, identical on
+  every OS today, legacy id migrated), `WOL_DATA_DIR` overrides it, and the CLI adds
+  `--data-dir` for scratch copies. Never write state anywhere else, or the desktop app and CLI
+  stop seeing each other's marks.
 - **`wol-cli` rendering is pre-wrapped ANSI text.** `render::article` emits styled, wrapped
   lines; the TUI converts those SGR sequences into ratatui styles (`ansi_to_tui_line`), which
   is what makes highlights visible in the TUI. Don't reintroduce a strip-ANSI pass.

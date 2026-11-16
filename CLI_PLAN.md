@@ -2,6 +2,41 @@
 
 > Goal: Build a **non-GUI, pure-terminal version** (`wol-cli/`) alongside `wol-desktop/` ("OfflineWOL") and `wol-highlights/`, sharing a core Rust library (`wol-core/`) so desktop, CLI/TUI, and future mobile targets share caching, sync, `.jwlibrary` import/export, and tokenization without duplicating logic.
 
+> **Status: implemented** (all four phases). `wol-core/` holds the Tauri-free engine,
+> `wol-cli/` ships the `wol` binary with `read`/`import`/`export`/`cache`/`sync`/`tui`/`info`,
+> and CI publishes portable binaries for six targets. Read the "Implementation notes" below
+> for the places where reality deliberately differs from this plan — the plan is kept as the
+> original design record, not as a live task list.
+
+## Implementation notes (what actually shipped, and why)
+
+1. **`wol` with no subcommand launches the TUI** at `settings.home` → the configured
+   language's home → a first-run language picker (saves `baseHost`/`language`/`region`/`home`
+   exactly like the desktop settings UI). This is not in the plan above, but it is what makes
+   the CLI feel like the desktop app.
+2. **Link browsing is a first-class mode** (`Tab`): `j`/`k` (or arrows) walk the page's links
+   with wrap-around; the selection is auto-scrolled into view and marked `▸`. `Enter` opens it,
+   `Backspace`/`H` go back, `gh` = home, `Ctrl-l` = language picker, `r` = re-fetch.
+3. **Navigation pages needed parser work**, not just a renderer: WOL library/year pages are
+   pretty-printed `<a>` cards, so `wol_core::dom` now (a) seeds a block's style from the block
+   element itself so anchor-rooted blocks keep their `href`, (b) collapses whitespace inside
+   text nodes and trims block tails, and (c) `render::article::is_nav_link` renders
+   identifier-less all-link blocks as a bulleted link list. Whitespace handling cannot shift
+   token indices (whitespace never forms a token).
+4. **The tokenizer port needed three fixes to match `lib/tokenize.js` byte-for-byte**: general
+   categories (`\p{L}`/`\p{N}`, so combining marks like Hebrew niqqud stay separate tokens),
+   one token per UTF-16 code unit for astral characters (surrogate halves never match `WORD`),
+   and U+0085 is *not* whitespace in JS. All three are covered by
+   `wol-core/tests/tokenize_parity.rs` + fixtures generated from the JS.
+5. **`n` edits a note; search hits cycle with `N` / `Ctrl-n`**, and `p` opens the colour legend
+   popup (the plan had `n` doing double duty).
+6. **Sidebar tabs are Cached · Contents · Highlights** (no separate "publications" tab).
+7. **Images render as styled captions.** The optional `ratatui-image` (Kitty/Sixel/iTerm2)
+   backend described above is not implemented.
+8. **Cross-compatibility is a JS test**, not just a manual check:
+   `wol-highlights/test/cli-export.test.mjs` exports from the CLI and re-imports through
+   `wol-highlights/lib/backup.js`.
+
 ---
 
 ## 1. Architecture: Cargo Workspace Split

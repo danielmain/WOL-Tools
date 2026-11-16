@@ -67,6 +67,7 @@ nix run .#deploy
 | `npm run desktop:test` | Runs the whole Rust workspace test suite (`cargo test --workspace`) |
 | `npm run cli` | Runs the terminal reader (`cargo run -p wol-cli -- …`) |
 | `npm run cli:test` | Runs the `wol-cli` unit tests |
+| `npm test` | Runs the extension's Node test suites (`node --test wol-highlights/test/*.test.mjs`) |
 | `npm run test:tokenize` | Verifies the Rust tokenizer against the shipped `lib/tokenize.js` fixtures |
 | `npm run test:tokenize:update` | Regenerates `wol-core/tests/fixtures/tokenize_cases.json` from `lib/tokenize.js` |
 | `npm start` | Launches Firefox with extension pre-loaded, live-reloading, and opened to `wol.jw.org` |
@@ -122,7 +123,7 @@ To build or run from source, Rust (`cargo`) and Tauri 2 prerequisites are requir
 ```bash
 npm run desktop:dev   # Launch in development mode
 npm run desktop       # Run directly via Cargo
-npm run desktop:test  # Run Rust unit & integration tests
+npm run desktop:test  # Run the whole Rust workspace test suite
 ```
 
 OfflineWOL intercepts `wol.jw.org` navigation via a custom `wol://` protocol, caches visited pages and subresources on disk (stale-while-revalidate with LRU eviction and a Cache Inspector UI), and shares the same `wolMarks` JSON format as the browser extension.
@@ -142,10 +143,10 @@ nix build .#wol && ./result/bin/wol  # Nix users
 ```
 
 It shares `wol-core` with the desktop app, so it reads and writes the **same data directory**
-(`~/Library/Application Support/com.offlinewol.desktop` on macOS,
-`~/.local/share/com.offlinewol.desktop` on Linux, `%APPDATA%\com.offlinewol.desktop` on
-Windows): one cache, one `wolMarks` set, one sync configuration. Use `--data-dir <DIR>` to
-point at a scratch copy (handy for testing).
+(`~/Library/Application Support/com.offlinewol.desktop`; the current resolver uses that path on
+every platform, and the legacy `com.wolhighlights.desktop` directory is migrated on first use):
+one cache, one `wolMarks` set, one sync configuration. Point it elsewhere with
+`WOL_DATA_DIR=<DIR>` or the `--data-dir <DIR>` flag (handy for tests and scratch profiles).
 
 Running `wol` with no subcommand opens the interactive reader — the terminal
 equivalent of launching OfflineWOL. On first run it asks for your language
@@ -172,7 +173,9 @@ and `Enter` opens the entry (`Backspace` goes back). Article pages get the full
 reader: highlights, notes, visual selection and search.
 
 Global flags: `--no-color` (also honours `NO_COLOR`), `--ascii`, `--width <COLUMNS>`,
-`--offline` (never touch the network), `--data-dir <DIR>`.
+`--offline` (never touch the network), `--data-dir <DIR>` (or `WOL_DATA_DIR`).
+`wol read` pages through `$PAGER` (default `less -R -F -X`) when stdout is a TTY; set
+`WOL_NO_PAGER=1` to print straight through.
 
 Accepted targets: full `https://wol.jw.org/...` URLs, `wol://…` addresses, site-relative
 paths (`/en/wol/d/r1/lp-e/2025441`), or a bare document id (`2025441`).
@@ -258,6 +261,12 @@ JW Library addresses text using **0-indexed token offsets** (inclusive range `[S
 - **Punctuation tokens**: Any non-whitespace character that is not a word token (e.g. periods, quotation marks, brackets, hyphens).
 - **Whitespace**: Skipped and does not advance the token counter.
 - **Special tokens**: Soft hyphens (`\u00AD`) are counted as individual tokens.
+- **Astral characters** (emoji, rare CJK) are two UTF-16 code units and therefore **two**
+  tokens — neither half of a surrogate pair is a letter.
+- **Rust parity**: `wol-core::tokenize` is a byte-for-byte port of the same rules
+  (it uses Unicode general categories, so combining marks stay separate tokens). It is
+  enforced by `cargo test -p wol-core --test tokenize_parity`, with fixtures generated from
+  `lib/tokenize.js` by `npm run test:tokenize:update`.
 
 ### DOM Range Alignment (`lib/highlight.js`)
 
@@ -317,8 +326,9 @@ Highlights replicate native JW Library colors:
 ├── wol-desktop/             # Rust + Tauri 2 OfflineWOL desktop app
 │   ├── Cargo.toml           # Rust crate manifest
 │   ├── tauri.conf.json      # Tauri configuration
-│   ├── src/                 # Protocol handler, disk cache, URL rewriter, crawler, bridge
-│   ├── tests/               # Acceptance & integration tests
+│   ├── src/                 # lib.rs (app setup, wol:// protocol, menus), bridge.rs (JS bridge),
+│   │                        #   commands.rs (IPC), main.rs — shared logic comes from wol-core
+│   ├── tests/               # Acceptance & integration tests (cargo test)
 │   └── ui/                  # Manager & setup UI + reused wol-highlights/lib/* assets
 └── wol-highlights/          # Cross-browser WebExtension source (Manifest V3)
     ├── manifest.json        # Extension manifest
@@ -337,7 +347,13 @@ Highlights replicate native JW Library colors:
     │   ├── sql-wasm.js      # sql.js WebAssembly SQLite loader
     │   └── sql-wasm.wasm    # sql.js WebAssembly SQLite binary
     └── test/
-        └── run.html         # Test runner verifying parsing and highlight placement
+        ├── run.html              # In-browser parser & highlight-placement test runner
+        ├── backup.test.mjs       # .jwlibrary / SQLite indexer tests (node --test)
+        ├── content.test.mjs      # DOM highlight & toolbar behaviour tests
+        ├── cli-export.test.mjs   # CLI `.jwlibrary` export re-imported by lib/backup.js
+        ├── jwpub-crypto.test.mjs # Encrypted JWPUB decoding tests
+        ├── sync.test.mjs         # Sync decision/merge tests
+        └── tokenize-parity.mjs   # Regenerates the Rust tokenizer parity fixtures
 ```
 
 ---

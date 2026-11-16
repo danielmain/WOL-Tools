@@ -6,7 +6,19 @@
 
 ## 0. Architecture Fit & Strategy
 
-`wol-desktop/` already runs on **Tauri 2** with a Rust backend (`rusqlite` with `bundled`, `tokio`, `reqwest`, `zip`, `serde`) and a webview frontend. Rather than creating a separate codebase, this plan adapts `wol-desktop/` to compile for both desktop and mobile (`#[cfg(desktop)]` / `#[cfg(mobile)]`) from the same crate.
+`wol-desktop/` already runs on **Tauri 2** with a webview frontend, and every GUI-agnostic
+piece now lives in **`wol-core/`** (Cargo workspace: `wol-core`, `wol-desktop`, `wol-cli`):
+cache, protocol/handler, `url_map`, crawler, state/`wolMarks`, sync, publications,
+`.jwlibrary` import/export, tokenization and the DOM model. `wol-core` has **no Tauri, clap or
+terminal dependencies**, so a mobile port wraps it with a thin Tauri shell instead of forking
+logic. Rather than creating a separate codebase, this plan adapts `wol-desktop/` (plus the
+shared `wol-core/`) to compile for both desktop and mobile (`#[cfg(desktop)]` / `#[cfg(mobile)]`).
+
+> **Already done (do not re-do):** the Tauri decoupling that used to block mobile —
+> `url_map` uses `url::Url`, `handler` speaks `http_types::{Response, Method, StatusCode,
+> Headers}`, `sync` reports through a `SyncListener` callback and is driven by
+> `SyncManager::new_shared()` instead of an `AppHandle`, and `publications` no longer exposes
+> Tauri commands. Paths below name `wol-core/src/...` where that is where the code now lives.
 
 ---
 
@@ -19,10 +31,10 @@
   - Annotate `run_app()` in `wol-desktop/src/lib.rs` with `#[cfg_attr(mobile, tauri::mobile_entry_point)]`.
 - [ ] **1.2 TLS backend (`wol-desktop/Cargo.toml`)**
   - Configure `reqwest` with `default-features = false` and `features = ["rustls-tls", ...]` (instead of platform `native-tls` / OpenSSL) to avoid cross-compilation failures on Android NDK and iOS.
-- [ ] **1.3 Platform-correct app data directory (`wol-desktop/src/lib.rs`, `wol-desktop/src/publications.rs`)**
-  - Replace `dirs_fallback_app_data()` (which currently hardcodes `$HOME/Library/Application Support/com.offlinewol.desktop`) with `app.path().app_data_dir()` inside `.setup(...)`.
+- [ ] **1.3 Platform-correct app data directory (`wol-desktop/src/lib.rs`, `wol-core/src/publications.rs`, `wol-core/src/dirs.rs`)**
+  - Replace the `wol-core/src/dirs.rs` fallback (which currently hardcodes `$HOME/Library/Application Support/com.offlinewol.desktop`) with `app.path().app_data_dir()` inside `.setup(...)`, and pass the path into `wol-core`.
   - Keep the legacy macOS migration (`com.wolhighlights.desktop` → `com.offlinewol.desktop`) behind `#[cfg(target_os = "macos")]`.
-  - Pass the resolved `PathBuf` into `publications.rs` instead of calling `dirs_fallback_app_data()` directly.
+  - Pass the resolved `PathBuf` into `wol-core::publications` instead of letting it call `dirs` directly.
 - [ ] **1.4 Gate desktop-only window & menu APIs (`wol-desktop/src/lib.rs`)**
   - Wrap `Menu`, `Submenu`, `MenuItem`, `PredefinedMenuItem`, `app.set_menu(...)`, and `app.on_menu_event(...)` in `#[cfg(desktop)]`.
   - Gate `.inner_size(1200.0, 800.0)` and `.theme(...)` on `WebviewWindowBuilder` with `#[cfg(desktop)]` where unsupported on mobile.
@@ -50,9 +62,9 @@
 
 **Outcome**: Backup import/export and Nextcloud / Google Drive sync work end-to-end on mobile.
 
-- [ ] **3.1 Replace `std::process::Command` browser launch (`wol-desktop/src/sync.rs`)**
+- [ ] **3.1 Replace `std::process::Command` browser launch (`wol-core/src/sync.rs`)**
   - `open_browser()` currently spawns `open` / `xdg-open` / `cmd`. Replace with `tauri-plugin-opener` so external URLs open in SFSafariViewController / Chrome Custom Tabs on mobile and the default browser on desktop.
-- [ ] **3.2 Mobile OAuth callback (`wol-desktop/src/sync.rs`)**
+- [ ] **3.2 Mobile OAuth callback (`wol-core/src/sync.rs`)**
   - A `127.0.0.1` loopback HTTP server can be suspended when iOS backgrounds the app during browser login. Register a custom URL scheme / deep link (e.g. `offlinewol://oauth/callback`) via `tauri-plugin-deep-link` for mobile OAuth redirects.
 - [ ] **3.3 `.jwlibrary` import & export (`wol-desktop/src/commands.rs`)**
   - Verify `tauri-plugin-dialog` file picker behavior on iOS Files and Android Storage Access Framework for `.jwlibrary` / `.json` import and export.
@@ -67,7 +79,7 @@
 - [ ] **4.1 Text selection & popover positioning (`wol-highlights/content.js`, `wol-desktop/src/bridge.rs`)**
   - Test `mouseup` / `pointerup` / `selectionchange` behavior in `WKWebView` and `Android WebView`.
   - Position the highlight color picker and note editor so it does not get obscured by the native OS copy/paste callout or the on-screen keyboard.
-- [ ] **4.2 Offline background crawling & battery/storage limits (`wol-desktop/src/crawler.rs`, `wol-desktop/src/state.rs`)**
+- [ ] **4.2 Offline background crawling & battery/storage limits (`wol-core/src/crawler.rs`, `wol-core/src/state.rs`)**
   - Keep default cache cap conservative on mobile (or warn before large Bible/library downloads on cellular connections).
 
 ---
@@ -75,7 +87,7 @@
 ## Phase 5 — Testing, Signing & Release
 
 - [ ] **5.1 Rust & desktop regression check**
-  - Run `npm run desktop:test` (`cargo test --manifest-path wol-desktop/Cargo.toml`) to ensure desktop behavior and all existing tests remain green.
+  - Run `npm run desktop:test` (`cargo test --workspace`) to ensure `wol-core`, the desktop app and the CLI all stay green.
 - [ ] **5.2 Mobile smoke test matrix**
   - Verify on iOS Simulator/device and Android Emulator/device:
     1. First-run setup (`setup.html`) → language selection → `wol://` home page loads.

@@ -234,9 +234,28 @@ A Bible chapter is `https://wol.jw.org/es/wol/b/r4/lp-s/nwtsty/2/5` for the stud
 
 The page writes the language as a symbol. The database writes it as `MepsLanguage`. The confirmed pairs are `E` = 0 and `S` = 1. Windows locale ids are a different numbering. This file has one location in language 2 (`od`, one highlight); the symbol for that id is not confirmed. A Bible chapter in any other language still matches when the backup has that symbol, book, and chapter in only one language.
 
+## Implementations
+
+The rules above exist twice, and both must agree, because a backup written by one is read by
+the other:
+
+- `wol-highlights/lib/tokenize.js` — the browser extension's tokenizer (the reference).
+- `wol-core/src/tokenize.rs` — the Rust port used by OfflineWOL and `wol-cli`. It classifies
+  characters by Unicode general category (`\p{L}` = Lu/Ll/Lt/Lm/Lo, `\p{N}` = Nd/Nl/No), so
+  combining marks stay separate tokens, and it emits one token per UTF-16 code unit, so astral
+  characters are two tokens.
+- Parity is enforced, not assumed: `npm run test:tokenize` regenerates
+  `wol-core/tests/fixtures/tokenize_cases.json` from the JS, and
+  `cargo test -p wol-core --test tokenize_parity` replays it against Rust. Add a case there
+  whenever a tokenization edge case is discovered.
+
 ## Add-on
 
 `wol-highlights/` loads `userData.db` or the `.jwlibrary` zip in Firefox and paints the ranges on wol.jw.org. Install steps are in `wol-highlights/README.md`. The backup is not shipped inside the add-on, and the highlights are not sent anywhere.
+
+The same ranges are painted by **OfflineWOL** (`wol-desktop/`, Tauri) and read/written by
+**`wol`** (`wol-cli/`, terminal), which share `wol-core/` and the same data directory — a
+highlight created in any of the three shows up in the others.
 
 From this file the index is 2,765 ranges, 184 articles, and 56 Bible chapters. `userData.db` and `userdata.zip` produce the same index.
 
