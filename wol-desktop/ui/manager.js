@@ -125,8 +125,6 @@ const settingLang = document.querySelector("#setting-lang");
 const settingHome = document.querySelector("#setting-home");
 const settingTheme = document.querySelector("#setting-theme");
 const settingCap = document.querySelector("#setting-cap");
-const btnSaveSettings = document.querySelector("#btn-save-settings");
-const btnNavigateHome = document.querySelector("#btn-navigate-home");
 
 // DOM Elements - Cache Inspector
 const statTotalSize = document.querySelector("#stat-total-size");
@@ -594,40 +592,10 @@ async function initSettings() {
         card.classList.toggle("is-selected", card.dataset.themeValue === mode);
       });
     };
-    syncThemeCards(initialTheme);
-    document.querySelectorAll(".theme-card").forEach((card) => {
-      card.addEventListener("click", () => {
-        const mode = card.dataset.themeValue || "system";
-        if (settingTheme) settingTheme.value = mode;
-        syncThemeCards(mode);
-        applyManagerTheme(mode);
-      });
-    });
-    applyManagerTheme(initialTheme);
-    settingCap.value = String(currentSettings.cacheCapBytes);
 
-    settingCap.addEventListener("change", async () => {
-      if (!currentSettings) return;
-      const updated = {
-        ...currentSettings,
-        cacheCapBytes: parseInt(settingCap.value, 10),
-      };
-      await tauriInvoke("save_settings", { settings: updated });
-      currentSettings = updated;
-      setMessage("Offline cache cap updated.");
-      await refreshCacheInspector();
-    });
-
-    settingLang.addEventListener("change", () => {
+    const persistSettings = async (feedback) => {
       const selected = settingLang.selectedOptions[0];
-      if (selected?.dataset.home) {
-        settingHome.value = selected.dataset.home;
-      }
-    });
-
-    btnSaveSettings.addEventListener("click", async () => {
-      const selected = settingLang.selectedOptions[0];
-      let baseHost = currentSettings.baseHost || activeBaseHost || null;
+      let baseHost = currentSettings?.baseHost || activeBaseHost || null;
       if (!baseHost && settingHome.value) {
         try {
           baseHost = new URL(settingHome.value).host || null;
@@ -643,13 +611,33 @@ async function initSettings() {
       };
       await tauriInvoke("save_settings", { settings: updated });
       currentSettings = updated;
-      applyManagerTheme(updated.theme);
-      setMessage("Settings saved successfully.");
+      if (feedback) setMessage(feedback);
+    };
+
+    syncThemeCards(initialTheme);
+    document.querySelectorAll(".theme-card").forEach((card) => {
+      card.addEventListener("click", async () => {
+        const mode = card.dataset.themeValue || "system";
+        if (settingTheme) settingTheme.value = mode;
+        syncThemeCards(mode);
+        applyManagerTheme(mode);
+        await persistSettings();
+      });
+    });
+    applyManagerTheme(initialTheme);
+    settingCap.value = String(currentSettings.cacheCapBytes);
+
+    settingCap.addEventListener("change", async () => {
+      await persistSettings("Offline cache cap updated.");
+      await refreshCacheInspector();
     });
 
-    btnNavigateHome.addEventListener("click", async () => {
-      await tauriInvoke("navigate_home");
-      setMessage("Navigating main window to Home…");
+    settingLang.addEventListener("change", async () => {
+      const selected = settingLang.selectedOptions[0];
+      if (selected?.dataset.home) {
+        settingHome.value = selected.dataset.home;
+      }
+      await persistSettings("Primary language updated.");
     });
   } catch (err) {
     console.error("[Manager] Failed to init settings:", err);
