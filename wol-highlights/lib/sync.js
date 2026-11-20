@@ -1,14 +1,32 @@
 (function (globalScope) {
   "use strict";
 
-  async function googleCredentials(ext) {
-    const { wolGoogleOAuth } = await ext.storage.local.get("wolGoogleOAuth");
-    const clientId = String(wolGoogleOAuth?.clientId || "").trim();
-    const clientSecret = String(wolGoogleOAuth?.clientSecret || "").trim();
+  /**
+   * Pure credential resolution: explicit override in local storage wins, then the
+   * client bundled at build time (`lib/oauth.generated.js`, from .env).
+   */
+  function resolveGoogleCredentials(stored, builtin) {
+    const pick = (a, b) => String(a || "").trim() || String(b || "").trim();
+    const clientId = pick(stored?.clientId, builtin?.clientId);
+    const clientSecret = pick(stored?.clientSecret, builtin?.clientSecret);
     if (!clientId || !clientSecret) {
-      throw new Error("Configure Google OAuth credentials in extension local storage; see README.");
+      throw new Error(
+        "This build has no Google Drive client baked in. Rebuild the extension with credentials " +
+          "(node scripts/gen-oauth.js --from-json <client_secret.json>), or set a custom client " +
+          "with browser.storage.local.set({ wolGoogleOAuth: { clientId, clientSecret } })."
+      );
     }
-    return { clientId, clientSecret };
+    return { clientId, clientSecret, source: stored?.clientId ? "storage" : "bundled" };
+  }
+
+  async function googleCredentials(ext) {
+    let stored = null;
+    try {
+      ({ wolGoogleOAuth: stored } = await ext.storage.local.get("wolGoogleOAuth"));
+    } catch (_) {
+      stored = null;
+    }
+    return resolveGoogleCredentials(stored, globalScope.WOL_GOOGLE_OAUTH);
   }
   const GOOGLE_AUTH_URL = "https://accounts.google.com/o/oauth2/auth";
   const GOOGLE_TOKEN_URL = "https://oauth2.googleapis.com/token";
@@ -849,6 +867,7 @@
     normalizeNextcloudServerUrl,
     nextcloudWebdavFileUrl,
     decideSyncAction,
+    resolveGoogleCredentials,
     mergeMarks,
     marksHasContent,
     buildStatus,

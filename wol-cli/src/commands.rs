@@ -134,6 +134,7 @@ async fn read(
         gutter,
         show_notes: notes,
         show_footnotes: true,
+        header: true,
     };
     let mut lines = render_document(&document, &marks, &theme, options);
     lines.push(String::new());

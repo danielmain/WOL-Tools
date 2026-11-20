@@ -17,6 +17,7 @@
           runtimeInputs = [
             webExt
             pkgs.coreutils
+            pkgs.nodejs
           ];
           text = ''
             for arg in "$@"; do
@@ -35,6 +36,9 @@
 
             CHANNEL="''${AMO_CHANNEL:-listed}"
             echo "Deploying extension to Mozilla Add-ons (Channel: ''${CHANNEL})..."
+
+            # Bake the shipped Google OAuth client into the package (no-op without creds).
+            node scripts/gen-oauth.js --quiet
 
             exec web-ext sign \
               --api-key="''${WEB_EXT_API_KEY}" \

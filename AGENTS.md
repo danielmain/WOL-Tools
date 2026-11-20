@@ -24,8 +24,8 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 |---|---|
 | Browser extension (`wol-highlights/`) | ✅ Shipped MV3 extension (~2.5k lines of JS) |
 | Desktop app (`wol-desktop/`) | ✅ Core Tauri app implemented (§1–§5 in `TODO.md`, 4 integration test suites) |
-| Shared engine (`wol-core/`) | ✅ Tauri-free; 68 unit tests + tokenizer parity suite |
-| Terminal CLI (`wol-cli/`) | ✅ 57 unit tests; `read`/`import`/`export`/`cache`/`sync`/`tui`/`info`, `wol` alone opens the TUI at the language home and browses links (see `CLI_PLAN.md`) |
+| Shared engine (`wol-core/`) | ✅ Tauri-free; 76 unit tests + tokenizer parity suite |
+| Terminal CLI (`wol-cli/`) | ✅ 69 unit tests; `read`/`import`/`export`/`cache`/`sync`/`tui`/`info`; `wol` alone opens the home dashboard (toolbar + daily text), directory pages open a two-pane category browser (see `CLI_PLAN.md`) |
 | Packaging & store scripts (`scripts/`, `safari/`) | ✅ Working (`npm run build`, `npm run lint`, `npm run publish`) |
 
 ---
@@ -71,7 +71,8 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 │       ├── jwlibrary_export.rs # wolMarks -> .jwlibrary (schema v16) writer
 │       ├── backup.rs        # .jwlibrary/userData.db/JSON -> wolMarks importer
 │       ├── tokenize.rs      # Rust port of lib/tokenize.js (UTF-16 token parity)
-│       ├── dom.rs           # #article parser -> blocks/tokens (ignore rules of highlight.js)
+│       ├── dom.rs           # #article parser (blocks/tokens, highlight.js ignore rules) +
+│       │                    #   chrome/welcome/daily-text/nav (toolbar & directory pages)
 │       ├── highlight.rs     # Token-range add/remove helpers shared by CLI & TUI
 │       ├── http_types.rs    # Response/Method/StatusCode/Headers abstraction
 │       ├── dirs.rs          # Shared app data directory resolution
@@ -82,7 +83,8 @@ This repository bridges **JW Library** personal study data with **Watchtower Onl
 │       ├── context.rs       # Cache-first loading, canonicalization, --offline
 │       ├── commands.rs      # read/import/export/cache/sync/info
 │       ├── render/          # Theme (TrueColor/256/none), article, tables, legend
-│       └── tui/             # ratatui event loop, reader, sidebar, notes, language picker
+│       └── tui/             # ratatui event loop; home.rs (dashboard), browser.rs
+│                            #   (sub-category browser), reader, sidebar, notes, languages
 └── wol-desktop/             # Rust + Tauri 2 Desktop App ("OfflineWOL")
     ├── Cargo.toml           # Depends on wol-core + tauri 2
     ├── tauri.conf.json      # Tauri app config (productName: OfflineWOL)
@@ -111,6 +113,26 @@ Key architectural decisions (do not reopen without cause):
 7. **Reuse the JS, shim the APIs.** `tokenize.js`, `highlight.js`, `backup.js`, `sql-wasm.*`, and `content.css` are reused; browser extension `storage`/`tabs`/`runtime` calls are shimmed via `window.__wolBridge`.
 
 ### Desktop Gotchas
+- **The shipped Google OAuth client is compiled in, not read from the environment.**
+  `wol-core/build.rs` reads `WOL_GOOGLE_CLIENT_ID`/`WOL_GOOGLE_CLIENT_SECRET` (or `CHROME_*`) from
+  the build environment, else the workspace `.env` (`WOL_ENV_FILE` overrides the path), and emits
+  them as `WOL_BUILTIN_GOOGLE_CLIENT_*`. `sync::google_credentials()` resolves *runtime env →
+  built-in → user-facing error*, so a released build needs no env vars while a developer can still
+  point it at a personal client. `build.rs` also prints `cargo:rerun-if-changed` for `.env` — keep
+  that or edits to credentials won't reach the binary. iOS builds need an iOS client id (public
+  PKCE client, no secret): Google only accepts the reversed-client-id redirect scheme for
+  registered iOS clients, so a baked-in Desktop client id will not work there. Never "fix" a
+  missing-credential error by committing the secret; the installed-app secret is non-confidential
+  but `CHROME_REFRESH_TOKEN` (publisher) is not.
+- **Tauri command state types must match `.manage()` exactly.** `SyncManager` is registered as
+  `Arc<SyncManager>` (`wol-desktop/src/lib.rs`: `.manage(sync_mgr.clone())`), so every command
+  takes `State<'_, Arc<SyncManager>>`. Asking for `State<'_, SyncManager>` compiles fine but every
+  IPC is rejected at runtime with `state not managed for field `syncMgr` on command `set_marks``—
+  and because `content.js` persists highlights through that IPC, the symptom is "highlights can no
+  longer be created" with no visible error (only `[__wolBridge] invoke set_marks failed` in the
+  webview console). `wol-desktop/tests/tauri_state_wiring.rs` guards this. When the desktop looks
+  broken but the extension works, open the webview console first: `set_marks`/`get_marks` failures
+  are only `console.warn`s.
 - **Cache keys must include language and region.** `/es/wol/d/r4/lp-s/X` and `/en/wol/d/r1/lp-e/X` are different documents. Canonicalize as `https://wol.jw.org<path>?<sorted-query>` — never key on `wol://`.
 - **Do not guess JW CDN paths.** `app.jw-cdn.org/pub-media/...` returns **403** to direct requests. Use the endpoints the page calls (`GETPUBMEDIALINKS`, `GETPUBMEDIA` on `b.jw-cdn.org/apis/...`).
 - **`wol-highlights/lib/languages.js` only maps `{E: 0, S: 1}`** (MEPS IDs). Non-EN/ES Bible-chapter matching requires the full language table (`wol-core/src/languages.json`).
@@ -135,10 +157,41 @@ Key architectural decisions (do not reopen without cause):
   is what makes highlights visible in the TUI. Don't reintroduce a strip-ANSI pass.
 - **TUI edits are real edits.** `1`-`6`, `0`/`x` and the note editor write straight through
   `State::set_stored_index`, so the desktop app and extension see them immediately.
+- **The TUI reader has an nvim-style cursor row, not a pinned viewport top.** `Reader::cursor_line`
+  is the active row; `↑`/`↓` (or `j`/`k`) move it and `Reader::follow_cursor` scrolls only when it
+  would leave the viewport. `draw_reader`/`draw_daily_text` paint that row with
+  `cursor_line_style` (background, or `REVERSED` without colour). `set_cursor_line`/
+  `move_line` clamp `cursor_token` into the paragraph under the cursor — without that clamp a
+  token left over from a longer paragraph made `v` + `1`-`6` store a range covering no text, so
+  highlights silently never appeared. Keep the `current_options(app)` width in sync with
+  `App::width` (set by `App::resize`) or re-renders after an edit re-wrap the page.
+- **`.gen-field` answer boxes are read-only in the CLI.** `dom::Node_::InputField` is rendered by
+  `render::article::render_input_field` from the page HTML only; `wol-core` exposes
+  `StoredIndex::doc_input_field` but no setter, so answers must be written in the extension or
+  desktop app (or imported as `wolMarks.inputFields`) — `wol export` still writes them to the
+  `.jwlibrary` `InputField` table.
 - **`wol` with no subcommand opens the TUI, desktop-style.** Startup target is
   `settings.home` → the configured language's home (`wol_core::languages::home_url`) → the
   language picker on a fresh install. The picker saves `baseHost`/`language`/`region`/`home`
   exactly like `wol-desktop/ui/manager.js`, so both front-ends agree.
+- **Home pages open a dashboard, not the raw article.** `wol-cli/src/tui/home.rs` renders the
+  same toolbar, welcome panel and daily text as the desktop home screen; the buttons, labels,
+  search endpoint and copy come from the page itself (`dom::parse_chrome`, `dom::parse_welcome`,
+  `dom::parse_daily_text`), never from hard-coded per-language URLs. `←`/`→` select, `Enter`
+  opens, `↓`/`Tab` reads the daily text, `Esc`/`Tab` returns, `[`/`]` are previous/next day.
+  The daily pane *is* the reader (`app.reader`), so `v`/`1-6`/`n` write real `wolMarks` against
+  the daily-text publication id. Keep `RenderOptions::header == false` there (the pane has its
+  own titled border) and remember WOL renders three days per home page: `parse_daily_text`
+  picks the dated page's own day, else the reader's local date, else the middle section.
+- **WOL directory pages open a two-pane browser** (`wol-cli/src/tui/browser.rs`), not a flat
+  link list. `dom::parse_nav` turns `#materialNav` into sections (`Vida y Ministerio`,
+  `Estudio de La Atalaya`, …) plus cards; the left pane is the sub-category menu (headings are
+  not selectable), the right pane shows the selected section's cards — or, on single-section
+  pages like `/library/…/biblioteca`, the selected card's detail. `j/k` move, `Enter`/`→`
+  open, `Esc`/`Backspace`/`←` go back, and the cursor is remembered per URL so returning from
+  an article lands on the same sub-category. Articles, Bible chapters and search results have
+  no `.materialNav`, so they never become browsers; keep it that way when touching
+  `parse_nav` or `apply_page` (priority: dashboard → browser → reader).
 - **WOL navigation pages are cards/anchors, not study paragraphs.** `dom` seeds a block's
   style from the block element itself (so `<a>` roots keep their `href`), collapses
   whitespace in text nodes, and trims block tails; `render::article::is_nav_link` turns
@@ -161,6 +214,14 @@ Key architectural decisions (do not reopen without cause):
   4. `content.js`
   **Do not add `import` or `export` statements to these files.**
 - `manifest.json` requires `"content_security_policy": { "extension_pages": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'" }` for `sql.js` WebAssembly execution.
+- **`lib/oauth.generated.js` is generated, not source.** `scripts/gen-oauth.js` writes it from
+  `WOL_GOOGLE_CLIENT_ID`/`WOL_GOOGLE_CLIENT_SECRET` (or `CHROME_*`) in `.env`, or from a Google
+  Cloud Console `client_secret_*.json` via `--from-json`. It is git-ignored and sets
+  `globalThis.WOL_GOOGLE_OAUTH`; `lib/sync.js` resolves credentials as *storage override →
+  generated client → actionable error*, and `background.js` `importScripts` both files
+  defensively because a plain checkout has no generated file. `npm run generate:oauth`,
+  `build:*`, `lint`, `start:*`, `prepare` and the flake's `deploy-amo` all run it — add it to any
+  new packaging path, or the zip ships a manifest that references a missing script.
 
 ### Tokenization & WOL DOM (`lib/tokenize.js`, `lib/highlight.js`, `content.js`)
 - **Tokens**: `WORD = /[\p{L}\p{N}\p{Pc}]/u` sequences form one token; any other non-whitespace char is an individual token; whitespace (`SPACE`) is skipped; soft hyphens (`\u00AD`) and zero-width spaces count as individual tokens.

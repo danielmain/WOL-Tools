@@ -1,5 +1,13 @@
 if (typeof importScripts === "function" && !globalThis.WOLSync) {
-  importScripts("lib/sync.js");
+  // `lib/oauth.generated.js` is produced by `node scripts/gen-oauth.js` at build
+  // time. It can be absent in a plain checkout, so load it defensively.
+  for (const scriptPath of ["lib/oauth.generated.js", "lib/sync.js"]) {
+    try {
+      importScripts(scriptPath);
+    } catch (err) {
+      console.warn(`[WOL Highlights Background] Could not load ${scriptPath}:`, err);
+    }
+  }
 }
 
 const ext = typeof browser !== "undefined" ? browser : chrome;

@@ -25,3 +25,10 @@ thiserror.workspace = true
 regex.workspace = true
 uuid.workspace = true
 reqwest.workspace = true
+time = { version = "0.3.55", features = ["local-offset"] }
+
+[dev-dependencies]
+# Fixtures for tests/jwlibrary_import.rs: build a real SQLite userData.db and zip it.
+rusqlite.workspace = true
+zip.workspace = true
+uuid.workspace = true

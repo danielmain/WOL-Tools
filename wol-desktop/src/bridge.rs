@@ -323,6 +323,20 @@ pub fn build_injected_script_with_theme(
           height: 30px;
           padding: 0;
           margin: 0;
+        }}
+        @media (pointer: coarse) {{
+          #wol-desktop-nav-pill {{
+            top: calc(8px + env(safe-area-inset-top, 0px));
+            left: calc(12px + env(safe-area-inset-left, 0px));
+            opacity: 0.94;
+            padding: 4px;
+            gap: 4px;
+          }}
+          #wol-desktop-nav-pill button {{
+            width: 38px;
+            height: 38px;
+          }}
+        }}
           border-radius: 9999px;
           display: inline-flex;
           align-items: center;

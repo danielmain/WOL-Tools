@@ -459,12 +459,22 @@ if (document.readyState === "loading") {
 let toolbarElement = null;
 let activeRange = null;
 let activeMark = null;
+let selectionDebounceTimer = null;
+
+function isTouchDevice() {
+  return Boolean(
+    window.matchMedia?.("(pointer: coarse)")?.matches ||
+      (navigator.maxTouchPoints > 0 && window.innerWidth <= 900)
+  );
+}
 
 function createToolbar() {
   if (toolbarElement) return toolbarElement;
   const toolbar = document.createElement("div");
   toolbar.className = "wol-hl-toolbar";
   toolbar.hidden = true;
+  // Prevent touch/pointer down on the toolbar from collapsing the active selection on mobile
+  toolbar.addEventListener("pointerdown", (e) => e.preventDefault());
 
   for (let color = 1; color <= 6; color++) {
     const btn = document.createElement("button");
@@ -559,6 +569,15 @@ function showToolbar(range) {
     return;
   }
 
+  if (isTouchDevice()) {
+    toolbar.classList.add("wol-hl-toolbar-mobile");
+    toolbar.style.top = "";
+    toolbar.style.left = "";
+    toolbar.hidden = false;
+    return;
+  }
+
+  toolbar.classList.remove("wol-hl-toolbar-mobile");
   let top = window.scrollY + rect.top;
   let left = window.scrollX + rect.left + rect.width / 2;
 
@@ -1472,6 +1491,32 @@ function setupSelectionListeners() {
     } else {
       hideToolbar();
     }
+  });
+
+  // On touch devices (e.g. iOS WKWebView), mouseup fires inconsistently with selection handles.
+  document.addEventListener("selectionchange", () => {
+    if (!isTouchDevice()) return;
+    clearTimeout(selectionDebounceTimer);
+    selectionDebounceTimer = setTimeout(() => {
+      const activeEl = document.activeElement;
+      if (activeEl instanceof HTMLTextAreaElement || activeEl?.closest?.("textarea, .gen-field")) {
+        hideToolbar();
+        return;
+      }
+      suppressAudioSelection();
+      const selection = window.getSelection();
+      if (!selection || selection.isCollapsed || !selection.rangeCount) {
+        if (!activeMark) hideToolbar();
+        return;
+      }
+      const range = selection.getRangeAt(0);
+      const article = document.querySelector("#article");
+      if (!article || !article.contains(range.commonAncestorContainer) || !selection.toString().trim()) {
+        hideToolbar();
+        return;
+      }
+      showToolbar(range);
+    }, 180);
   });
 }
 

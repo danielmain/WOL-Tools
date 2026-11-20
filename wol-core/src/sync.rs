@@ -8,7 +8,9 @@ use reqwest::{Client, Method, StatusCode};
 use serde::{Deserialize, Serialize};
 use serde_json::{json, Map, Value};
 use sha2::{Digest, Sha256};
+#[cfg(not(target_os = "ios"))]
 use tokio::io::{AsyncReadExt, AsyncWriteExt};
+#[cfg(not(target_os = "ios"))]
 use tokio::net::TcpListener;
 use tokio::sync::{Mutex, Notify};
 
@@ -17,13 +19,53 @@ use crate::state::{
     SyncProvider, SyncState,
 };
 
-fn google_credentials() -> Result<(String, String), String> {
-    let id = std::env::var("WOL_GOOGLE_CLIENT_ID").unwrap_or_default();
-    let secret = std::env::var("WOL_GOOGLE_CLIENT_SECRET").unwrap_or_default();
-    if id.trim().is_empty() || secret.trim().is_empty() {
-        return Err("Set WOL_GOOGLE_CLIENT_ID and WOL_GOOGLE_CLIENT_SECRET before starting OfflineWOL.".to_string());
+fn google_credentials() -> Result<(String, Option<String>), String> {
+    google_credentials_from(
+        |key| std::env::var(key).ok(),
+        option_env!("WOL_BUILTIN_GOOGLE_CLIENT_ID").unwrap_or(""),
+        option_env!("WOL_BUILTIN_GOOGLE_CLIENT_SECRET").unwrap_or(""),
+        // iOS uses a public PKCE client, which Google accepts without a secret.
+        !cfg!(target_os = "ios"),
+    )
+}
+
+/// Resolves the Google OAuth client without touching the environment directly.
+///
+/// Precedence per key: runtime `WOL_GOOGLE_CLIENT_ID`/`WOL_GOOGLE_CLIENT_SECRET`
+/// (so a developer can point an existing build at their own client) → the client
+/// baked in by `build.rs` from `.env` → an actionable error.
+fn google_credentials_from(
+    env: impl Fn(&str) -> Option<String>,
+    builtin_id: &str,
+    builtin_secret: &str,
+    secret_required: bool,
+) -> Result<(String, Option<String>), String> {
+    let pick = |key: &str, builtin: &str| {
+        env(key)
+            .map(|value| value.trim().to_string())
+            .filter(|value| !value.is_empty())
+            .unwrap_or_else(|| builtin.trim().to_string())
+    };
+    let client_id = pick("WOL_GOOGLE_CLIENT_ID", builtin_id);
+    let client_secret = pick("WOL_GOOGLE_CLIENT_SECRET", builtin_secret);
+    if client_id.is_empty() {
+        return Err(missing_google_credentials_message());
     }
-    Ok((id, secret))
+    if client_secret.is_empty() {
+        return if secret_required {
+            Err(missing_google_credentials_message())
+        } else {
+            Ok((client_id, None))
+        };
+    }
+    Ok((client_id, Some(client_secret)))
+}
+
+fn missing_google_credentials_message() -> String {
+    "Google Drive sign-in is not configured in this build. Rebuild with \
+     WOL_GOOGLE_CLIENT_ID and WOL_GOOGLE_CLIENT_SECRET in the environment (or in the \
+     workspace .env, which build.rs reads). Nextcloud sync needs no Google credentials."
+        .to_string()
 }
 pub const GOOGLE_AUTH_URL: &str = "https://accounts.google.com/o/oauth2/auth";
 pub const GOOGLE_TOKEN_URL: &str = "https://oauth2.googleapis.com/token";
@@ -510,25 +552,43 @@ async fn read_json<T: serde::de::DeserializeOwned>(resp: reqwest::Response) -> R
 }
 
 pub fn open_system_browser(url: &str) -> Result<(), String> {
-    #[cfg(target_os = "macos")]
-    let status = std::process::Command::new("open").arg(url).status();
-    #[cfg(target_os = "linux")]
-    let status = std::process::Command::new("xdg-open").arg(url).status();
-    #[cfg(target_os = "windows")]
-    let status = std::process::Command::new("cmd")
-        .args(["/C", "start", "", url])
-        .status();
+    #[cfg(any(target_os = "macos", target_os = "linux", target_os = "windows"))]
+    {
+        #[cfg(target_os = "macos")]
+        let status = std::process::Command::new("open").arg(url).status();
+        #[cfg(target_os = "linux")]
+        let status = std::process::Command::new("xdg-open").arg(url).status();
+        #[cfg(target_os = "windows")]
+        let status = std::process::Command::new("cmd")
+            .args(["/C", "start", "", url])
+            .status();
 
-    match status {
-        Ok(s) if s.success() => Ok(()),
-        Ok(s) => Err(format!("Browser command exited with status {s}")),
-        Err(e) => Err(format!("Failed to open system browser: {e}")),
+        match status {
+            Ok(s) if s.success() => Ok(()),
+            Ok(s) => Err(format!("Browser command exited with status {s}")),
+            Err(e) => Err(format!("Failed to open system browser: {e}")),
+        }
+    }
+    #[cfg(not(any(target_os = "macos", target_os = "linux", target_os = "windows")))]
+    {
+        let _ = url;
+        Err("System browser opening is not supported on this platform without a host opener.".to_string())
     }
 }
 
 /// Invoked after a sync run that changed local marks, so a front-end can refresh
 /// its views (the desktop app re-applies highlights in both webview windows).
 pub type SyncListener = Arc<dyn Fn() + Send + Sync>;
+
+/// Host-provided callback for opening an external URL (e.g. via `tauri-plugin-opener`).
+pub type BrowserOpener = Arc<dyn Fn(&str) -> Result<(), String> + Send + Sync>;
+
+/// Future returned by a host-provided interactive OAuth session (e.g. `ASWebAuthenticationSession` on iOS).
+pub type OAuthSessionFuture =
+    std::pin::Pin<Box<dyn std::future::Future<Output = Result<String, String>> + Send>>;
+
+/// Host-provided callback that opens `(auth_url, callback_scheme)` and resolves to the full callback URL.
+pub type OAuthSessionOpener = Arc<dyn Fn(&str, &str) -> OAuthSessionFuture + Send + Sync>;
 
 #[derive(Clone)]
 pub struct SyncManager {
@@ -539,6 +599,8 @@ pub struct SyncManager {
     debounce_notify: Arc<Notify>,
     debounce_started: Arc<AtomicBool>,
     listener: Arc<std::sync::Mutex<Option<SyncListener>>>,
+    browser_opener: Arc<std::sync::Mutex<Option<BrowserOpener>>>,
+    oauth_session_opener: Arc<std::sync::Mutex<Option<OAuthSessionOpener>>>,
     /// Handle to this very instance, so background tasks can own a `'static` clone.
     self_ref: std::sync::OnceLock<Arc<SyncManager>>,
 }
@@ -558,6 +620,8 @@ impl SyncManager {
             debounce_notify: Arc::new(Notify::new()),
             debounce_started: Arc::new(AtomicBool::new(false)),
             listener: Arc::new(std::sync::Mutex::new(None)),
+            browser_opener: Arc::new(std::sync::Mutex::new(None)),
+            oauth_session_opener: Arc::new(std::sync::Mutex::new(None)),
             self_ref: std::sync::OnceLock::new(),
         }
     }
@@ -567,6 +631,46 @@ impl SyncManager {
         if let Ok(mut slot) = self.listener.try_lock() {
             *slot = listener;
         }
+    }
+
+    /// Register a host-provided URL opener (used on mobile or when Tauri handles URLs).
+    pub fn set_browser_opener(&self, opener: Option<BrowserOpener>) {
+        if let Ok(mut slot) = self.browser_opener.try_lock() {
+            *slot = opener;
+        }
+    }
+
+    /// Register a host-provided interactive OAuth session handler (e.g. `ASWebAuthenticationSession` on iOS).
+    pub fn set_oauth_session_opener(&self, opener: Option<OAuthSessionOpener>) {
+        if let Ok(mut slot) = self.oauth_session_opener.try_lock() {
+            *slot = opener;
+        }
+    }
+
+    fn open_browser(&self, url: &str) -> Result<(), String> {
+        let opener = self
+            .browser_opener
+            .try_lock()
+            .ok()
+            .and_then(|slot| slot.clone());
+        match opener {
+            Some(cb) => cb(url),
+            None => open_system_browser(url),
+        }
+    }
+
+    #[cfg(target_os = "ios")]
+    async fn open_oauth_session(&self, auth_url: &str, callback_scheme: &str) -> Result<String, String> {
+        let opener = self
+            .oauth_session_opener
+            .try_lock()
+            .ok()
+            .and_then(|slot| slot.clone())
+            .ok_or_else(|| {
+                "Google Drive OAuth requires an ASWebAuthenticationSession handler on iOS."
+                    .to_string()
+            })?;
+        opener(auth_url, callback_scheme).await
     }
 
     fn notify_listener(&self) {
@@ -781,7 +885,7 @@ impl SyncManager {
 
         let flow: LoginFlowInit = read_json(resp).await?;
 
-        open_system_browser(&flow.login)?;
+        self.open_browser(&flow.login)?;
 
         // Poll up to 3 minutes
         for _ in 0..120 {
@@ -930,46 +1034,48 @@ impl SyncManager {
 
     pub async fn connect_google_drive(&self) -> Result<SyncStatus, String> {
         let (client_id, client_secret) = google_credentials()?;
-        let listener = TcpListener::bind("127.0.0.1:0")
-            .await
-            .map_err(|e| format!("Failed to bind local OAuth callback port: {e}"))?;
-        let port = listener
-            .local_addr()
-            .map_err(|e| format!("Failed to read callback port: {e}"))?
-            .port();
-
-        let redirect_uri = format!("http://127.0.0.1:{port}");
         let verifier = format!(
             "{}{}",
             uuid::Uuid::new_v4().simple(),
             uuid::Uuid::new_v4().simple()
         );
-        let challenge = pkce_challenge(&verifier);
         let state_token = uuid::Uuid::new_v4().simple().to_string();
 
-        let mut auth_url =
-            url::Url::parse(GOOGLE_AUTH_URL).map_err(|e| format!("Invalid auth URL: {e}"))?;
-        auth_url
-            .query_pairs_mut()
-            .append_pair("client_id", &client_id)
-            .append_pair("redirect_uri", &redirect_uri)
-            .append_pair("response_type", "code")
-            .append_pair("scope", GOOGLE_DRIVE_SCOPE)
-            .append_pair("access_type", "offline")
-            .append_pair("prompt", "consent")
-            .append_pair("code_challenge", &challenge)
-            .append_pair("code_challenge_method", "S256")
-            .append_pair("state", &state_token);
+        #[cfg(target_os = "ios")]
+        let (redirect_uri, code) = {
+            let callback_scheme = google_ios_callback_scheme(&client_id);
+            let redirect_uri = format!("{callback_scheme}:/oauth2redirect");
+            let auth_url = build_google_auth_url(&client_id, &redirect_uri, &verifier, &state_token)?;
+            let callback_url = self
+                .open_oauth_session(auth_url.as_str(), &callback_scheme)
+                .await?;
+            let code = extract_oauth_code_from_url(&callback_url, &state_token)?;
+            (redirect_uri, code)
+        };
 
-        open_system_browser(auth_url.as_str())?;
+        #[cfg(not(target_os = "ios"))]
+        let (redirect_uri, code) = {
+            let listener = TcpListener::bind("127.0.0.1:0")
+                .await
+                .map_err(|e| format!("Failed to bind local OAuth callback port: {e}"))?;
+            let port = listener
+                .local_addr()
+                .map_err(|e| format!("Failed to read callback port: {e}"))?
+                .port();
 
-        // Wait up to 3 minutes for the OAuth callback
-        let code = tokio::time::timeout(
-            Duration::from_secs(180),
-            wait_for_oauth_code(listener, &state_token),
-        )
-        .await
-        .map_err(|_| "Google sign-in timed out.".to_string())??;
+            let redirect_uri = format!("http://127.0.0.1:{port}");
+            let auth_url = build_google_auth_url(&client_id, &redirect_uri, &verifier, &state_token)?;
+            self.open_browser(auth_url.as_str())?;
+
+            // Wait up to 3 minutes for the OAuth callback
+            let code = tokio::time::timeout(
+                Duration::from_secs(180),
+                wait_for_oauth_code(listener, &state_token),
+            )
+            .await
+            .map_err(|_| "Google sign-in timed out.".to_string())??;
+            (redirect_uri, code)
+        };
 
         #[derive(Deserialize)]
         struct TokenResponse {
@@ -978,17 +1084,21 @@ impl SyncManager {
             expires_in: Option<u64>,
         }
 
+        let mut form: Vec<(&str, &str)> = vec![
+            ("code", code.as_str()),
+            ("client_id", client_id.as_str()),
+            ("redirect_uri", redirect_uri.as_str()),
+            ("grant_type", "authorization_code"),
+            ("code_verifier", verifier.as_str()),
+        ];
+        if let Some(secret) = client_secret.as_deref() {
+            form.push(("client_secret", secret));
+        }
+
         let token_resp = self
             .client
             .post(GOOGLE_TOKEN_URL)
-            .form(&[
-                ("code", code.as_str()),
-                ("client_id", client_id.as_str()),
-                ("client_secret", client_secret.as_str()),
-                ("redirect_uri", redirect_uri.as_str()),
-                ("grant_type", "authorization_code"),
-                ("code_verifier", verifier.as_str()),
-            ])
+            .form(&form)
             .send()
             .await
             .map_err(|e| format!("Google token exchange failed: {e}"))?;
@@ -1073,15 +1183,19 @@ impl SyncManager {
             expires_in: Option<u64>,
         }
 
+        let mut form: Vec<(&str, &str)> = vec![
+            ("client_id", client_id.as_str()),
+            ("refresh_token", cfg.refresh_token.as_str()),
+            ("grant_type", "refresh_token"),
+        ];
+        if let Some(secret) = client_secret.as_deref() {
+            form.push(("client_secret", secret));
+        }
+
         let resp = self
             .client
             .post(GOOGLE_TOKEN_URL)
-            .form(&[
-                ("client_id", client_id.as_str()),
-                ("client_secret", client_secret.as_str()),
-                ("refresh_token", cfg.refresh_token.as_str()),
-                ("grant_type", "refresh_token"),
-            ])
+            .form(&form)
             .send()
             .await
             .map_err(|e| format!("Google token refresh failed: {e}"))?;
@@ -1416,6 +1530,63 @@ impl SyncManager {
     }
 }
 
+fn build_google_auth_url(
+    client_id: &str,
+    redirect_uri: &str,
+    verifier: &str,
+    state_token: &str,
+) -> Result<url::Url, String> {
+    let challenge = pkce_challenge(verifier);
+    let mut auth_url =
+        url::Url::parse(GOOGLE_AUTH_URL).map_err(|e| format!("Invalid auth URL: {e}"))?;
+    auth_url
+        .query_pairs_mut()
+        .append_pair("client_id", client_id)
+        .append_pair("redirect_uri", redirect_uri)
+        .append_pair("response_type", "code")
+        .append_pair("scope", GOOGLE_DRIVE_SCOPE)
+        .append_pair("access_type", "offline")
+        .append_pair("prompt", "consent")
+        .append_pair("code_challenge", &challenge)
+        .append_pair("code_challenge_method", "S256")
+        .append_pair("state", state_token);
+    Ok(auth_url)
+}
+
+#[cfg(target_os = "ios")]
+fn google_ios_callback_scheme(client_id: &str) -> String {
+    if let Ok(scheme) = std::env::var("WOL_GOOGLE_IOS_SCHEME") {
+        let trimmed = scheme.trim();
+        if !trimmed.is_empty() {
+            return trimmed.to_string();
+        }
+    }
+    if let Some(prefix) = client_id.strip_suffix(".apps.googleusercontent.com") {
+        return format!("com.googleusercontent.apps.{prefix}");
+    }
+    "com.offlinewol.desktop".to_string()
+}
+
+#[cfg(target_os = "ios")]
+fn extract_oauth_code_from_url(callback_url: &str, expected_state: &str) -> Result<String, String> {
+    let parsed =
+        url::Url::parse(callback_url).map_err(|e| format!("Invalid OAuth callback URL: {e}"))?;
+    let params: HashMap<String, String> = parsed.query_pairs().into_owned().collect();
+
+    if let Some(err) = params.get("error") {
+        return Err(format!("Google sign-in failed: {err}"));
+    }
+    let state = params.get("state").map(String::as_str).unwrap_or("");
+    if state != expected_state {
+        return Err("OAuth state mismatch.".to_string());
+    }
+    params
+        .get("code")
+        .cloned()
+        .ok_or_else(|| "OAuth callback missing code.".to_string())
+}
+
+#[cfg(not(target_os = "ios"))]
 async fn wait_for_oauth_code(listener: TcpListener, expected_state: &str) -> Result<String, String> {
     loop {
         let (mut socket, _) = listener
@@ -1606,5 +1777,69 @@ mod tests {
         assert_eq!(merged["notes"]["docs"]["100"]["2"][0]["title"], "Remote");
         assert_eq!(merged["inputFields"]["docs"]["100"]["q1"], "Answer A");
         assert_eq!(merged["inputFields"]["docs"]["200"]["q2"], "Answer B");
+    }
+
+    #[test]
+    fn custom_browser_opener_receives_url() {
+        let dir = std::env::temp_dir().join(format!("wol-sync-opener-{}", uuid::Uuid::new_v4()));
+        let state = StateManager::load_or_init(&dir).expect("init state");
+        let mgr = SyncManager::new(state);
+        let seen = Arc::new(std::sync::Mutex::new(Vec::<String>::new()));
+        let seen_clone = seen.clone();
+        mgr.set_browser_opener(Some(Arc::new(move |url| {
+            seen_clone.lock().unwrap().push(url.to_string());
+            Ok(())
+        })));
+        mgr.open_browser("https://example.com/auth").expect("opener succeeds");
+        assert_eq!(&*seen.lock().unwrap(), &["https://example.com/auth".to_string()]);
+        let _ = std::fs::remove_dir_all(&dir);
+    }
+
+    fn fake_env(pairs: Vec<(&'static str, &'static str)>) -> impl Fn(&str) -> Option<String> {
+        move |key: &str| {
+            pairs
+                .iter()
+                .find(|(candidate, _)| *candidate == key)
+                .map(|(_, value)| (*value).to_string())
+        }
+    }
+
+    #[test]
+    fn google_credentials_prefer_environment_over_builtin_client() {
+        let env = fake_env(vec![
+            ("WOL_GOOGLE_CLIENT_ID", "env-id.apps.googleusercontent.com"),
+            ("WOL_GOOGLE_CLIENT_SECRET", "env-secret"),
+        ]);
+        let (id, secret) = google_credentials_from(env, "builtin-id", "builtin-secret", true)
+            .expect("env credentials resolve");
+        assert_eq!(id, "env-id.apps.googleusercontent.com");
+        assert_eq!(secret.as_deref(), Some("env-secret"));
+    }
+
+    #[test]
+    fn google_credentials_fall_back_to_the_bundled_client() {
+        let env = fake_env(vec![("WOL_GOOGLE_CLIENT_ID", "   ")]);
+        let (id, secret) =
+            google_credentials_from(env, " builtin-id ", "builtin-secret", true).expect("builtin resolves");
+        assert_eq!(id, "builtin-id");
+        assert_eq!(secret.as_deref(), Some("builtin-secret"));
+    }
+
+    #[test]
+    fn google_credentials_report_missing_client() {
+        let env = fake_env(vec![]);
+        let err = google_credentials_from(env, "", "", true).expect_err("no credentials configured");
+        assert!(err.contains("Google Drive sign-in is not configured in this build"), "{err}");
+    }
+
+    #[test]
+    fn google_credentials_allow_public_client_without_secret_on_ios() {
+        let env = fake_env(vec![
+            ("WOL_GOOGLE_CLIENT_ID", "ios-id.apps.googleusercontent.com"),
+            ("WOL_GOOGLE_CLIENT_SECRET", ""),
+        ]);
+        let (id, secret) = google_credentials_from(env, "", "", false).expect("public client resolves");
+        assert_eq!(id, "ios-id.apps.googleusercontent.com");
+        assert_eq!(secret, None);
     }
 }

@@ -4,7 +4,7 @@
 > integrates the existing WOL Highlights extension logic, and caches content **as you
 > browse** so previously-visited pages work offline — no download button.
 
-**Status**: Core Tauri migration completed (§1 spike, §2 cache, §3 crawler, §4 bridge & manager window, §5 settings & cache inspector). The Rust side is now a Cargo workspace — `wol-core/` (GUI-agnostic engine, 68 unit tests + tokenizer parity), `wol-desktop/` (Tauri shell, 5 unit + 12 integration tests), `wol-cli/` (`wol` terminal reader, see `CLI_PLAN.md`) — so file paths mentioned in the task lists below may now live under `wol-core/src/` instead of `wol-desktop/src/`.
+**Status**: Core Tauri migration completed (§1 spike, §2 cache, §3 crawler, §4 bridge & manager window, §5 settings & cache inspector). The Rust side is now a Cargo workspace — `wol-core/` (GUI-agnostic engine, 76 unit tests + tokenizer parity), `wol-desktop/` (Tauri shell, 5 unit + 12 integration tests), `wol-cli/` (`wol` terminal reader with home dashboard and directory browser, see `CLI_PLAN.md`) — so file paths mentioned in the task lists below may now live under `wol-core/src/` instead of `wol-desktop/src/`.
 **Origin**: this repo (`wol-highlights`) — a working MV3 browser extension. The Tauri app
 is a **new sibling crate in this same repo**, reusing `wol-highlights/lib/*` and
 `wol-highlights/content.js` + `content.css` largely unmodified.

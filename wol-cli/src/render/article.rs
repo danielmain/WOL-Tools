@@ -38,6 +38,9 @@ pub struct RenderOptions {
     pub gutter: bool,
     pub show_notes: bool,
     pub show_footnotes: bool,
+    /// Draw the framed title/highlight-count header. The home dashboard turns it
+    /// off: its daily-text pane already has a titled border.
+    pub header: bool,
 }
 
 impl Default for RenderOptions {
@@ -47,6 +50,7 @@ impl Default for RenderOptions {
             gutter: true,
             show_notes: true,
             show_footnotes: true,
+            header: true,
         }
     }
 }
@@ -78,6 +82,34 @@ pub fn fold_ascii(text: &str) -> String {
 pub struct RenderedLine {
     pub text: String,
     pub node: Option<usize>,
+    /// Pieces of the paragraph this line is built from, in screen order.
+    /// Empty for header/note lines, which belong to no block.
+    pub fragments: Vec<Fragment>,
+}
+
+/// A contiguous piece of one paragraph, as it appears on a rendered line.
+///
+/// `start`/`end` are `char` offsets into the block's plain text (stable across
+/// `fold_ascii`), `col`/`width` are screen columns *after* painting, so marker
+/// glyphs and ANSI escapes are already accounted for. The TUI uses these to
+/// paint the visual selection and the token cursor without re-wrapping.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct Fragment {
+    pub run: usize,
+    pub start: usize,
+    pub end: usize,
+    pub col: usize,
+    pub width: usize,
+}
+
+/// A wrappable word of one run, with its window in the block's plain text.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+struct Atom {
+    run: usize,
+    start: usize,
+    end: usize,
+    /// Columns the word reserves once rendered (marker glyphs included).
+    width: usize,
 }
 
 /// Render a whole document to printable lines (colour included).
@@ -101,33 +133,43 @@ pub fn render_document_lines(
     options: RenderOptions,
 ) -> Vec<RenderedLine> {
     let mut out: Vec<RenderedLine> = Vec::new();
-    out.extend(
-        render_header(document, marks, theme, options)
-            .into_iter()
-            .map(|text| RenderedLine { text, node: None }),
-    );
+    if options.header {
+        out.extend(
+            render_header(document, marks, theme, options)
+                .into_iter()
+                .map(|text| RenderedLine { text, node: None, fragments: Vec::new() }),
+        );
+    }
 
     let document_id = guess_document_id(document, marks);
     let mut footnotes: Vec<String> = Vec::new();
 
     for (index, node) in document.nodes.iter().enumerate() {
-        let push = |lines: Vec<String>, out: &mut Vec<RenderedLine>| {
-            out.extend(lines.into_iter().map(|text| RenderedLine {
-                text,
+        let push = |lines: Vec<RenderedLine>, out: &mut Vec<RenderedLine>| {
+            out.extend(lines.into_iter().map(|line| RenderedLine {
                 node: Some(index),
+                ..line
             }));
         };
         match node {
             Node_::Block(block) => {
                 push(
-                    render_block(block, marks, document_id.as_deref(), theme, options),
+                    render_block_lines(block, marks, document_id.as_deref(), theme, options),
                     &mut out,
                 );
                 if options.show_footnotes {
                     footnotes.extend(collect_footnotes(block));
                 }
             }
-            Node_::InputField(field) => push(render_input_field(field, theme, options), &mut out),
+            Node_::InputField(field) => {
+                push(
+                    render_input_field(field, theme, options)
+                        .into_iter()
+                        .map(plain_line)
+                        .collect(),
+                    &mut out,
+                )
+            }
             Node_::Image(image) => {
                 let caption = if image.alt.is_empty() {
                     image.src.clone()
@@ -135,48 +177,42 @@ pub fn render_document_lines(
                     image.alt.clone()
                 };
                 push(
-                    vec![format!(
+                    vec![plain_line(format!(
                         "  {}",
                         theme.paint(StyleRole::Caption, &format!("[ image: {caption} ]"))
-                    )],
+                    ))],
                     &mut out,
                 );
             }
-            Node_::Rule => push(vec![rule(theme, options.width, '─')], &mut out),
+            Node_::Rule => push(vec![plain_line(rule(theme, options.width, '─'))], &mut out),
         }
     }
 
     if options.show_notes {
         let notes = render_notes(document, marks, document_id.as_deref(), theme, options);
         if !notes.is_empty() {
-            out.push(RenderedLine {
-                text: String::new(),
-                node: None,
-            });
-            out.extend(notes.into_iter().map(|text| RenderedLine { text, node: None }));
+            out.push(plain_line(String::new()));
+            out.extend(notes.into_iter().map(|text| plain_line(text)));
         }
     }
     if options.show_footnotes && !footnotes.is_empty() {
-        out.push(RenderedLine {
-            text: String::new(),
-            node: None,
-        });
-        out.push(RenderedLine {
-            text: theme.paint(StyleRole::Accent, "References"),
-            node: None,
-        });
+        out.push(plain_line(String::new()));
+        out.push(plain_line(theme.paint(StyleRole::Accent, "References")));
         for footnote in footnotes {
-            out.push(RenderedLine {
-                text: format!("  {}", theme.paint(StyleRole::Dim, &footnote)),
-                node: None,
-            });
+            out.push(plain_line(format!(
+                "  {}",
+                theme.paint(StyleRole::Dim, &footnote)
+            )));
         }
     }
     if theme.glyphs == super::Glyphs::Ascii {
+        // `fold_ascii` maps character to character, so `char` offsets and
+        // column widths of the fragments survive the fold.
         out.into_iter()
             .map(|line| RenderedLine {
                 text: fold_ascii(&line.text),
                 node: line.node,
+                fragments: line.fragments,
             })
             .collect()
     } else {
@@ -247,7 +283,10 @@ fn frame_line(content: &str, border: &str, width: usize, vertical: char) -> Stri
     format!("{border}{text}{border}")
 }
 
-/// Render one paragraph/verse/heading.
+/// Render one paragraph/verse/heading (styled text only).
+///
+/// Kept as the plain API for callers that do not need the fragment map.
+#[allow(dead_code)]
 pub fn render_block(
     block: &Block,
     marks: &StoredIndex,
@@ -255,6 +294,30 @@ pub fn render_block(
     theme: &Theme,
     options: RenderOptions,
 ) -> Vec<String> {
+    render_block_lines(block, marks, document_id, theme, options)
+        .into_iter()
+        .map(|line| line.text)
+        .collect()
+}
+
+/// A line that belongs to no paragraph (header, notes, images, rules).
+fn plain_line(text: String) -> RenderedLine {
+    RenderedLine {
+        text,
+        node: None,
+        fragments: Vec::new(),
+    }
+}
+
+/// Like [`render_block`], but keeps the [`Fragment`] map of every line so the
+/// TUI can paint the cursor/selection on the right columns.
+pub fn render_block_lines(
+    block: &Block,
+    marks: &StoredIndex,
+    document_id: Option<&str>,
+    theme: &Theme,
+    options: RenderOptions,
+) -> Vec<RenderedLine> {
     let ranges = document_id
         .map(|id| match block.kind {
             BlockKind::Verse => block
@@ -275,23 +338,81 @@ pub fn render_block(
     let indent = visible_width(&prefix);
     let body_width = options.width.saturating_sub(indent).max(20);
 
-    // Highlight runs are painted up-front, so wrapping happens on styled text.
-    let painted: Vec<Run> = runs
+    // Wrapping works on plain text with character offsets; painting happens per
+    // fragment, so a highlight that wraps onto the next line keeps its style.
+    // Colourless output reserves room for the ⟦…⟧ markers.
+    let reserve = if theme.depth == crate::render::ColorDepth::None {
+        2
+    } else {
+        0
+    };
+    let atoms = atoms(&runs, reserve);
+
+    let mut lines: Vec<RenderedLine> = wrap_fragments(&atoms, &block.text, body_width)
         .into_iter()
-        .map(|run| Run {
-            text: paint_run(&run.text, run.role, theme),
-            role: run.role,
+        .enumerate()
+        .map(|(index, fragments)| {
+            let lead = if index == 0 { prefix.clone() } else { " ".repeat(indent) };
+            let (body, painted) = materialize(&block.text, &runs, fragments, theme);
+            RenderedLine {
+                text: format!("{lead}{body}"),
+                node: None,
+                fragments: painted
+                    .into_iter()
+                    .map(|fragment| Fragment {
+                        col: fragment.col + indent,
+                        ..fragment
+                    })
+                    .collect(),
+            }
         })
         .collect();
-    let mut lines = Vec::new();
-    for (index, line) in wrap_runs(&painted, body_width).into_iter().enumerate() {
-        let lead = if index == 0 { prefix.clone() } else { " ".repeat(indent) };
-        lines.push(format!("{lead}{line}"));
-    }
     if block.kind == BlockKind::Heading(1) {
-        lines.push(rule(theme, options.width, '━'));
+        lines.push(plain_line(rule(theme, options.width, '━')));
     }
     lines
+}
+
+/// Byte offset of every `char` of `text`, plus the end offset.
+fn char_bytes(text: &str) -> Vec<usize> {
+    let mut offsets: Vec<usize> = text.char_indices().map(|(byte, _)| byte).collect();
+    offsets.push(text.len());
+    offsets
+}
+
+/// Slice `text` by `char` offsets.
+fn char_slice<'a>(text: &'a str, offsets: &[usize], start: usize, end: usize) -> &'a str {
+    let begin = offsets.get(start).copied().unwrap_or(text.len());
+    let finish = offsets.get(end).copied().unwrap_or(text.len());
+    &text[begin..finish.max(begin)]
+}
+
+/// Turn wrapped fragments into styled text, recording each fragment's column.
+fn materialize(
+    text: &str,
+    runs: &[Run],
+    fragments: Vec<Fragment>,
+    theme: &Theme,
+) -> (String, Vec<Fragment>) {
+    let offsets = char_bytes(text);
+    let mut body = String::new();
+    let mut column = 0usize;
+    let painted: Vec<Fragment> = fragments
+        .into_iter()
+        .map(|fragment| {
+            let piece = paint_run(
+                char_slice(text, &offsets, fragment.start, fragment.end),
+                runs.get(fragment.run).map(|run| run.role).unwrap_or(StyleRole::Body),
+                theme,
+            );
+            let width = visible_width(&piece);
+            body.push_str(&piece);
+            let placed = Fragment { col: column, width, ..fragment };
+            column += width;
+            placed
+        })
+        .collect();
+    (body, painted)
 }
 
 /// Paint one run. Without colour, highlights fall back to marker brackets so the
@@ -445,100 +566,151 @@ fn push_run(runs: &mut Vec<Run>, text: String, role: StyleRole) {
     }
 }
 
-/// Word-wrap runs to `width` visible columns (ANSI-aware via [`Theme::paint`]).
+/// Word-wrap runs to `width` visible columns (plain text, no markers).
+#[allow(dead_code)]
 pub fn wrap_runs(runs: &[Run], width: usize) -> Vec<String> {
-    let width = width.max(10);
-    let mut lines: Vec<String> = Vec::new();
-    let mut current = String::new();
-    let mut current_width = 0usize;
+    let source: String = runs.iter().map(|run| run.text.as_str()).collect();
+    let offsets = char_bytes(&source);
+    wrap_fragments(&atoms(runs, 0), &source, width)
+        .into_iter()
+        .map(|line| {
+            line.iter()
+                .map(|fragment| char_slice(&source, &offsets, fragment.start, fragment.end))
+                .collect()
+        })
+        .collect()
+}
 
-    for run in runs {
-        for word in split_keep_spaces(&run.text) {
-            let word_width = visible_width(&word);
-            if word_width == 0 {
-                current.push_str(&run.text.get(..0).unwrap_or(""));
-                continue;
-            }
-            let is_space = word.chars().all(char::is_whitespace);
-            if word_width > width && !is_space {
-                // A single token longer than the line: hard-split it.
-                if current_width > 0 {
-                    lines.push(std::mem::take(&mut current));
-                    current_width = 0;
-                }
-                for chunk in chunk_by_width(&word, width) {
-                    if visible_width(&chunk) >= width {
-                        lines.push(chunk);
-                    } else {
-                        current_width = visible_width(&chunk);
-                        current = chunk;
-                    }
-                }
-                continue;
-            }
-            if current_width + word_width > width && current_width > 0 {
-                if is_space {
-                    continue;
-                }
-                lines.push(std::mem::take(&mut current));
-                current_width = 0;
-            }
-            if is_space && current_width == 0 {
-                continue;
-            }
-            current.push_str(&word);
-            current_width += word_width;
+/// Words of every run, in block-text `char` offsets.
+///
+/// `reserve` adds columns to highlighted words so colourless output has room for
+/// the `⟦…⟧` markers without overflowing the line.
+fn atoms(runs: &[Run], reserve: usize) -> Vec<Atom> {
+    let mut atoms: Vec<Atom> = Vec::new();
+    let mut base = 0usize;
+    for (run, text) in runs.iter().enumerate() {
+        let highlighted = matches!(text.role, StyleRole::Highlight(_));
+        for (start, end, is_space, width) in split_words(text) {
+            atoms.push(Atom {
+                run,
+                start: base + start,
+                end: base + end,
+                width: width + if highlighted && !is_space { reserve } else { 0 },
+            });
         }
+        base += text.text.chars().count();
     }
-    if !current.is_empty() {
-        lines.push(current);
+    atoms
+}
+
+/// Words of `run` as `(char_start, char_end, is_whitespace, columns)`.
+fn split_words(run: &Run) -> Vec<(usize, usize, bool, usize)> {
+    let mut words: Vec<(usize, usize, bool, usize)> = Vec::new();
+    let mut start = 0usize;
+    let mut group: Option<bool> = None;
+    let mut width = 0usize;
+    for (index, character) in run.text.chars().enumerate() {
+        let is_space = character.is_whitespace();
+        if group.is_some_and(|previous| previous != is_space) {
+            words.push((start, index, group.unwrap_or(false), width));
+            start = index;
+            width = 0;
+        }
+        group = Some(is_space);
+        width += UnicodeWidthChar::width(character).unwrap_or(0);
+    }
+    if let Some(is_space) = group {
+        words.push((start, run.text.chars().count(), is_space, width));
+    }
+    words
+}
+
+/// Pack atoms into lines of [`Fragment`]s, never wider than `width` columns.
+fn wrap_fragments(atoms: &[Atom], text: &str, width: usize) -> Vec<Vec<Fragment>> {
+    let width = width.max(10);
+    let mut lines: Vec<Vec<Fragment>> = Vec::new();
+    let mut line: Vec<Fragment> = Vec::new();
+    let mut used = 0usize;
+
+    for atom in atoms {
+        if atom.width == 0 {
+            continue;
+        }
+        let is_space = atom.end > atom.start
+            && text
+                .chars()
+                .skip(atom.start)
+                .take(atom.end - atom.start)
+                .all(char::is_whitespace);
+
+        if atom.width > width && !is_space {
+            // A single word longer than the line: hard-split it.
+            if used > 0 {
+                lines.push(std::mem::take(&mut line));
+                used = 0;
+            }
+            for (start, end, chunk_width) in chunk_chars(text, atom.start, atom.end, width) {
+                if chunk_width >= width {
+                    lines.push(vec![Fragment { run: atom.run, start, end, col: 0, width: chunk_width }]);
+                } else {
+                    push_fragment(&mut line, &mut used, atom.run, start, end, chunk_width);
+                }
+            }
+            continue;
+        }
+        if used + atom.width > width && used > 0 {
+            if is_space {
+                continue;
+            }
+            lines.push(std::mem::take(&mut line));
+            used = 0;
+        }
+        if is_space && used == 0 {
+            continue;
+        }
+        push_fragment(&mut line, &mut used, atom.run, atom.start, atom.end, atom.width);
+    }
+    if !line.is_empty() {
+        lines.push(line);
     }
     lines
 }
 
-/// Split `text` into pieces no wider than `width` columns.
-fn chunk_by_width(text: &str, width: usize) -> Vec<String> {
-    let mut chunks = Vec::new();
-    let mut buffer = String::new();
-    let mut used = 0usize;
-    for character in text.chars() {
-        let character_width = UnicodeWidthChar::width(character).unwrap_or(0);
-        if used + character_width > width && !buffer.is_empty() {
-            chunks.push(std::mem::take(&mut buffer));
-            used = 0;
+/// Append an atom, merging it into the previous fragment when contiguous.
+fn push_fragment(
+    line: &mut Vec<Fragment>,
+    used: &mut usize,
+    run: usize,
+    start: usize,
+    end: usize,
+    width: usize,
+) {
+    match line.last_mut() {
+        Some(last) if last.run == run && last.end == start => {
+            last.end = end;
+            last.width += width;
         }
-        buffer.push(character);
-        used += character_width;
+        _ => line.push(Fragment { run, start, end, col: 0, width }),
     }
-    if !buffer.is_empty() {
-        chunks.push(buffer);
-    }
-    chunks
+    *used += width;
 }
 
-fn split_keep_spaces(text: &str) -> Vec<String> {
-    let mut parts = Vec::new();
-    let mut buffer = String::new();
-    let mut buffer_is_space = None;
-    for character in text.chars() {
-        let is_space = character.is_whitespace();
-        match buffer_is_space {
-            Some(flag) if flag == is_space => buffer.push(character),
-            Some(_) => {
-                parts.push(std::mem::take(&mut buffer));
-                buffer.push(character);
-                buffer_is_space = Some(is_space);
-            }
-            None => {
-                buffer.push(character);
-                buffer_is_space = Some(is_space);
-            }
+/// Split one over-long word into `char` windows no wider than `width`.
+fn chunk_chars(text: &str, start: usize, end: usize, width: usize) -> Vec<(usize, usize, usize)> {
+    let mut chunks: Vec<(usize, usize, usize)> = Vec::new();
+    let mut chunk_start = start;
+    let mut used = 0usize;
+    for (offset, character) in text.chars().skip(start).take(end.saturating_sub(start)).enumerate() {
+        let character_width = UnicodeWidthChar::width(character).unwrap_or(0);
+        if used + character_width > width && used > 0 {
+            chunks.push((chunk_start, chunk_start + offset, used));
+            chunk_start += offset;
+            used = 0;
         }
+        used += character_width;
     }
-    if !buffer.is_empty() {
-        parts.push(buffer);
-    }
-    parts
+    chunks.push((chunk_start, end, used));
+    chunks
 }
 
 /// Plain (unstyled) word wrap, used for headers and notes.
@@ -563,6 +735,34 @@ pub fn wrap_text(text: &str, width: usize) -> Vec<String> {
         lines.push(String::new());
     }
     lines
+}
+
+/// Convert a UTF-16 unit window of `text` into `char` offsets.
+///
+/// Token coordinates are UTF-16 based (they mirror the extension's `splitText`
+/// offsets); the renderer and the TUI index paragraphs by `char`, so a token
+/// range must be translated before it can be painted or sliced.
+pub fn utf16_window_to_chars(
+    text: &str,
+    window: std::ops::Range<usize>,
+) -> Option<(usize, usize)> {
+    let mut units = 0usize;
+    let mut start: Option<usize> = None;
+    let mut finish: Option<usize> = None;
+    for (index, character) in text.chars().enumerate() {
+        if start.is_none() && units >= window.start {
+            start = Some(index);
+        }
+        if finish.is_none() && units >= window.end {
+            finish = Some(index);
+        }
+        if start.is_some() && finish.is_some() {
+            break;
+        }
+        units += character.len_utf16();
+    }
+    let start = start?;
+    Some((start, finish.unwrap_or(text.chars().count()).max(start)))
 }
 
 /// Visible columns of `text`, ignoring ANSI SGR sequences.

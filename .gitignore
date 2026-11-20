@@ -31,6 +31,9 @@ package-lock.json
 .envrc
 .direnv/
 
+# Generated OAuth client bundle (created by scripts/gen-oauth.js from .env)
+wol-highlights/lib/oauth.generated.js
+
 # Build Outputs & Packaged Extensions (generated binaries)
 *.xpi
 dist/
@@ -52,3 +55,6 @@ default_thumbnail.png
 tmp-fixtures/
 scratch/
 *.log
+
+# Local agent state (sessions, credentials, model cache) — never commit
+.pi/

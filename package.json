@@ -6,6 +6,8 @@
   "author": "Daniel Main <ff-addons@funktional.dev>",
   "scripts": {
     "clean": "rm -rf dist",
+    "prepare": "node scripts/gen-oauth.js --quiet",
+    "generate:oauth": "node scripts/gen-oauth.js",
     "desktop": "cargo run -p wol-desktop",
     "desktop:dev": "cargo tauri dev --manifest-path wol-desktop/Cargo.toml",
     "desktop:test": "cargo test --workspace",
@@ -15,13 +17,13 @@
     "test:tokenize": "node wol-highlights/test/tokenize-parity.mjs",
     "test:tokenize:update": "node wol-highlights/test/tokenize-parity.mjs --update",
     "start": "npm run start:firefox",
-    "start:firefox": "npx web-ext run --source-dir wol-highlights --start-url https://wol.jw.org",
-    "start:chrome": "npx web-ext run --target=chromium --source-dir wol-highlights --start-url https://wol.jw.org",
+    "start:firefox": "node scripts/gen-oauth.js --quiet && npx web-ext run --source-dir wol-highlights --start-url https://wol.jw.org",
+    "start:chrome": "node scripts/gen-oauth.js --quiet && npx web-ext run --target=chromium --source-dir wol-highlights --start-url https://wol.jw.org",
     "generate:icons": "mkdir -p wol-highlights/icons && sips -z 16 16 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-16.png && sips -z 32 32 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-32.png && sips -z 128 128 wol-highlights/icons/icon-48.png --out wol-highlights/icons/icon-128.png",
-    "build:chrome": "mkdir -p dist && npx web-ext build --overwrite-dest --source-dir wol-highlights --artifacts-dir dist --ignore-files test test/**",
+    "build:chrome": "node scripts/gen-oauth.js --quiet && mkdir -p dist && npx web-ext build --overwrite-dest --source-dir wol-highlights --artifacts-dir dist --ignore-files test test/**",
     "build:firefox": "npm run build:chrome && node -e \"const fs=require('fs');const path=require('path');const dir='dist';const zip=fs.readdirSync(dir).find((name)=>name.endsWith('.zip'));if(!zip){throw new Error('No zip artifact found in dist');}const from=path.join(dir,zip);const to=path.join(dir,zip.replace(/\\.zip$/,'.xpi'));fs.copyFileSync(from,to);console.log('Created', to);\"",
     "build:xpi": "npm run build:firefox",
-    "build:safari": "xcodebuild -project \"safari/WOL Highlights/WOL Highlights.xcodeproj\" -scheme \"WOL Highlights (macOS)\" -destination 'platform=macOS' CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build",
+    "build:safari": "node scripts/gen-oauth.js --quiet && xcodebuild -project \"safari/WOL Highlights/WOL Highlights.xcodeproj\" -scheme \"WOL Highlights (macOS)\" -destination 'platform=macOS' CODE_SIGN_IDENTITY=\"\" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO build",
     "build:all": "npm run clean && npm run build:firefox && npm run build:safari",
     "build": "npm run build:all",
     "publish:firefox": "node scripts/publish-firefox.js",
@@ -34,7 +36,7 @@
     "bump": "node scripts/bump-version.js patch",
     "bump:minor": "node scripts/bump-version.js minor",
     "bump:major": "node scripts/bump-version.js major",
-    "lint": "npx web-ext lint --source-dir wol-highlights --ignore-files test test/**"
+    "lint": "node scripts/gen-oauth.js --quiet && npx web-ext lint --source-dir wol-highlights --ignore-files test test/**"
   },
   "devDependencies": {
     "web-ext": "^8.8.0"

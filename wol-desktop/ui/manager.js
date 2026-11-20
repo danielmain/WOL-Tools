@@ -219,6 +219,30 @@ if (window.location.hash && window.location.hash.length > 1) {
 }
 
 // ----------------------------------------------------
+// MOBILE SINGLE-WINDOW BACK NAVIGATION
+// ----------------------------------------------------
+const mobileBackBtn = document.querySelector("#mobile-back-btn");
+if (mobileBackBtn) {
+  const winLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label;
+  if (winLabel === "main") {
+    mobileBackBtn.hidden = false;
+  }
+  mobileBackBtn.addEventListener("click", async () => {
+    if (window.history.length > 1) {
+      window.history.back();
+      return;
+    }
+    if (tauriInvoke) {
+      try {
+        await tauriInvoke("navigate_home");
+      } catch (err) {
+        console.warn("[Bridge] navigate_home failed:", err);
+      }
+    }
+  });
+}
+
+// ----------------------------------------------------
 // NETWORK STATUS
 // ----------------------------------------------------
 function updateNetworkStatus() {
@@ -450,8 +474,40 @@ if (exportButton) {
         } else {
           setMessage("Export cancelled.");
         }
+        return;
       } catch (err) {
-        console.error("[Manager] Export failed:", err);
+        const msg = typeof err === "string" ? err : (err?.message || "");
+        if (!msg.includes("export_marks_to_bytes") && !msg.includes("not supported on mobile")) {
+          console.error("[Manager] Export failed:", err);
+          setMessage(msg || "Export failed.", true);
+          return;
+        }
+      }
+
+      try {
+        const rawBytes = await tauriInvoke("export_marks_to_bytes", { defaultName });
+        const bytes = new Uint8Array(rawBytes);
+        const file = new File([bytes], defaultName, { type: "application/zip" });
+        if (typeof navigator.share === "function" && navigator.canShare?.({ files: [file] })) {
+          await navigator.share({ files: [file], title: defaultName });
+          setMessage(`JW Library backup ready to share (${defaultName}).`);
+        } else {
+          const url = URL.createObjectURL(file);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = defaultName;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          setMessage(`JW Library backup exported (${defaultName}).`);
+        }
+      } catch (err) {
+        if (err?.name === "AbortError") {
+          setMessage("Export cancelled.");
+          return;
+        }
+        console.error("[Manager] Mobile export failed:", err);
         setMessage(typeof err === "string" ? err : (err?.message || "Export failed."), true);
       }
       return;

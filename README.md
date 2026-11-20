@@ -4,7 +4,7 @@ A privacy-first **cross-browser WebExtension** and **Rust/Tauri desktop app (`Of
 
 - **Browser Extension (`wol-highlights/`)**: Supported across **Mozilla Firefox**, **Google Chrome**, **Microsoft Edge**, **Brave**, **Opera**, and **Apple Safari (macOS & iOS)**.
 - **Desktop App (`wol-desktop/`)**: Native **OfflineWOL** desktop reader built with Rust + Tauri 2 that automatically caches visited pages as you browse for offline reading, with built-in highlight/note sync and dark mode.
-- **Terminal CLI (`wol-cli/`)**: `wol` — the same reader in any terminal. Cached articles with highlights, notes, search and highlight editing, backed by the **same cache, `wolMarks` and sync state** as the desktop app (`wol-core/`).
+- **Terminal CLI (`wol-cli/`)**: `wol` — the same reader in any terminal. Opens with the same home screen as the desktop app (Bible / Publications / Meetings / search, and today's daily text), browses WOL's directory pages as a two-pane category browser, and reads cached articles with highlights, notes, search and highlight editing, backed by the **same cache, `wolMarks` and sync state** as the desktop app (`wol-core/`).
 
 ---
 
@@ -148,15 +148,33 @@ every platform, and the legacy `com.wolhighlights.desktop` directory is migrated
 one cache, one `wolMarks` set, one sync configuration. Point it elsewhere with
 `WOL_DATA_DIR=<DIR>` or the `--data-dir <DIR>` flag (handy for tests and scratch profiles).
 
-Running `wol` with no subcommand opens the interactive reader — the terminal
-equivalent of launching OfflineWOL. On first run it asks for your language
-(type to filter ~1000 languages, `Enter` to confirm) and remembers it in the same
-`settings.json` the desktop app uses; afterwards it opens straight to your home
-page and you can browse WOL with the arrow keys.
+Running `wol` with no subcommand opens the **home dashboard** — the terminal
+equivalent of launching OfflineWOL. On first run it asks for your language (type to
+filter ~1000 languages, `Enter` to confirm) and remembers it in the same
+`settings.json` the desktop app uses; afterwards it opens straight to WOL's home
+screen and you drive everything with the arrow keys.
+
+```text
+ OfflineWOL · BIBLIOTECA EN LÍNEA Watchtower                        español
+  BIBLIA   PUBLICACIONES   REUNIONES   Introducir búsqueda   configuración
+┌ BIBLIOTECA EN LÍNEA ──────────┐┌ Lunes 16 de noviembre ──────────────────────┐
+│ Watchtower                    ││  ─ Lunes 16 de noviembre                    │
+│ BIBLIOTECA EN LÍNEA           ││  48 │ Deja todo lo que hagas en manos…      │
+│ ¡Bienvenido!                  ││  49 │ A medida que se acerca el fin…        │
+│ En esta página podrá…        ││  • Examinemos las Escrituras…               │
+│ Anuncio: Nuevos idiomas…      ││                                             │
+└───────────────────────────────┘└─────────────────────────────────────────────┘
+2026-11-16 · 1/5   ←/→ choose · Enter open · ↓/Tab read · / search · q quit
+```
+
+The toolbar, its labels, the search endpoint and the welcome copy are parsed from
+the page itself, so the dashboard speaks whatever language you picked. Only
+*today's* daily text is shown (WOL ships three days per page), and it is a real
+reader: select text and press `1`–`6` or `n` to highlight/annotate it.
 
 ```bash
-wol                                       # interactive reader at your home page
-wol tui /es/wol/library/r4/lp-s/biblioteca   # ...or start somewhere specific
+wol                                       # home dashboard (toolbar + today's daily text)
+wol tui /es/wol/library/r4/lp-s/biblioteca   # ...or start on a specific page
 wol info                                  # data dir, cache size, loaded highlights
 wol import ~/Downloads/UserdataBackup.jwlibrary
 wol read /en/wol/d/r1/lp-e/2025441        # cache-first; ⟦…⟧ marks in --no-color mode
@@ -167,10 +185,30 @@ wol export out.jwlibrary                  # or --format json for the extension's
 wol sync status | wol sync push
 ```
 
-Browsing works exactly like the website: the library index, publication and year
-lists are server-rendered link pages, so `Tab` turns the cursor into a link cursor
-and `Enter` opens the entry (`Backspace` goes back). Article pages get the full
-reader: highlights, notes, visual selection and search.
+WOL's directory pages (library, meetings, Bible versions, publication years) open a
+**two-pane browser**: sub-categories on the left, their cards on the right, so
+"Reuniones" is not one long link dump but *Vida y Ministerio*, *Estudio de La
+Atalaya* and *Otras publicaciones* you can switch between with `j`/`k`.
+
+```text
+ OfflineWOL · REUNIONES                                    1/8
+┌ REUNIONES ────────────────────┐┌ Vida y Ministerio ────────────────────────────┐
+│ Vida y Ministerio             ││▸ 16-22 de noviembre                           │
+│▸ 16-22 de noviembre           ││  Guía de actividades 2026 | noviembre         │
+│ Estudio de La Atalaya         ││  /es/wol/d/r4/lp-s/202026403                  │
+│  Predicamos las buenas noti…  ││                                               │
+│ Otras publicaciones           ││                                               │
+│  Guía de actividades 2026…    ││                                               │
+│  La Atalaya (estudio) 2026…   ││                                               │
+└───────────────────────────────┘└───────────────────────────────────────────────┘
+1/8  j/k move · Enter open · Esc/Backspace back · / search · r refresh · q quit
+```
+
+`Enter` opens the selected card (an article, workbook, Bible book, …);
+`Esc`/`Backspace` returns to the same sub-category and cursor. Article pages get the
+full reader: highlights, notes, visual selection and search. Pages that are a single
+list of entries (e.g. `/library/…/biblioteca/biblias`) show the selected card's
+detail on the right instead of repeating the menu.
 
 Global flags: `--no-color` (also honours `NO_COLOR`), `--ascii`, `--width <COLUMNS>`,
 `--offline` (never touch the network), `--data-dir <DIR>` (or `WOL_DATA_DIR`).
@@ -181,6 +219,34 @@ Accepted targets: full `https://wol.jw.org/...` URLs, `wol://…` addresses, sit
 paths (`/en/wol/d/r1/lp-e/2025441`), or a bare document id (`2025441`).
 
 #### TUI keys
+
+**Home dashboard**
+
+| Key | Action |
+|---|---|
+| `←` / `→` (or `h` / `l`) | Move between toolbar buttons |
+| `Enter` / `Space` | Open the selected button (Bible, Publications, Meetings…, search, settings) |
+| `↓` / `Tab` / `j` | Focus the daily text (normal reader keys apply) |
+| `Esc` / `Tab` | Back to the toolbar |
+| `[` / `]` | Previous / next day of the daily text |
+| `/` | Site search (asks for a query) |
+| `r` | Re-fetch the home page |
+| `Ctrl-l` | Change language |
+
+The gear button opens a settings sheet with the language picker, a shortcut back to the home
+page, and the data directory / cache size.
+
+**Directory browser**
+
+| Key | Action |
+|---|---|
+| `j` / `k`, `↓` / `↑` | Move through sub-categories and cards |
+| `g` / `G` | First / last entry |
+| `Enter`, `l`, `→` | Open the selected card |
+| `Esc`, `Backspace`, `h`, `←` | Back (selection is restored) |
+| `/` | Site search · `r` refresh · `Ctrl-l` language · `q` quit |
+
+**Reader (articles, Bible chapters, daily text)**
 
 | Key | Action |
 |---|---|
@@ -322,7 +388,9 @@ Highlights replicate native JW Library colors:
 │   │                        #   tokenize, dom, highlight, jwlibrary export, languages
 │   └── tests/               # tokenizer parity fixtures replayed against lib/tokenize.js
 ├── wol-cli/                 # `wol` terminal reader (clap CLI + ratatui TUI)
-│   └── src/                 # main.rs, context.rs, commands.rs, render/, tui/
+│   └── src/                 # main.rs, context.rs, commands.rs, render/,
+│                            #   tui/ (home dashboard, directory browser, reader,
+│                            #   sidebar, notes, language picker)
 ├── wol-desktop/             # Rust + Tauri 2 OfflineWOL desktop app
 │   ├── Cargo.toml           # Rust crate manifest
 │   ├── tauri.conf.json      # Tauri configuration
@@ -372,14 +440,45 @@ This project is licensed under the [MIT License](LICENSE). Embedded `sql.js` fil
 
 ### Google Drive sync credentials
 
-Google Drive sync requires your own Google OAuth desktop client credentials. Create a new client and keep its credentials private; do not commit them or include them in extension packages. Desktop OAuth clients are public clients: a secret stored on a user's computer cannot be kept confidential from that user.
+**Using the app (end users):** nothing to configure. The Google OAuth client is baked into the
+released extension, the OfflineWOL desktop app and the `wol` CLI at build time, so
+*Sign in with Google Drive* just works. Your own refresh token stays on your device (extension
+local storage / the app data directory); it is never sent anywhere except Google.
 
-For OfflineWOL, set `WOL_GOOGLE_CLIENT_ID` and `WOL_GOOGLE_CLIENT_SECRET` in the environment before launching the app. An ignored `.env` file can hold these values for local development, but must be loaded into the environment by your shell before starting the app.
+**Building from source (maintainers):** put the OAuth *Desktop app* client in a git-ignored `.env`
+at the repo root — either copy the values, or point the generator straight at the JSON you download
+from Google Cloud Console:
 
-For the browser extension, set `wolGoogleOAuth` in the extension's local storage using its background/service-worker developer console (use `browser` on Firefox and `chrome` on Chromium):
+```bash
+node scripts/gen-oauth.js --from-json ~/Downloads/client_secret_*.json
+```
+
+The script writes `wol-highlights/lib/oauth.generated.js` (git-ignored) from
+`WOL_GOOGLE_CLIENT_ID` / `WOL_GOOGLE_CLIENT_SECRET`, falling back to `CHROME_CLIENT_ID` /
+`CHROME_CLIENT_SECRET`. `npm run build`, `npm run lint`, `npm start` and the AMO deploy app all run
+it automatically, so a plain `npm install` is enough for browser development.
+
+For Rust builds, `wol-core/build.rs` reads the same keys from the environment (or the workspace
+`.env`) and bakes them into the binary; `cargo build` therefore "just works" locally. On CI, set
+`WOL_GOOGLE_CLIENT_ID` / `WOL_GOOGLE_CLIENT_SECRET` as repository secrets — without them the build
+still succeeds, but Google Drive sync reports "not configured in this build".
+
+Runtime environment variables still override the baked-in client, which is handy for testing a
+personal client without rebuilding. The browser extension accepts the same override in storage:
 
 ```js
 browser.storage.local.set({ wolGoogleOAuth: { clientId: "YOUR_CLIENT_ID", clientSecret: "YOUR_CLIENT_SECRET" } });
 ```
 
-These credentials remain in local extension storage. Reconfigure them on each browser installation. Google Drive sync reports an error when credentials are missing; Nextcloud sync does not require them.
+Notes:
+
+- The client secret of an *installed/desktop* OAuth client is **not** a confidential secret — it
+  ships inside every copy of the app either way. Never commit it anyway, and never put the
+  **refresh token** of the Chrome Web Store publishing client (`CHROME_REFRESH_TOKEN`, used only by
+  `npm run publish:*`) in a package: that one really is privileged.
+- iOS builds need their own *iOS* OAuth client id (public PKCE client, no secret): set
+  `WOL_GOOGLE_CLIENT_ID` when building, because Google only accepts the reversed-client-id
+  redirect scheme for registered iOS clients.
+- `npm run pull:env` regenerates `.env` from Bitwarden and only understands the store-publishing
+  keys; re-add `WOL_GOOGLE_*` (or re-run the generator with `--from-json`) afterwards.
+- Nextcloud sync needs no Google credentials at all.

@@ -1,6 +1,11 @@
+use std::sync::Arc;
+
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tauri::{AppHandle, Manager, State, WebviewUrl, WebviewWindowBuilder};
+use tauri::{AppHandle, Manager, State};
+#[cfg(desktop)]
+use tauri::{WebviewUrl, WebviewWindowBuilder};
+#[cfg(desktop)]
 use tauri_plugin_dialog::DialogExt;
 
 use crate::cache::{CacheEntry, DiskCache};
@@ -45,7 +50,7 @@ pub fn set_marks(
     app: AppHandle,
     marks: Option<Value>,
     state_mgr: State<'_, StateManager>,
-    sync_mgr: State<'_, SyncManager>,
+    sync_mgr: State<'_, Arc<SyncManager>>,
 ) -> Result<(), String> {
     state_mgr.set_marks(marks).map_err(|e| e.to_string())?;
     sync_mgr.schedule_debounced_sync();
@@ -83,12 +88,7 @@ fn marks_has_exportable_data(marks: &Value) -> bool {
     has_docs || has_bible
 }
 
-#[tauri::command]
-pub async fn export_marks_to_file(
-    app: AppHandle,
-    default_name: Option<String>,
-    state_mgr: State<'_, StateManager>,
-) -> Result<Option<String>, String> {
+fn validated_export_marks(state_mgr: &StateManager) -> Result<(Value, i64), String> {
     let marks = state_mgr
         .get_marks()
         .map_err(|e| e.to_string())?
@@ -112,36 +112,73 @@ pub async fn export_marks_to_file(
         })
         .unwrap_or(0);
 
-    let file_name = default_name
+    Ok((marks, default_meps_lang))
+}
+
+fn resolve_export_file_name(default_name: Option<String>) -> String {
+    default_name
         .map(|s| s.trim().to_string())
         .filter(|s| !s.is_empty())
-        .unwrap_or_else(|| "UserdataBackup_OfflineWOL.jwlibrary".to_string());
+        .unwrap_or_else(|| "UserdataBackup_OfflineWOL.jwlibrary".to_string())
+}
 
-    let (tx, rx) = tokio::sync::oneshot::channel();
-    app.dialog()
-        .file()
-        .set_title("Export JW Library Backup")
-        .set_file_name(&file_name)
-        .add_filter("JW Library Backup", &["jwlibrary"])
-        .save_file(move |file_path| {
-            let _ = tx.send(file_path);
-        });
-
-    let chosen = rx.await.map_err(|_| "Export dialog closed unexpectedly.".to_string())?;
-    let Some(file_path) = chosen else {
-        return Ok(None);
-    };
-
-    let mut path = file_path
-        .into_path()
-        .map_err(|e| format!("Invalid destination path: {e}"))?;
-    if path.extension().and_then(|e| e.to_str()) != Some("jwlibrary") {
-        path.set_extension("jwlibrary");
+#[tauri::command]
+pub async fn export_marks_to_file(
+    app: AppHandle,
+    default_name: Option<String>,
+    state_mgr: State<'_, StateManager>,
+) -> Result<Option<String>, String> {
+    #[cfg(mobile)]
+    {
+        let _ = (app, default_name, state_mgr);
+        return Err("Save dialog is not supported on mobile; use export_marks_to_bytes.".to_string());
     }
 
-    crate::jwlibrary_export::export_marks_to_jwlibrary(&marks, &path, default_meps_lang)?;
+    #[cfg(desktop)]
+    {
+        let (marks, default_meps_lang) = validated_export_marks(&state_mgr)?;
+        let file_name = resolve_export_file_name(default_name);
 
-    Ok(Some(path.display().to_string()))
+        let (tx, rx) = tokio::sync::oneshot::channel();
+        app.dialog()
+            .file()
+            .set_title("Export JW Library Backup")
+            .set_file_name(&file_name)
+            .add_filter("JW Library Backup", &["jwlibrary"])
+            .save_file(move |file_path| {
+                let _ = tx.send(file_path);
+            });
+
+        let chosen = rx.await.map_err(|_| "Export dialog closed unexpectedly.".to_string())?;
+        let Some(file_path) = chosen else {
+            return Ok(None);
+        };
+
+        let mut path = file_path
+            .into_path()
+            .map_err(|e| format!("Invalid destination path: {e}"))?;
+        if path.extension().and_then(|e| e.to_str()) != Some("jwlibrary") {
+            path.set_extension("jwlibrary");
+        }
+
+        crate::jwlibrary_export::export_marks_to_jwlibrary(&marks, &path, default_meps_lang)?;
+
+        Ok(Some(path.display().to_string()))
+    }
+}
+
+#[tauri::command]
+pub fn export_marks_to_bytes(
+    default_name: Option<String>,
+    state_mgr: State<'_, StateManager>,
+) -> Result<Vec<u8>, String> {
+    let (marks, default_meps_lang) = validated_export_marks(&state_mgr)?;
+    let file_name = resolve_export_file_name(default_name);
+    crate::jwlibrary_export::export_marks_to_jwlibrary_bytes(
+        &marks,
+        Some(&file_name),
+        default_meps_lang,
+    )
 }
 
 #[tauri::command]
@@ -165,19 +202,23 @@ pub fn dispatch_tab_message(
     }))
 }
 
+// The IPC names are the function names, so they must match what the webview
+// invokes (`ui/manager.js`, `ui/imported-library.js`). `tests/ui_command_contract.rs`
+// enforces that; do not reintroduce a `_command` suffix here.
 #[tauri::command]
-pub fn list_imported_publications_command() -> Vec<serde_json::Value> {
+pub fn list_imported_publications() -> Vec<serde_json::Value> {
     wol_core::publications::list_imported_publications()
 }
 
 #[tauri::command]
-pub fn save_imported_publication_command(
+pub fn save_imported_publication(
     publication: wol_core::publications::ImportedPublication,
 ) -> Result<(), String> {
     wol_core::publications::save_imported_publication(publication)
 }
 
 /// Convert a core `ThemeMode` into Tauri's theme (the core crate stays Tauri-free).
+#[cfg(desktop)]
 pub fn theme_to_tauri(theme: wol_core::state::ThemeMode) -> Option<tauri::Theme> {
     match theme {
         wol_core::state::ThemeMode::System => None,
@@ -200,16 +241,19 @@ pub fn save_settings(
     let theme = settings.theme;
     state_mgr.set_settings(settings).map_err(|e| e.to_string())?;
 
+    #[cfg(desktop)]
     let tauri_theme = theme_to_tauri(theme);
     let theme_str = theme.as_str();
 
     if let Some(main_window) = app.get_webview_window("main") {
+        #[cfg(desktop)]
         let _ = main_window.set_theme(tauri_theme);
         let _ = main_window.eval(&format!(
             "if (window.__wolApplyTheme) {{ window.__wolApplyTheme({theme_str:?}); }}"
         ));
     }
     if let Some(manager_window) = app.get_webview_window("manager") {
+        #[cfg(desktop)]
         let _ = manager_window.set_theme(tauri_theme);
         let _ = manager_window.eval(&format!(
             "if (window.__wolApplyManagerTheme) {{ window.__wolApplyManagerTheme({theme_str:?}); }}"
@@ -542,42 +586,56 @@ fn normalize_manager_tab(tab: Option<&str>) -> Option<&'static str> {
 #[tauri::command]
 pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), String> {
     let target_tab = normalize_manager_tab(tab.as_deref());
-    if let Some(win) = app.get_webview_window("manager") {
-        let _ = win.show();
-        let _ = win.set_focus();
-        if let Some(tab_id) = target_tab {
-            let _ = win.eval(&format!(
-                "if (window.__wolSelectTab) {{ window.__wolSelectTab({tab_id:?}); }}"
-            ));
+    let app_url = match target_tab {
+        Some(tab_id) => format!("index.html#{tab_id}"),
+        None => "index.html".to_string(),
+    };
+
+    #[cfg(desktop)]
+    {
+        if let Some(win) = app.get_webview_window("manager") {
+            let _ = win.show();
+            let _ = win.set_focus();
+            if let Some(tab_id) = target_tab {
+                let _ = win.eval(&format!(
+                    "if (window.__wolSelectTab) {{ window.__wolSelectTab({tab_id:?}); }}"
+                ));
+            }
+        } else {
+            let tauri_theme = app
+                .try_state::<StateManager>()
+                .and_then(|s| s.get_settings().ok())
+                .and_then(|s| theme_to_tauri(s.theme));
+            let _win = WebviewWindowBuilder::new(&app, "manager", WebviewUrl::App(app_url.into()))
+                .title("OfflineWOL — Highlights & Settings")
+                .inner_size(740.0, 820.0)
+                .min_inner_size(520.0, 560.0)
+                .theme(tauri_theme)
+                .build()
+                .map_err(|e| e.to_string())?;
         }
-    } else {
-        let tauri_theme = app
-            .try_state::<StateManager>()
-            .and_then(|s| s.get_settings().ok())
-            .and_then(|s| theme_to_tauri(s.theme));
-        let app_url = match target_tab {
-            Some(tab_id) => format!("index.html#{tab_id}"),
-            None => "index.html".to_string(),
-        };
-        let _win = WebviewWindowBuilder::new(&app, "manager", WebviewUrl::App(app_url.into()))
-            .title("OfflineWOL — Highlights & Settings")
-            .inner_size(740.0, 820.0)
-            .min_inner_size(520.0, 560.0)
-            .theme(tauri_theme)
-            .build()
-            .map_err(|e| e.to_string())?;
     }
+
+    #[cfg(mobile)]
+    {
+        if let Some(win) = app.get_webview_window("main") {
+            let parsed = tauri::Url::parse(&format!("tauri://localhost/{app_url}"))
+                .map_err(|e| e.to_string())?;
+            win.navigate(parsed).map_err(|e| e.to_string())?;
+        }
+    }
+
     Ok(())
 }
 
 #[tauri::command]
-pub fn get_sync_status(sync_mgr: State<'_, SyncManager>) -> Result<SyncStatus, String> {
+pub fn get_sync_status(sync_mgr: State<'_, Arc<SyncManager>>) -> Result<SyncStatus, String> {
     sync_mgr.status()
 }
 
 #[tauri::command]
 pub async fn sync_now(
-    sync_mgr: State<'_, SyncManager>,
+    sync_mgr: State<'_, Arc<SyncManager>>,
 ) -> Result<SyncStatus, String> {
     sync_mgr.sync_now().await
 }
@@ -588,7 +646,7 @@ pub async fn connect_nextcloud(
     username: String,
     password: String,
     remote_path: Option<String>,
-    sync_mgr: State<'_, SyncManager>,
+    sync_mgr: State<'_, Arc<SyncManager>>,
 ) -> Result<SyncStatus, String> {
     sync_mgr
         .connect_nextcloud(server_url, username, password, remote_path)
@@ -599,7 +657,7 @@ pub async fn connect_nextcloud(
 pub async fn connect_nextcloud_browser(
     server_url: String,
     remote_path: Option<String>,
-    sync_mgr: State<'_, SyncManager>,
+    sync_mgr: State<'_, Arc<SyncManager>>,
 ) -> Result<SyncStatus, String> {
     sync_mgr
         .connect_nextcloud_browser(server_url, remote_path)
@@ -608,13 +666,13 @@ pub async fn connect_nextcloud_browser(
 
 #[tauri::command]
 pub async fn connect_google_drive(
-    sync_mgr: State<'_, SyncManager>,
+    sync_mgr: State<'_, Arc<SyncManager>>,
 ) -> Result<SyncStatus, String> {
     sync_mgr.connect_google_drive().await
 }
 
 #[tauri::command]
-pub fn disconnect_sync(sync_mgr: State<'_, SyncManager>) -> Result<SyncStatus, String> {
+pub fn disconnect_sync(sync_mgr: State<'_, Arc<SyncManager>>) -> Result<SyncStatus, String> {
     sync_mgr.disconnect()
 }
 

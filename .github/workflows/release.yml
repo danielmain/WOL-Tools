@@ -59,6 +59,9 @@ jobs:
         uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          # Baked into the binary by wol-core/build.rs; sync stays disabled if unset.
+          WOL_GOOGLE_CLIENT_ID: ${{ secrets.WOL_GOOGLE_CLIENT_ID }}
+          WOL_GOOGLE_CLIENT_SECRET: ${{ secrets.WOL_GOOGLE_CLIENT_SECRET }}
         with:
           projectPath: wol-desktop
           tagName: v__VERSION__
@@ -110,6 +113,10 @@ jobs:
           workspaces: .
 
       - name: Build wol CLI
+        env:
+          # Baked into the binary by wol-core/build.rs; sync stays disabled if unset.
+          WOL_GOOGLE_CLIENT_ID: ${{ secrets.WOL_GOOGLE_CLIENT_ID }}
+          WOL_GOOGLE_CLIENT_SECRET: ${{ secrets.WOL_GOOGLE_CLIENT_SECRET }}
         run: cargo build --release --locked -p wol-cli --target ${{ matrix.target }}
 
       - name: Package portable binary

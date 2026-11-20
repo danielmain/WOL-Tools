@@ -744,3 +744,98 @@ html[data-theme="dark"] .sync-manual-details summary {
 html[data-theme="dark"] .sync-error {
   color: #f87171;
 }
+
+/* Mobile Back button & responsive layout (375px+ portrait, iOS safe areas) */
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.btn-back {
+  appearance: none;
+  -webkit-appearance: none;
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  font-size: 13.5px;
+  font-weight: 600;
+  padding: 8px 12px;
+  min-height: 44px;
+  border-radius: 10px;
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.btn-back:active {
+  transform: scale(0.97);
+}
+
+html[data-theme="dark"] .btn-back {
+  background: #1e293b;
+  border-color: #334155;
+  color: #f1f5f9;
+}
+
+@media (max-width: 600px), (pointer: coarse) {
+  body {
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: calc(20px + env(safe-area-inset-bottom, 0px));
+    padding-left: env(safe-area-inset-left, 0px);
+    padding-right: env(safe-area-inset-right, 0px);
+  }
+
+  .app-header {
+    padding: 12px 14px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .tabs {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+
+  .tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .tab-btn {
+    min-height: 44px;
+    white-space: nowrap;
+    flex: 0 0 auto;
+  }
+
+  .backup-actions,
+  .sync-provider-tabs,
+  .cache-actions,
+  .loaded-header,
+  .sync-status-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .sync-manual-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .btn-primary,
+  .btn-secondary,
+  .btn-export,
+  .btn-reset,
+  .btn-danger-outline,
+  .file,
+  .form-control {
+    min-height: 44px;
+  }
+
+  .form-control,
+  input[type="text"],
+  input[type="url"],
+  input[type="password"] {
+    font-size: 16px;
+  }
+}

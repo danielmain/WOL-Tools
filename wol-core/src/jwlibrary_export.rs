@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 use std::fs::File;
-use std::io::Write;
+use std::io::{Cursor, Seek, Write};
 use std::path::Path;
 use std::time::{SystemTime, UNIX_EPOCH};
 
@@ -705,10 +705,11 @@ fn build_user_data_db_bytes(marks: &Value, default_meps_lang: i64, now_iso: &str
     build_res
 }
 
-pub fn export_marks_to_jwlibrary(
+fn write_jwlibrary_zip<W: Write + Seek>(
     marks: &Value,
-    dest_path: &Path,
+    backup_name: Option<&str>,
     default_meps_lang: i64,
+    writer: W,
 ) -> Result<(), String> {
     let (now_iso_z, now_iso_offset, date_str) = utc_now_timestamps();
     let db_bytes = build_user_data_db_bytes(marks, default_meps_lang, &now_iso_z)?;
@@ -717,15 +718,14 @@ pub fn export_marks_to_jwlibrary(
     hasher.update(&db_bytes);
     let db_hash = format!("{:x}", hasher.finalize());
 
-    let backup_name = dest_path
-        .file_name()
-        .and_then(|s| s.to_str())
+    let resolved_name = backup_name
+        .map(str::trim)
         .filter(|s| !s.is_empty())
         .map(String::from)
         .unwrap_or_else(|| format!("UserdataBackup_{date_str}_OfflineWOL.jwlibrary"));
 
     let manifest = serde_json::json!({
-        "name": backup_name,
+        "name": resolved_name,
         "creationDate": now_iso_offset,
         "version": 1,
         "type": 0,
@@ -740,9 +740,7 @@ pub fn export_marks_to_jwlibrary(
     let manifest_bytes = serde_json::to_vec(&manifest)
         .map_err(|e| format!("Failed to serialize manifest.json: {e}"))?;
 
-    let file = File::create(dest_path)
-        .map_err(|e| format!("Failed to create destination file: {e}"))?;
-    let mut zip = ZipWriter::new(file);
+    let mut zip = ZipWriter::new(writer);
     let options = SimpleFileOptions::default().compression_method(CompressionMethod::Deflated);
 
     zip.start_file("userData.db", options)
@@ -759,6 +757,28 @@ pub fn export_marks_to_jwlibrary(
         .map_err(|e| format!("Failed to finalize .jwlibrary archive: {e}"))?;
 
     Ok(())
+}
+
+pub fn export_marks_to_jwlibrary(
+    marks: &Value,
+    dest_path: &Path,
+    default_meps_lang: i64,
+) -> Result<(), String> {
+    let backup_name = dest_path.file_name().and_then(|s| s.to_str());
+    let file = File::create(dest_path)
+        .map_err(|e| format!("Failed to create destination file: {e}"))?;
+    write_jwlibrary_zip(marks, backup_name, default_meps_lang, file)
+}
+
+/// Build a `.jwlibrary` archive in memory (used by mobile share-sheet export).
+pub fn export_marks_to_jwlibrary_bytes(
+    marks: &Value,
+    backup_name: Option<&str>,
+    default_meps_lang: i64,
+) -> Result<Vec<u8>, String> {
+    let mut cursor = Cursor::new(Vec::new());
+    write_jwlibrary_zip(marks, backup_name, default_meps_lang, &mut cursor)?;
+    Ok(cursor.into_inner())
 }
 
 #[cfg(test)]
@@ -1019,5 +1039,21 @@ mod tests {
         let out_path = std::env::temp_dir().join(format!("test_invalid_keys_{}.jwlibrary", Uuid::new_v4()));
         export_marks_to_jwlibrary(&marks, &out_path, 1).expect("invalid keys should be skipped cleanly");
         let _ = std::fs::remove_file(&out_path);
+    }
+
+    #[test]
+    fn exports_valid_jwlibrary_archive_in_memory_bytes() {
+        let marks = serde_json::json!({
+            "version": 1,
+            "docs": { "2025441": { "7": [[53, 62, 1]] } }
+        });
+
+        let bytes = export_marks_to_jwlibrary_bytes(&marks, Some("MobileBackup.jwlibrary"), 0)
+            .expect("in-memory export");
+        let mut archive = ZipArchive::new(Cursor::new(bytes)).expect("read zip bytes");
+        assert!(archive.by_name("userData.db").is_ok());
+        let mut manifest = String::new();
+        archive.by_name("manifest.json").unwrap().read_to_string(&mut manifest).unwrap();
+        assert!(manifest.contains("MobileBackup.jwlibrary"));
     }
 }

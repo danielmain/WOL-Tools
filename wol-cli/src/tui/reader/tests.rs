@@ -106,6 +106,55 @@ fn search_finds_hits_and_cycles() {
 }
 
 #[test]
+fn cursor_row_moves_and_keeps_itself_visible() {
+    let mut reader = reader();
+    assert_eq!(reader.cursor_line(), 0);
+    reader.move_line(1, 3);
+    assert_eq!(reader.cursor_line(), 1);
+    assert_eq!(reader.scroll, 0, "cursor stays inside the viewport");
+    reader.move_line(100, 3);
+    assert_eq!(reader.cursor_line(), reader.lines.len() - 1);
+    assert!(
+        reader.cursor_line() >= reader.scroll && reader.cursor_line() < reader.scroll + 3,
+        "scroll follows the cursor"
+    );
+    reader.move_line(-100, 3);
+    assert_eq!((reader.cursor_line(), reader.scroll), (0, 0));
+}
+
+#[test]
+fn stale_token_is_clamped_to_the_new_paragraph() {
+    let mut reader = reader();
+    reader.jump_to("3");
+    // Simulate scrolling away from a long paragraph, which used to leave a token
+    // index far past the end of the short one under the cursor.
+    reader.cursor_token = 900;
+    reader.set_cursor_line(reader.cursor_line());
+    let total = reader.current_block().expect("paragraph").tokens.len() as i64;
+    assert_eq!(reader.cursor_token, total - 1);
+
+    reader.begin_selection();
+    assert_eq!(reader.apply_color(2).as_deref(), Some("3"));
+    assert_eq!(
+        reader.marks.doc_ranges("2025441", "3"),
+        &[(total - 1, total - 1, 2)],
+        "a stale token must still land on a real token"
+    );
+    assert_eq!(reader.marks.highlight_count, 1);
+}
+
+#[test]
+fn status_shows_the_cursor_row() {
+    let theme = Theme::new(ColorDepth::None, Glyphs::Unicode);
+    let mut reader = reader();
+    reader.jump_to("2");
+    let row = reader.cursor_line() + 1;
+    let status = reader.status(&theme);
+    assert!(status.contains(&format!("{row}/{}", reader.lines.len())));
+    assert!(status.contains("tok 1/"));
+}
+
+#[test]
 fn status_line_reports_position_and_visual_mode() {
     let theme = Theme::new(ColorDepth::None, Glyphs::Unicode);
     let mut reader = reader();
@@ -199,4 +248,136 @@ fn pages_without_links_report_none() {
     assert!(reader.links().is_empty());
     assert_eq!(reader.nearest_link(), None);
     assert_eq!(reader.link_at_top(), None);
+}
+
+/// Visible-column substring of a colourless rendered line.
+fn columns(text: &str, from: usize, width: usize) -> String {
+    text.chars().skip(from).take(width).collect()
+}
+
+/// Selection/cursor columns of one line, merged per overlay kind.
+fn span(overlays: &[(usize, Vec<(usize, usize, OverlayKind)>)] , line: usize, kind: OverlayKind) -> Option<(usize, usize)> {
+    overlays
+        .iter()
+        .find(|(index, _)| *index == line)
+        .map(|(_, pieces)| pieces.iter())
+        .unwrap()
+        .filter(move |(_, _, found)| *found == kind)
+        .map(|(start, end, _)| (*start, *end))
+        .reduce(|(a, b), (c, d)| (a.min(c), b.max(d)))
+}
+
+#[test]
+fn selection_overlay_lands_on_the_selected_words() {
+    let mut reader = reader();
+    reader.jump_to("2");
+    let line = reader.cursor_line();
+    reader.cursor_token = 6;
+    reader.begin_selection();
+    reader.move_cursor_token(1);
+
+    let overlays = reader.overlays();
+    let (start, end) = span(&overlays, line, OverlayKind::Selection).expect("selection columns");
+    assert_eq!(
+        columns(&reader.lines[line].text, start, end - start),
+        "draw close"
+    );
+    assert_eq!(reader.selected_text().as_deref(), Some("draw close"));
+}
+
+#[test]
+fn cursor_overlay_marks_the_token_a_colour_would_use() {
+    let mut reader = reader();
+    reader.jump_to("2");
+    let line = reader.cursor_line();
+    reader.cursor_token = 0;
+    let overlays = reader.overlays();
+    let (start, end) = span(&overlays, line, OverlayKind::Cursor).expect("cursor columns");
+    assert_eq!(columns(&reader.lines[line].text, start, end - start), "Jehovah");
+
+    // The cursor is covered by the selection once `v` extends past it.
+    reader.begin_selection();
+    reader.move_cursor_token(2);
+    let overlays = reader.overlays();
+    let kinds: Vec<OverlayKind> = overlays
+        .iter()
+        .find(|(index, _)| *index == line)
+        .map(|(_, pieces)| pieces.iter().map(|(_, _, kind)| *kind).collect())
+        .unwrap();
+    assert!(kinds.contains(&OverlayKind::Selection));
+    assert!(kinds.contains(&OverlayKind::Cursor));
+}
+
+#[test]
+fn status_names_the_selected_text() {
+    let theme = Theme::new(ColorDepth::None, Glyphs::Unicode);
+    let mut reader = reader();
+    reader.jump_to("2");
+    reader.cursor_token = 6;
+    reader.begin_selection();
+    reader.move_cursor_token(1);
+    let status = reader.status(&theme);
+    assert!(status.contains("VISUAL ¶2 tok 6-7"), "{status}");
+    assert!(status.contains("«draw close»"), "{status}");
+}
+
+const WIDE_HTML: &str = r##"
+<div id="article">
+  <p data-pid="1">A Long Paragraph</p>
+  <p data-pid="2">Jehovah God invites all people everywhere to draw close to him by studying the Bible carefully every single day and by praying to him often with a thankful heart.</p>
+</div>
+"##;
+
+fn wide_reader() -> Reader {
+    let mut document = wol_core::dom::parse_document(WIDE_HTML);
+    document.source_url = Some("https://wol.jw.org/en/wol/d/r1/lp-e/2025441".to_string());
+    Reader::new(
+        document,
+        StoredIndex::default(),
+        &Theme::new(ColorDepth::None, Glyphs::Unicode),
+        RenderOptions {
+            width: 40,
+            ..RenderOptions::default()
+        },
+    )
+}
+
+#[test]
+fn moving_the_token_follows_it_across_wrapped_lines() {
+    let mut reader = wide_reader();
+    reader.jump_to("2");
+    let first = reader.cursor_line();
+    let start = reader.overlays().first().map(|(index, _)| *index);
+    assert_eq!(start, Some(first));
+
+    // Walk to the end of the paragraph: the cursor row must travel with the
+    // token instead of staying on the first wrapped line.
+    let tokens = reader.total_tokens();
+    for _ in 1..tokens {
+        reader.move_cursor_token(1);
+        reader.follow_token(4);
+    }
+    assert!(reader.cursor_line() > first, "the cursor row did not follow");
+    let last = reader.overlays().last().map(|(index, _)| *index);
+    assert_eq!(last, Some(reader.cursor_line()));
+}
+
+#[test]
+fn the_selection_band_is_on_screen_after_moving_the_token() {
+    let mut reader = wide_reader();
+    reader.jump_to("2");
+    for _ in 0..20 {
+        reader.move_cursor_token(1);
+        reader.follow_token(4);
+    }
+    reader.begin_selection();
+    reader.move_cursor_token(2);
+    let overlays = reader.overlays();
+    let row = overlays
+        .iter()
+        .find(|(_, pieces)| pieces.iter().any(|(_, _, kind)| *kind == OverlayKind::Selection))
+        .map(|(index, _)| *index)
+        .expect("a selection band");
+    assert_eq!(row, reader.cursor_line());
+    assert!(row >= reader.scroll, "the band scrolled out of view");
 }

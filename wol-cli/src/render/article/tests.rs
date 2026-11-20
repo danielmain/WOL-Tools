@@ -200,3 +200,66 @@ fn visible_width_ignores_ansi_sequences() {
     assert_eq!(visible_width(painted), 7);
     assert_eq!(visible_width("ünïcodé"), 7);
 }
+
+#[test]
+fn wrapped_highlight_keeps_its_style_on_every_line() {
+    let document = wol_core::dom::parse_document(HTML);
+    let block = document.block("2").expect("paragraph 2");
+    let mut marks = marks();
+    // Cover the whole paragraph, which is wider than 60 columns.
+    marks.docs.insert(
+        "2025441".to_string(),
+        [("2".to_string(), vec![(0, 11, 1)])].into_iter().collect(),
+    );
+    let lines = render_block_lines(
+        block,
+        &marks,
+        Some("2025441"),
+        &theme(ColorDepth::TrueColor),
+        RenderOptions {
+            width: 60,
+            ..RenderOptions::default()
+        },
+    );
+    assert!(lines.len() > 1, "the paragraph must wrap");
+    for line in &lines {
+        assert!(
+            line.text.contains("\x1b[48;2;255;227;107"),
+            "highlight lost on a continuation line: {:?}",
+            line.text
+        );
+    }
+}
+
+#[test]
+fn fragments_report_the_columns_each_piece_occupies() {
+    let document = wol_core::dom::parse_document(HTML);
+    let block = document.block("2").expect("paragraph 2");
+    let lines = render_block_lines(
+        block,
+        &marks(),
+        Some("2025441"),
+        &theme(ColorDepth::None),
+        RenderOptions {
+            width: 60,
+            ..RenderOptions::default()
+        },
+    );
+    let first = lines.first().expect("a rendered line");
+    let plain: String = first.text.chars().collect();
+    let columns = |from: usize, width: usize| -> String {
+        plain.chars().skip(from).take(width).collect()
+    };
+    // The gutter is painted before the body, so the first fragment starts after it.
+    assert!(columns(first.fragments[0].col, first.fragments[0].width).starts_with("Jehovah"));
+    // The highlighted run carries its colourless markers, and the fragment's
+    // columns include them — that is what makes the overlay land on real words.
+    let highlighted = first
+        .fragments
+        .iter()
+        .filter(|fragment| fragment.width > 0)
+        .map(|fragment| columns(fragment.col, fragment.width))
+        .find(|piece| piece.contains("draw"))
+        .expect("highlighted fragment");
+    assert_eq!(highlighted, "⟦draw close⟧");
+}

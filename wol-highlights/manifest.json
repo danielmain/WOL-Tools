@@ -35,6 +35,7 @@
   },
   "background": {
     "scripts": [
+      "lib/oauth.generated.js",
       "lib/sync.js",
       "background.js"
     ],

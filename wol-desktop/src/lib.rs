@@ -11,7 +11,8 @@ pub use wol_core::{
     state, sync, url_map,
 };
 
-use std::sync::Arc;
+use std::sync::{Arc, OnceLock};
+#[cfg(desktop)]
 use tauri::menu::{Menu, MenuItem, PredefinedMenuItem, Submenu};
 use tauri::{Manager, WebviewUrl, WebviewWindowBuilder};
 
@@ -52,66 +53,33 @@ fn to_tauri_response(
     }
 }
 
+fn resolve_app_data_dir(app: &tauri::App) -> std::path::PathBuf {
+    #[cfg(mobile)]
+    {
+        if let Ok(dir) = app.path().app_data_dir() {
+            dirs::set_app_data_dir_override(dir.clone());
+            return dir;
+        }
+    }
+    #[cfg(not(mobile))]
+    let _ = app;
+    dirs_fallback_app_data()
+}
+
+#[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run_app() {
-    let app_data_dir = dirs_fallback_app_data();
-    let settings = StateManager::load_or_init(&app_data_dir)
-        .map(|mgr| mgr.get_settings().unwrap_or_default())
-        .unwrap_or_else(|err| {
-            eprintln!("Failed to init state manager: {err}");
-            std::process::exit(1);
-        });
-    let state_mgr = match StateManager::load_or_init(&app_data_dir) {
-        Ok(m) => m,
-        Err(err) => {
-            eprintln!("Failed to init state manager: {err}");
-            std::process::exit(1);
-        }
-    };
-
-    let cache_dir = app_data_dir.join("cache");
-    let cache = match DiskCache::open(&cache_dir, settings.cache_cap_bytes) {
-        Ok(c) => c,
-        Err(err) => {
-            eprintln!("Failed to init disk cache: {err}");
-            std::process::exit(1);
-        }
-    };
-
-    let crawler = Crawler::new(cache.clone());
-    let sync_mgr = SyncManager::new_shared(state_mgr.clone());
-
-    let initial_marks = state_mgr
-        .get_marks()
-        .ok()
-        .flatten()
-        .and_then(|v| serde_json::to_string(&v).ok());
-    let initial_cookies = state_mgr
-        .get_cookies()
-        .ok()
-        .and_then(|c| serde_json::to_string(&c).ok());
-    let init_script = bridge::build_injected_script_with_theme(
-        initial_marks.as_deref(),
-        initial_cookies.as_deref(),
-        settings.theme,
-    );
-
-    let handler = Arc::new(ProtocolHandler::new_with_state(
-        cache.clone(),
-        state_mgr.clone(),
-    ));
+    let protocol_handler: Arc<OnceLock<Arc<ProtocolHandler>>> = Arc::new(OnceLock::new());
 
     let builder = tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
-        .manage(state_mgr.clone())
-        .manage(cache)
-        .manage(crawler)
-        .manage(sync_mgr.clone())
+        .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![
             commands::get_marks,
-            commands::list_imported_publications_command,
-            commands::save_imported_publication_command,
+            commands::list_imported_publications,
+            commands::save_imported_publication,
             commands::set_marks,
             commands::export_marks_to_file,
+            commands::export_marks_to_bytes,
             commands::get_cookies,
             commands::set_cookie,
             commands::dispatch_tab_message,
@@ -139,23 +107,77 @@ pub fn run_app() {
             commands::connect_google_drive,
             commands::disconnect_sync,
         ])
-        .register_asynchronous_uri_scheme_protocol("wol", move |_app, request, responder| {
-            let handler = handler.clone();
-            tauri::async_runtime::spawn(async move {
-                let resp = match wol_core::url_map::Url::parse(&request.uri().to_string()) {
-                    Ok(url) => handler.handle_request(&url, request.method()).await,
-                    Err(err) => wol_core::http_types::Response::new(
-                        wol_core::http_types::StatusCode::BAD_REQUEST,
-                        wol_core::http_types::Headers::new(),
-                        format!("Bad request URI: {err}").into_bytes(),
-                    ),
-                };
-                responder.respond(to_tauri_response(resp));
-            });
+        .register_asynchronous_uri_scheme_protocol("wol", {
+            let protocol_handler = protocol_handler.clone();
+            move |_app, request, responder| {
+                let protocol_handler = protocol_handler.clone();
+                tauri::async_runtime::spawn(async move {
+                    let resp = match protocol_handler.get() {
+                        Some(handler) => {
+                            match wol_core::url_map::Url::parse(&request.uri().to_string()) {
+                                Ok(url) => handler.handle_request(&url, request.method()).await,
+                                Err(err) => wol_core::http_types::Response::new(
+                                    wol_core::http_types::StatusCode::BAD_REQUEST,
+                                    wol_core::http_types::Headers::new(),
+                                    format!("Bad request URI: {err}").into_bytes(),
+                                ),
+                            }
+                        }
+                        None => wol_core::http_types::Response::new(
+                            wol_core::http_types::StatusCode::SERVICE_UNAVAILABLE,
+                            wol_core::http_types::Headers::new(),
+                            b"Protocol handler not initialized".to_vec(),
+                        ),
+                    };
+                    responder.respond(to_tauri_response(resp));
+                });
+            }
         })
         .setup({
-            let sync_mgr = sync_mgr.clone();
+            let protocol_handler = protocol_handler.clone();
             move |app| {
+                let app_data_dir = resolve_app_data_dir(app);
+                let state_mgr = StateManager::load_or_init(&app_data_dir).map_err(|err| {
+                    std::io::Error::other(format!("Failed to init state manager: {err}"))
+                })?;
+                let settings = state_mgr.get_settings().unwrap_or_default();
+
+                let cache_dir = app_data_dir.join("cache");
+                let cache = DiskCache::open(&cache_dir, settings.cache_cap_bytes).map_err(|err| {
+                    std::io::Error::other(format!("Failed to init disk cache: {err}"))
+                })?;
+
+                let crawler = Crawler::new(cache.clone());
+                let sync_mgr = SyncManager::new_shared(state_mgr.clone());
+                install_sync_openers(app, &sync_mgr);
+
+                let initial_marks = state_mgr
+                    .get_marks()
+                    .ok()
+                    .flatten()
+                    .and_then(|v| serde_json::to_string(&v).ok());
+                let initial_cookies = state_mgr
+                    .get_cookies()
+                    .ok()
+                    .and_then(|c| serde_json::to_string(&c).ok());
+                let init_script = bridge::build_injected_script_with_theme(
+                    initial_marks.as_deref(),
+                    initial_cookies.as_deref(),
+                    settings.theme,
+                );
+
+                let handler = Arc::new(ProtocolHandler::new_with_state(
+                    cache.clone(),
+                    state_mgr.clone(),
+                ));
+                let _ = protocol_handler.set(handler);
+
+                app.manage(state_mgr);
+                app.manage(cache);
+                app.manage(crawler);
+                app.manage(sync_mgr.clone());
+
+                #[cfg(desktop)]
                 install_menu(app)?;
                 install_sync_listener(app, &sync_mgr);
                 build_main_window(app, &settings, &init_script)?;
@@ -170,6 +192,7 @@ pub fn run_app() {
     }
 }
 
+#[cfg(desktop)]
 fn install_menu(app: &mut tauri::App) -> tauri::Result<()> {
     let manage_item = MenuItem::with_id(
         app,
@@ -252,14 +275,20 @@ fn build_main_window(
 ) -> tauri::Result<()> {
     let initial_url = initial_webview_url(settings);
     let navigation_app = app.handle().clone();
-    WebviewWindowBuilder::new(app, "main", initial_url)
-        .title(if settings.is_configured() {
-            "OfflineWOL"
-        } else {
-            "OfflineWOL — Setup"
-        })
-        .inner_size(1200.0, 800.0)
-        .theme(commands::theme_to_tauri(settings.theme))
+    #[cfg_attr(mobile, allow(unused_mut))]
+    let mut builder = WebviewWindowBuilder::new(app, "main", initial_url);
+    #[cfg(desktop)]
+    {
+        builder = builder
+            .title(if settings.is_configured() {
+                "OfflineWOL"
+            } else {
+                "OfflineWOL — Setup"
+            })
+            .inner_size(1200.0, 800.0)
+            .theme(commands::theme_to_tauri(settings.theme));
+    }
+    builder
         .initialization_script(
             r#"
             window.addEventListener('click', function (event) {
@@ -319,4 +348,73 @@ fn spawn_background_sync(app: &tauri::App, sync_mgr: &SyncManager) {
             tokio::time::sleep(std::time::Duration::from_secs(300)).await;
         }
     });
+}
+
+fn install_sync_openers(app: &tauri::App, sync_mgr: &SyncManager) {
+    use tauri_plugin_opener::OpenerExt;
+
+    let app_handle = app.handle().clone();
+    sync_mgr.set_browser_opener(Some(Arc::new(move |url: &str| {
+        app_handle
+            .opener()
+            .open_url(url, None::<&str>)
+            .map_err(|e| format!("Failed to open browser: {e}"))
+    })));
+
+    #[cfg(target_os = "ios")]
+    sync_mgr.set_oauth_session_opener(Some(Arc::new(
+        |auth_url: &str, callback_scheme: &str| {
+            let auth_url = auth_url.to_string();
+            let callback_scheme = callback_scheme.to_string();
+            Box::pin(async move { ios_oauth_session(&auth_url, &callback_scheme).await })
+        },
+    )));
+}
+
+#[cfg(target_os = "ios")]
+async fn ios_oauth_session(auth_url: &str, callback_scheme: &str) -> Result<String, String> {
+    use std::ffi::{CStr, CString};
+    use std::os::raw::{c_char, c_void};
+
+    extern "C" {
+        fn wol_ios_start_oauth_session(
+            auth_url: *const c_char,
+            callback_scheme: *const c_char,
+            ctx: *mut c_void,
+            completion: extern "C" fn(*mut c_void, *const c_char, *const c_char),
+        );
+    }
+
+    extern "C" fn on_oauth_complete(
+        ctx: *mut c_void,
+        callback_url: *const c_char,
+        error: *const c_char,
+    ) {
+        let tx = unsafe { Box::from_raw(ctx as *mut tokio::sync::oneshot::Sender<Result<String, String>>) };
+        let res = if !callback_url.is_null() {
+            Ok(unsafe { CStr::from_ptr(callback_url) }
+                .to_string_lossy()
+                .into_owned())
+        } else if !error.is_null() {
+            Err(unsafe { CStr::from_ptr(error) }
+                .to_string_lossy()
+                .into_owned())
+        } else {
+            Err("OAuth sign-in cancelled.".to_string())
+        };
+        let _ = tx.send(res);
+    }
+
+    let c_url = CString::new(auth_url).map_err(|_| "Invalid OAuth URL.".to_string())?;
+    let c_scheme =
+        CString::new(callback_scheme).map_err(|_| "Invalid OAuth callback scheme.".to_string())?;
+    let (tx, rx) = tokio::sync::oneshot::channel::<Result<String, String>>();
+    let ctx = Box::into_raw(Box::new(tx)) as *mut c_void;
+
+    unsafe {
+        wol_ios_start_oauth_session(c_url.as_ptr(), c_scheme.as_ptr(), ctx, on_oauth_complete);
+    }
+
+    rx.await
+        .map_err(|_| "OAuth session channel closed unexpectedly.".to_string())?
 }

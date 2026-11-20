@@ -47,6 +47,35 @@ mark.wol-c0 { background-color: #e6e6e6 !important; }
   display: none !important;
 }
 
+/* Fixed bottom bar on touch/iOS devices so native selection callout doesn't overlap */
+.wol-hl-toolbar.wol-hl-toolbar-mobile {
+  position: fixed;
+  top: auto;
+  bottom: calc(18px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  margin-top: 0;
+  padding: 10px 14px;
+  gap: 10px;
+  border-radius: 999px;
+}
+
+.wol-hl-toolbar.wol-hl-toolbar-mobile .wol-hl-btn {
+  width: 34px;
+  height: 34px;
+}
+
+.wol-hl-toolbar.wol-hl-toolbar-mobile .wol-hl-divider {
+  height: 24px;
+}
+
+@media (pointer: coarse) {
+  .wol-hl-btn:hover,
+  .wol-hl-btn-remove:hover {
+    transform: none;
+  }
+}
+
 .wol-hl-btn {
   width: 22px;
   height: 22px;

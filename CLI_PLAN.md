@@ -14,26 +14,43 @@
    language's home → a first-run language picker (saves `baseHost`/`language`/`region`/`home`
    exactly like the desktop settings UI). This is not in the plan above, but it is what makes
    the CLI feel like the desktop app.
-2. **Link browsing is a first-class mode** (`Tab`): `j`/`k` (or arrows) walk the page's links
+2. **Home pages open a dashboard, not a wall of text.** WOL's own toolbar, welcome panel and
+   daily-text widget are parsed out of the page HTML (`wol_core::dom::parse_chrome` /
+   `parse_welcome` / `parse_daily_text`), so the CLI shows the same `BIBLIA · PUBLICACIONES ·
+   REUNIONES · search · gear` buttons, in the page's language, as the desktop app. The toolbar
+   is driven by the arrow keys + `Enter` (`↓`/`Tab` reads the daily text, `Esc`/`Tab` returns,
+   `[`/`]` walk previous/next day) and the daily text is the normal reader, so highlights and
+   notes work there too. Dated home pages (`/h/…/2026/11/15`) show *that* day; only the day
+   matching the reader's local date is shown out of the three sections WOL always renders.
+   Below 90 columns the welcome panel is dropped so an 80-column terminal still reads well.
+3. **Directory pages got a two-pane browser.** WOL's library/meetings/Bible-version pages are
+   `#materialNav` grids of cards; `dom::parse_nav` extracts the heading-delimited sections and
+   their cards, and `tui/browser.rs` renders sub-categories on the left with the selected
+   section's cards on the right (single-section pages show the selected card's detail instead
+   of mirroring the menu). `j/k` move, `Enter` opens, `Esc`/`Backspace` back, and the cursor is
+   remembered per URL. The window header names the site section (`BIBLIA · Biblias en
+   español`) by matching the URL against WOL's own toolbar, so no per-language strings live in
+   the CLI.
+4. **Link browsing is a first-class mode** (`Tab`): `j`/`k` (or arrows) walk the page's links
    with wrap-around; the selection is auto-scrolled into view and marked `▸`. `Enter` opens it,
    `Backspace`/`H` go back, `gh` = home, `Ctrl-l` = language picker, `r` = re-fetch.
-3. **Navigation pages needed parser work**, not just a renderer: WOL library/year pages are
+5. **Navigation pages needed parser work**, not just a renderer: WOL library/year pages are
    pretty-printed `<a>` cards, so `wol_core::dom` now (a) seeds a block's style from the block
    element itself so anchor-rooted blocks keep their `href`, (b) collapses whitespace inside
    text nodes and trims block tails, and (c) `render::article::is_nav_link` renders
    identifier-less all-link blocks as a bulleted link list. Whitespace handling cannot shift
    token indices (whitespace never forms a token).
-4. **The tokenizer port needed three fixes to match `lib/tokenize.js` byte-for-byte**: general
+6. **The tokenizer port needed three fixes to match `lib/tokenize.js` byte-for-byte**: general
    categories (`\p{L}`/`\p{N}`, so combining marks like Hebrew niqqud stay separate tokens),
    one token per UTF-16 code unit for astral characters (surrogate halves never match `WORD`),
    and U+0085 is *not* whitespace in JS. All three are covered by
    `wol-core/tests/tokenize_parity.rs` + fixtures generated from the JS.
-5. **`n` edits a note; search hits cycle with `N` / `Ctrl-n`**, and `p` opens the colour legend
+7. **`n` edits a note; search hits cycle with `N` / `Ctrl-n`**, and `p` opens the colour legend
    popup (the plan had `n` doing double duty).
-6. **Sidebar tabs are Cached · Contents · Highlights** (no separate "publications" tab).
-7. **Images render as styled captions.** The optional `ratatui-image` (Kitty/Sixel/iTerm2)
+8. **Sidebar tabs are Cached · Contents · Highlights** (no separate "publications" tab).
+9. **Images render as styled captions.** The optional `ratatui-image` (Kitty/Sixel/iTerm2)
    backend described above is not implemented.
-8. **Cross-compatibility is a JS test**, not just a manual check:
+10. **Cross-compatibility is a JS test**, not just a manual check:
    `wol-highlights/test/cli-export.test.mjs` exports from the CLI and re-imports through
    `wol-highlights/lib/backup.js`.
 
@@ -139,9 +156,17 @@ Instead of generic `html2text`, render the structured DOM from `wol-core::dom` i
 - `wol-cli tui [url]` — Launch the full-screen interactive reader.
 
 ### B. Interactive TUI (`ratatui` + `crossterm`)
-- **Navigation**: Vim-style scrolling (`j`/`k`, `Ctrl-d`/`Ctrl-u`, `g`/`G`), link following (`Enter` / `Tab`), history (`H`/`L`), and `/` in-page search.
-- **Interactive Highlighting**: Visual selection mode (`v` to mark start/end tokens, `1`–`6` to apply color, `0`/`x` to remove) — writes directly to `wolMarks` using exact token coordinates.
-- **Note Editing**: Press `n` on the active paragraph (`data-pid`) to edit/save a note in a popup modal (or `$EDITOR`).
+- **Home dashboard**: WOL's own toolbar (`BIBLIA · PUBLICACIONES · REUNIONES · search · gear`), the localised welcome/announcement panel and today's daily text in two panes. Arrows select a button, `Enter` opens it, `↓`/`Tab` focuses the daily text, `[`/`]` change day, `Ctrl-l` switches language.
+- **Directory browser**: pages with `#materialNav` (library, meetings, Bible versions, publication years) render sub-categories on the left and the selected section's cards on the right; `j/k` move, `Enter` opens, `Esc`/`Backspace` back, and the cursor is remembered per URL.
+- **Navigation**: nvim-style cursor row (`↑`/`↓` or `j`/`k` move it, viewport scrolls only when
+  the cursor leaves it; `Ctrl-d`/`Ctrl-u`, `PageUp`/`PageDown`, `g`/`G`/`Home`/`End`), `←`/`→`
+  (or `h`/`l`) move the token cursor, link following (`Enter` / `Tab`), history (`H`/`L`), and
+  `/` in-page search. The status line shows the cursor row, token index and token text.
+- **Interactive Highlighting**: Visual selection mode (`v` to mark start/end tokens, `1`–`6` to
+  apply color, `0`/`x` to remove) — writes directly to `wolMarks` using exact token coordinates.
+- **Note Editing**: Press `n` on the active paragraph (`data-pid`) to edit/save a note in a popup
+  modal. `.gen-field` answer boxes are rendered read-only; they are edited in the extension or
+  desktop app.
 - **Panels**: Toggleable sidebar (`b`) for cached documents / TOC / publications, and a bottom drawer (`f`) for footnotes & cross-references.
 
 ---

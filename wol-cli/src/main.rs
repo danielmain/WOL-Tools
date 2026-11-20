@@ -23,7 +23,8 @@ use crate::render::{ColorDepth, Glyphs, Theme};
     long_about = "Browse Watchtower Online Library in the terminal: the library index, \
 publications and articles, with the highlights and study notes from your .jwlibrary backup. \
 Pages are served from the same cache OfflineWOL uses, so anything you browsed on the desktop \
-is instantly readable. Run without a subcommand to open the interactive reader at your \
+is instantly readable. Run without a subcommand to open the home dashboard (Bible, \
+publications, meetings, search and today's daily text, driven with the arrow keys) at your \
 configured home page."
 )]
 pub struct Cli {
@@ -114,6 +115,9 @@ pub enum Command {
     },
 
     /// Open the full-screen interactive reader (default when no subcommand is given).
+    /// A home page opens the dashboard: ←/→ pick a button, Enter opens, ↓/Tab reads the
+    /// daily text. Directory pages open a two-pane browser (sub-categories left, content
+    /// right) driven by j/k and Enter.
     Tui {
         /// Optional page to open immediately (defaults to the configured home page).
         target: Option<String>,
