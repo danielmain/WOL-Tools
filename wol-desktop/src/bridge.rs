@@ -277,7 +277,7 @@ pub fn build_injected_script_with_theme(
     if (document.getElementById("wol-highlights-css")) return;
     const style = document.createElement("style");
     style.id = "wol-highlights-css";
-    style.textContent = {css_json} + "\n.lnc-firstRunPopup {{ display: none !important; }}\n.article {{ max-width: none !important; padding: 1em 20px 5em 20px !important; }}\na[aria-label=\"home\"], header a[href*=\"/wol/h/\"]:has(> span.icon), #regionFooter, .regionFooter, #bibleChapterView {{ display: none !important; }}\nhtml, body {{ min-height: 100vh !important; min-height: 100dvh !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }}\nbody {{ display: flex !important; flex-direction: column !important; }}\n#regionMain, main {{ flex: 1 0 auto !important; display: flex !important; flex-direction: column !important; width: 100% !important; min-width: 0 !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }}\n#content {{ flex: 1 0 auto !important; display: flex !important; flex-direction: column !important; width: auto !important; min-width: 0 !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }}\n.articlePositioner {{ min-width: 0 !important; }}\narticle, #article, .article {{ flex: 1 0 auto !important; width: auto !important; min-width: 0 !important; max-width: none !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; margin-bottom: 0 !important; }}\n#todayNav, #todayNav nav, #todayNav .resultNavControls {{ width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important; }}\n#todayNav ul {{ display: flex !important; width: 100% !important; max-width: none !important; justify-content: space-between !important; box-sizing: border-box !important; }}\n#todayNav ul > li.todayNav {{ flex: 1 1 auto !important; text-align: center !important; }}\n";
+    style.textContent = {css_json} + "\n.lnc-firstRunPopup {{ display: none !important; }}\n.article {{ max-width: none !important; padding: 1em 20px 5em 20px !important; }}\na[aria-label=\"home\"], header a[href*=\"/wol/h/\"]:has(> span.icon), #regionFooter, .regionFooter, #bibleChapterView {{ display: none !important; }}\nhtml, body {{ min-height: 100vh !important; min-height: 100dvh !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }}\nbody {{ display: flex !important; flex-direction: column !important; }}\n#regionMain, main {{ flex: 1 0 auto !important; width: 100% !important; min-width: 0 !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }}\n#content {{ width: auto !important; min-width: 0 !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }}\n.articlePositioner {{ min-width: 0 !important; }}\n.dir-ltr #studyWrapper {{ right: 0 !important; left: auto !important; }}\n.dir-rtl #studyWrapper {{ left: 0 !important; right: auto !important; }}\narticle, #article, .article {{ width: auto !important; min-width: 0 !important; max-width: none !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; margin-bottom: 0 !important; }}\n#todayNav, #todayNav nav, #todayNav .resultNavControls {{ width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important; }}\n#todayNav ul {{ display: flex !important; width: 100% !important; max-width: none !important; justify-content: space-between !important; box-sizing: border-box !important; }}\n#todayNav ul > li.todayNav {{ flex: 1 1 auto !important; text-align: center !important; }}\n";
     (document.head || document.documentElement).appendChild(style);
   }}
 
@@ -878,9 +878,8 @@ pub fn build_injected_script_with_theme(
 
   function cleanupWolLayout() {{
     if (!isWolPage()) return;
-    document.querySelectorAll("#regionFooter, .regionFooter").forEach(function(el) {{
-      el.remove();
-    }});
+    // Keep #regionFooter in the DOM (hidden via CSS) because WOL's layout JS
+    // reads $("#regionFooter")[0].getBoundingClientRect() during setup.
     if (isBinavPage()) {{
       document.querySelectorAll("#bibleChapterView").forEach(function(el) {{
         el.remove();
@@ -948,8 +947,9 @@ mod tests {
         assert!(script.contains(r#"a[aria-label=\"home\"]"#));
         assert!(script.contains("#regionFooter, .regionFooter"));
         assert!(script.contains("#bibleChapterView"));
-        assert!(script.contains("#content { flex: 1 0 auto !important; display: flex !important; flex-direction: column !important; width: auto !important;"));
+        assert!(script.contains("#content { width: auto !important; min-width: 0 !important;"));
         assert!(script.contains(".articlePositioner { min-width: 0 !important; }"));
+        assert!(script.contains(".dir-ltr #studyWrapper { right: 0 !important; left: auto !important; }"));
         assert!(script.contains("isBinavPage"));
         assert!(script.contains("cleanupWolLayout"));
         assert!(script.contains("__wolCookiesShimInstalled"));
