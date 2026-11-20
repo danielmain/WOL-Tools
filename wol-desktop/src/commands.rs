@@ -4,8 +4,6 @@ use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tauri::{AppHandle, Manager, State};
 #[cfg(desktop)]
-use tauri::{WebviewUrl, WebviewWindowBuilder};
-#[cfg(desktop)]
 use tauri_plugin_dialog::DialogExt;
 
 use crate::cache::{CacheEntry, DiskCache};
@@ -249,14 +247,7 @@ pub fn save_settings(
         #[cfg(desktop)]
         let _ = main_window.set_theme(tauri_theme);
         let _ = main_window.eval(&format!(
-            "if (window.__wolApplyTheme) {{ window.__wolApplyTheme({theme_str:?}); }}"
-        ));
-    }
-    if let Some(manager_window) = app.get_webview_window("manager") {
-        #[cfg(desktop)]
-        let _ = manager_window.set_theme(tauri_theme);
-        let _ = manager_window.eval(&format!(
-            "if (window.__wolApplyManagerTheme) {{ window.__wolApplyManagerTheme({theme_str:?}); }}"
+            "if (window.__wolApplyTheme) {{ window.__wolApplyTheme({theme_str:?}); }} if (window.__wolApplyManagerTheme) {{ window.__wolApplyManagerTheme({theme_str:?}); }}"
         ));
     }
     Ok(())
@@ -583,6 +574,14 @@ fn normalize_manager_tab(tab: Option<&str>) -> Option<&'static str> {
     }
 }
 
+fn app_page_url(app_url: &str) -> Result<url::Url, String> {
+    #[cfg(target_os = "windows")]
+    let raw = format!("http://tauri.localhost/{app_url}");
+    #[cfg(not(target_os = "windows"))]
+    let raw = format!("tauri://localhost/{app_url}");
+    url::Url::parse(&raw).map_err(|e| e.to_string())
+}
+
 #[tauri::command]
 pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), String> {
     let target_tab = normalize_manager_tab(tab.as_deref());
@@ -591,38 +590,11 @@ pub fn open_manager_window(app: AppHandle, tab: Option<String>) -> Result<(), St
         None => "index.html".to_string(),
     };
 
-    #[cfg(desktop)]
-    {
-        if let Some(win) = app.get_webview_window("manager") {
-            let _ = win.show();
-            let _ = win.set_focus();
-            if let Some(tab_id) = target_tab {
-                let _ = win.eval(&format!(
-                    "if (window.__wolSelectTab) {{ window.__wolSelectTab({tab_id:?}); }}"
-                ));
-            }
-        } else {
-            let tauri_theme = app
-                .try_state::<StateManager>()
-                .and_then(|s| s.get_settings().ok())
-                .and_then(|s| theme_to_tauri(s.theme));
-            let _win = WebviewWindowBuilder::new(&app, "manager", WebviewUrl::App(app_url.into()))
-                .title("OfflineWOL — Highlights & Settings")
-                .inner_size(740.0, 820.0)
-                .min_inner_size(520.0, 560.0)
-                .theme(tauri_theme)
-                .build()
-                .map_err(|e| e.to_string())?;
-        }
-    }
-
-    #[cfg(mobile)]
-    {
-        if let Some(win) = app.get_webview_window("main") {
-            let parsed = tauri::Url::parse(&format!("tauri://localhost/{app_url}"))
-                .map_err(|e| e.to_string())?;
-            win.navigate(parsed).map_err(|e| e.to_string())?;
-        }
+    if let Some(win) = app.get_webview_window("main") {
+        let parsed = app_page_url(&app_url)?;
+        win.navigate(parsed).map_err(|e| e.to_string())?;
+        #[cfg(desktop)]
+        let _ = win.set_focus();
     }
 
     Ok(())

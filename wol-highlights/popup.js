@@ -22,6 +22,7 @@ const fileInput = document.querySelector("#file");
 const loaded = document.querySelector("#loaded");
 const fileName = document.querySelector("#file-name");
 const counts = document.querySelector("#counts");
+const colorBar = document.querySelector("#color-bar");
 const colors = document.querySelector("#colors");
 const enabledInput = document.querySelector("#enabled");
 const removeButton = document.querySelector("#remove");
@@ -88,7 +89,22 @@ function renderIndex(index) {
   counts.textContent = `${index.highlightCount.toLocaleString()} highlight${index.highlightCount === 1 ? "" : "s"}${noteInfo}`
     + (places.length ? ` in ${places.join(" and ")}` : "");
   colors.replaceChildren();
-  for (const [color, count] of Object.entries(index.colorCounts || {})) {
+  const entries = Object.entries(index.colorCounts || {});
+  const totalColors = entries.reduce((sum, [, c]) => sum + c, 0);
+  if (colorBar) {
+    colorBar.replaceChildren();
+    colorBar.hidden = totalColors === 0;
+    for (const [color, count] of entries) {
+      if (!count) continue;
+      const seg = document.createElement("span");
+      seg.className = "color-bar-seg";
+      seg.style.flexGrow = String(count);
+      seg.style.background = COLOR_CSS[color] || "#e6e6e6";
+      seg.title = `${COLOR_NAMES[color] || "Other"}: ${count}`;
+      colorBar.append(seg);
+    }
+  }
+  for (const [color, count] of entries) {
     const item = document.createElement("li");
     const swatch = document.createElement("span");
     swatch.className = "swatch";

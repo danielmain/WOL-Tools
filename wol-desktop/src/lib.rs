@@ -259,11 +259,8 @@ fn install_sync_listener(app: &tauri::App, sync_mgr: &SyncManager) {
     sync_mgr.set_listener(Some(Arc::new(move || {
         if let Some(main_win) = handle.get_webview_window("main") {
             let _ = main_win.eval(
-                "if (window.__wolDispatchMessage) { window.__wolDispatchMessage({ type: 'wol-reapply' }); }",
+                "if (window.__wolDispatchMessage) { window.__wolDispatchMessage({ type: 'wol-reapply' }); } if (window.__wolOnSyncUpdated) { window.__wolOnSyncUpdated(); }",
             );
-        }
-        if let Some(mgr_win) = handle.get_webview_window("manager") {
-            let _ = mgr_win.eval("if (window.__wolOnSyncUpdated) { window.__wolOnSyncUpdated(); }");
         }
     })));
 }

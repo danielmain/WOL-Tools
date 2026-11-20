@@ -111,6 +111,7 @@ const fileInput = document.querySelector("#file");
 const loadedSection = document.querySelector("#loaded");
 const fileName = document.querySelector("#file-name");
 const counts = document.querySelector("#counts");
+const colorBar = document.querySelector("#color-bar");
 const colors = document.querySelector("#colors");
 const enabledInput = document.querySelector("#enabled");
 const removeButton = document.querySelector("#remove");
@@ -198,9 +199,13 @@ function selectTab(tabId) {
   const targetPane = document.getElementById(tabId);
   if (!targetBtn || !targetPane) return;
 
-  document.querySelectorAll(".tab-btn").forEach((b) => b.classList.remove("active"));
+  document.querySelectorAll(".tab-btn").forEach((b) => {
+    b.classList.remove("active");
+    b.setAttribute("aria-selected", "false");
+  });
   document.querySelectorAll(".tab-pane").forEach((p) => p.classList.remove("active"));
   targetBtn.classList.add("active");
+  targetBtn.setAttribute("aria-selected", "true");
   targetPane.classList.add("active");
 
   if (tabId === "tab-cache") {
@@ -300,7 +305,22 @@ function renderIndex(index) {
     + (places.length ? ` in ${places.join(" and ")}` : "");
 
   colors.replaceChildren();
-  for (const [color, count] of Object.entries(index.colorCounts || {})) {
+  const entries = Object.entries(index.colorCounts || {});
+  const totalColors = entries.reduce((sum, [, c]) => sum + c, 0);
+  if (colorBar) {
+    colorBar.replaceChildren();
+    colorBar.hidden = totalColors === 0;
+    for (const [color, count] of entries) {
+      if (!count) continue;
+      const seg = document.createElement("span");
+      seg.className = "color-bar-seg";
+      seg.style.flexGrow = String(count);
+      seg.style.background = COLOR_CSS[color] || "#e6e6e6";
+      seg.title = `${COLOR_NAMES[color] || "Other"}: ${count}`;
+      colorBar.append(seg);
+    }
+  }
+  for (const [color, count] of entries) {
     const item = document.createElement("li");
     const swatch = document.createElement("span");
     swatch.className = "swatch";
@@ -315,14 +335,16 @@ async function refreshPage() {
   try {
     const tabs = await ext.tabs.query();
     if (!tabs || !tabs.length) {
-      pageStatus.textContent = "Open an article in the main window.";
+      if (pageStatus) pageStatus.textContent = "Open an article in the main window.";
       return;
     }
     const res = await ext.tabs.sendMessage("main", { type: "wol-reapply" });
-    if (res && res.applied !== undefined) {
-      pageStatus.textContent = `Highlights active. Updates applied.`;
-    } else {
-      pageStatus.textContent = `Main window updated.`;
+    if (pageStatus) {
+      if (res && res.applied !== undefined) {
+        pageStatus.textContent = `Highlights active. Updates applied.`;
+      } else {
+        pageStatus.textContent = `Main window updated.`;
+      }
     }
   } catch (err) {
     console.warn("[Manager] refreshPage error:", err);
@@ -563,11 +585,38 @@ async function initSettings() {
     }
 
     settingHome.value = currentSettings.home;
+    const initialTheme = currentSettings.theme || "system";
     if (settingTheme) {
-      settingTheme.value = currentSettings.theme || "system";
+      settingTheme.value = initialTheme;
     }
-    applyManagerTheme(currentSettings.theme || "system");
+    const syncThemeCards = (mode) => {
+      document.querySelectorAll(".theme-card").forEach((card) => {
+        card.classList.toggle("is-selected", card.dataset.themeValue === mode);
+      });
+    };
+    syncThemeCards(initialTheme);
+    document.querySelectorAll(".theme-card").forEach((card) => {
+      card.addEventListener("click", () => {
+        const mode = card.dataset.themeValue || "system";
+        if (settingTheme) settingTheme.value = mode;
+        syncThemeCards(mode);
+        applyManagerTheme(mode);
+      });
+    });
+    applyManagerTheme(initialTheme);
     settingCap.value = String(currentSettings.cacheCapBytes);
+
+    settingCap.addEventListener("change", async () => {
+      if (!currentSettings) return;
+      const updated = {
+        ...currentSettings,
+        cacheCapBytes: parseInt(settingCap.value, 10),
+      };
+      await tauriInvoke("save_settings", { settings: updated });
+      currentSettings = updated;
+      setMessage("Offline cache cap updated.");
+      await refreshCacheInspector();
+    });
 
     settingLang.addEventListener("change", () => {
       const selected = settingLang.selectedOptions[0];
@@ -617,6 +666,16 @@ async function refreshCacheInspector() {
     statTotalSize.textContent = formatBytes(stats.total_size);
     statEntryCount.textContent = stats.entry_count.toLocaleString();
     statCapSize.textContent = formatBytes(stats.cap_bytes);
+
+    const fillEl = document.querySelector("#cache-usage-fill");
+    const pctEl = document.querySelector("#cache-usage-pct");
+    if (fillEl && pctEl) {
+      const pct = stats.cap_bytes > 0
+        ? Math.min(100, Math.round((stats.total_size / stats.cap_bytes) * 100))
+        : 0;
+      fillEl.style.width = `${pct}%`;
+      pctEl.textContent = `${pct}%`;
+    }
 
     await loadCacheEntries();
   } catch (err) {

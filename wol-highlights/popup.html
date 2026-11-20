@@ -2,99 +2,145 @@
 <html lang="en">
   <head>
     <meta charset="utf-8">
-    <title>WOL Highlights</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WOL Highlights — Settings &amp; Study Data</title>
     <link rel="stylesheet" href="popup.css">
   </head>
   <body>
-    <header>
-      <img src="icons/icon-48.png" alt="" width="28" height="28">
-      <div>
-        <h1>WOL Highlights</h1>
-        <p>JW Library marks on wol.jw.org</p>
-      </div>
-    </header>
-
-    <div class="actions">
-      <label class="file">
-        <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,.json,application/octet-stream,application/json">
-        <span>📂 Load backup</span>
-      </label>
-    </div>
-    <p class="hint">Select a JW Library backup (<code>.jwlibrary</code>) or JSON file, or drag and drop it anywhere on this page.</p>
-
-    <section id="loaded" hidden>
-      <p id="file-name"></p>
-      <p id="counts"></p>
-      <ul id="colors"></ul>
-      <label class="toggle">
-        <input id="enabled" type="checkbox">
-        <span>Show highlights</span>
-      </label>
-      <div class="loaded-actions">
-        <button id="export-json" type="button" class="btn-secondary">Export highlights</button>
-        <button id="remove" type="button">Remove highlights</button>
-      </div>
-    </section>
-
-    <section id="cloud-sync">
-      <h2>Cloud Sync</h2>
-      <p class="hint">Sync highlights, notes, and textbox answers automatically across all your apps.</p>
-
-      <div id="sync-disconnected">
-        <div class="sync-buttons">
-          <button id="sync-google" type="button" class="btn-primary">Sign in with Google Drive</button>
-          <button id="sync-nc-toggle" type="button" class="btn-secondary">Connect Nextcloud…</button>
-        </div>
-
-        <div id="sync-nc-form" hidden>
-          <label class="sync-label">
-            Nextcloud Server URL
-            <input id="nc-server" type="url" class="sync-input" placeholder="https://cloud.example.com">
-          </label>
-          <div class="sync-buttons" style="margin-top: 8px;">
-            <button id="nc-browser" type="button" class="btn-primary">Sign in via Browser</button>
-          </div>
-          <details class="sync-manual">
-            <summary>Or enter Username &amp; App Password</summary>
-            <label class="sync-label">
-              Username
-              <input id="nc-username" type="text" class="sync-input" placeholder="username">
-            </label>
-            <label class="sync-label">
-              App Password
-              <input id="nc-password" type="password" class="sync-input" placeholder="xxxx-xxxx-xxxx-xxxx">
-            </label>
-            <label class="sync-label">
-              Remote File Path
-              <input id="nc-remote-path" type="text" class="sync-input" value="OfflineWOL/wol-highlights-sync.json">
-            </label>
-            <button id="nc-manual" type="button" class="btn-secondary" style="margin-top: 8px;">Connect with App Password</button>
-          </details>
-        </div>
-      </div>
-
-      <div id="sync-connected" hidden>
-        <div class="sync-status-bar">
+    <div class="ext-shell">
+      <header class="ext-header">
+        <div class="ext-brand">
+          <img src="icons/icon-48.png" alt="" width="38" height="38">
           <div>
-            <span id="sync-badge" class="sync-badge">Connected</span>
-            <span id="sync-account" class="sync-account"></span>
-          </div>
-          <div class="sync-buttons">
-            <button id="sync-now" type="button" class="btn-secondary">Sync Now</button>
-            <button id="sync-disconnect" type="button">Disconnect</button>
+            <h1>WOL Highlights</h1>
+            <p>JW Library highlights, notes &amp; cloud sync for wol.jw.org</p>
           </div>
         </div>
-        <p id="sync-meta" class="hint"></p>
-        <p id="sync-err" class="sync-err" hidden></p>
+        <div class="page-pill" title="Current wol.jw.org tab status">
+          <span class="page-pill-dot" aria-hidden="true"></span>
+          <span id="page-status">Open an article on wol.jw.org.</span>
+        </div>
+      </header>
+
+      <div class="ext-grid">
+        <div class="ext-col">
+          <section class="card">
+            <div class="card-title-row">
+              <div>
+                <h2>Study Backup</h2>
+                <p class="card-subtitle">Import a JW Library backup or JSON file to display your highlights and notes on wol.jw.org.</p>
+              </div>
+            </div>
+
+            <div class="dropzone">
+              <div class="dropzone-icon" aria-hidden="true">
+                <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+              </div>
+              <div class="dropzone-title">Drop your backup file anywhere</div>
+              <div class="dropzone-sub">Supports <code>.jwlibrary</code>, <code>.db</code>, <code>.sqlite</code>, and <code>.json</code> backups.</div>
+              <label class="file" style="margin-top: 4px;">
+                <input id="file" type="file" accept=".jwlibrary,.db,.sqlite,.zip,.json,application/octet-stream,application/json">
+                <span>
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/></svg>
+                  Load Backup…
+                </span>
+              </label>
+            </div>
+          </section>
+
+          <section id="loaded" class="card" hidden>
+            <div class="card-title-row">
+              <div>
+                <h2>Active Highlights</h2>
+                <p id="file-name" style="margin-top: 4px;"></p>
+                <p id="counts"></p>
+              </div>
+            </div>
+
+            <div id="color-bar" class="color-bar" hidden></div>
+            <ul id="colors"></ul>
+
+            <label class="toggle">
+              <input id="enabled" type="checkbox">
+              <span>Show highlights on wol.jw.org</span>
+            </label>
+
+            <div class="loaded-actions">
+              <button id="export-json" type="button" class="btn-secondary">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export Backup
+              </button>
+              <button id="remove" type="button">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>
+                Remove
+              </button>
+            </div>
+          </section>
+        </div>
+
+        <div class="ext-col">
+          <section id="cloud-sync" class="card">
+            <div class="card-title-row">
+              <div>
+                <h2>Cloud Sync</h2>
+                <p class="card-subtitle">Sync highlights, notes, and textbox answers automatically across all your browsers and OfflineWOL apps.</p>
+              </div>
+            </div>
+
+            <div id="sync-disconnected">
+              <div class="sync-buttons">
+                <button id="sync-google" type="button" class="btn-primary">Sign in with Google Drive</button>
+                <button id="sync-nc-toggle" type="button" class="btn-secondary">Connect Nextcloud…</button>
+              </div>
+
+              <div id="sync-nc-form" hidden>
+                <label class="sync-label">
+                  Nextcloud Server URL
+                  <input id="nc-server" type="url" class="sync-input" placeholder="https://cloud.example.com">
+                </label>
+                <div class="sync-buttons" style="margin-top: 10px;">
+                  <button id="nc-browser" type="button" class="btn-primary">Sign in via Browser</button>
+                </div>
+                <details class="sync-manual">
+                  <summary>Or enter Username &amp; App Password</summary>
+                  <label class="sync-label">
+                    Username
+                    <input id="nc-username" type="text" class="sync-input" placeholder="username">
+                  </label>
+                  <label class="sync-label">
+                    App Password
+                    <input id="nc-password" type="password" class="sync-input" placeholder="xxxx-xxxx-xxxx-xxxx">
+                  </label>
+                  <label class="sync-label">
+                    Remote File Path
+                    <input id="nc-remote-path" type="text" class="sync-input" value="OfflineWOL/wol-highlights-sync.json">
+                  </label>
+                  <button id="nc-manual" type="button" class="btn-secondary" style="margin-top: 10px;">Connect with App Password</button>
+                </details>
+              </div>
+            </div>
+
+            <div id="sync-connected" hidden>
+              <div class="sync-status-bar">
+                <div>
+                  <span id="sync-badge" class="sync-badge">Connected</span>
+                  <span id="sync-account" class="sync-account"></span>
+                </div>
+                <div class="sync-buttons">
+                  <button id="sync-now" type="button" class="btn-secondary">Sync Now</button>
+                  <button id="sync-disconnect" type="button">Disconnect</button>
+                </div>
+              </div>
+              <p id="sync-meta" class="hint" style="margin-top: 10px;"></p>
+              <p id="sync-err" class="sync-err" hidden></p>
+            </div>
+          </section>
+        </div>
       </div>
-    </section>
 
-    <section id="page">
-      <h2>This page</h2>
-      <p id="page-status">Open an article on wol.jw.org.</p>
-    </section>
+      <p id="message" role="status"></p>
+    </div>
 
-    <p id="message" role="status"></p>
     <script src="lib/sql-wasm.js"></script>
     <script src="lib/backup.js"></script>
     <script src="lib/oauth.generated.js"></script>
