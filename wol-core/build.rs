@@ -22,14 +22,14 @@ const SECRET_KEYS: [&str; 2] = ["WOL_GOOGLE_CLIENT_SECRET", "CHROME_CLIENT_SECRE
 
 fn main() {
     println!("cargo:rerun-if-changed=build.rs");
+    println!("cargo:rerun-if-env-changed=WOL_ENV_FILE");
     for key in ID_KEYS.iter().chain(SECRET_KEYS.iter()) {
         println!("cargo:rerun-if-env-changed={key}");
     }
 
     let env_file = env_file_path();
-    if env_file.is_file() {
-        println!("cargo:rerun-if-changed={}", env_file.display());
-    }
+    // Always watch the .env path even if it does not exist yet so creating it triggers a rebuild.
+    println!("cargo:rerun-if-changed={}", env_file.display());
     let file_env = std::fs::read_to_string(&env_file)
         .map(|contents| parse_dotenv(&contents))
         .unwrap_or_default();

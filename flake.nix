@@ -88,12 +88,27 @@
             webExt
             pkgs.cargo
             pkgs.rustc
+            pkgs.pkg-config
             pkgs.jq
             pkgs.zip
             pkgs.unzip
             pkgs.resvg
             pkgs.rbw
             pkgs.bitwarden-cli
+          ] ++ pkgs.lib.optionals pkgs.stdenv.hostPlatform.isLinux [
+            pkgs.atk
+            pkgs.dbus
+            pkgs.gdk-pixbuf
+            pkgs.glib
+            pkgs.glib-networking
+            pkgs.gsettings-desktop-schemas
+            pkgs.gtk3
+            pkgs.libayatana-appindicator
+            pkgs.librsvg
+            pkgs.libsoup_3
+            pkgs.openssl
+            pkgs.pango
+            pkgs.webkitgtk_4_1
           ];
         };
 
