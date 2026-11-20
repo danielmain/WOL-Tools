@@ -782,11 +782,77 @@ pub fn build_injected_script_with_theme(
   syncThemeFromSettings();
   window.addEventListener("pageshow", syncThemeFromSettings);
 
+  function applyFontScale(scaleRaw) {{
+    if (!isWolPage()) return;
+    const scale = parseFloat(scaleRaw);
+    const id = "__wol_desktop_font_scale";
+    let el = document.getElementById(id);
+    if (!Number.isFinite(scale) || scale <= 0 || Math.abs(scale - 1) < 0.001) {{
+      if (el) el.remove();
+      return;
+    }}
+    const pct = Math.round(scale * 10000) / 100;
+    const cssText = ".scalableui {{ font-size: " + pct + "% !important; }}";
+    if (!el) {{
+      el = document.createElement("style");
+      el.id = id;
+      (document.head || document.documentElement).appendChild(el);
+    }}
+    if (el.textContent !== cssText) {{
+      el.textContent = cssText;
+    }}
+  }}
+
+  let lastSyncedRb = (cookieStore.rb && cookieStore.rb.value) || null;
+  let lastSyncedAudioPlayer = (cookieStore.audioPlayer && cookieStore.audioPlayer.value) || null;
+
+  function syncPreferencesFromCookies(evt) {{
+    if (!isWolPage()) return;
+    if (window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke) {{
+      window.__TAURI_INTERNALS__.invoke("get_cookies").then(function(cookies) {{
+        if (cookies && typeof cookies === "object") {{
+          const rbNow = cookies.rb || null;
+          const audioNow = cookies.audioPlayer || null;
+          const needsReload = Boolean(
+            evt && evt.persisted && (rbNow !== lastSyncedRb || audioNow !== lastSyncedAudioPlayer)
+          );
+          lastSyncedRb = rbNow;
+          lastSyncedAudioPlayer = audioNow;
+          if (typeof mergeCookieObj === "function") mergeCookieObj(cookies);
+          if (typeof persistCookies === "function") persistCookies();
+          applyFontScale(cookies.fontScale);
+          if (needsReload) {{
+            window.location.reload();
+          }}
+        }}
+      }}).catch(function() {{}});
+    }}
+  }}
+  window.addEventListener("pageshow", syncPreferencesFromCookies);
+
+  function interceptWolSettingsLinks() {{
+    if (!isWolPage()) return;
+    document.addEventListener("click", function(e) {{
+      const anchor = e.target && e.target.closest
+        ? e.target.closest('a[href*="/wol/pref/"]')
+        : null;
+      if (!anchor) return;
+      if (!(window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke)) return;
+      e.preventDefault();
+      e.stopPropagation();
+      window.__TAURI_INTERNALS__.invoke("open_manager_window", {{ tab: "settings" }}).catch(function(err) {{
+        console.warn("[__wolBridge] open_manager_window(settings) failed:", err);
+      }});
+    }}, true);
+  }}
+
   function onDomReady() {{
     applyTheme(currentTheme);
     syncThemeFromSettings();
+    syncPreferencesFromCookies();
     injectStyle();
     injectNavPill();
+    interceptWolSettingsLinks();
   }}
 
   if (document.readyState === "loading") {{

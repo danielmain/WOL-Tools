@@ -216,13 +216,93 @@
               </div>
 
               <div class="form-group">
-                <label for="setting-lang">Primary Language</label>
-                <select id="setting-lang" class="form-control"></select>
+                <label for="setting-lang-search">Primary Language <span id="setting-lang-current" class="lang-current-badge"></span></label>
+                <input id="setting-lang-search" type="search" class="form-control" placeholder="Search languages (e.g. español, English, es, E)..." autocomplete="off">
+                <div id="setting-lang-list" class="lang-picker-list" role="listbox" aria-label="Primary Language" hidden></div>
+                <select id="setting-lang" class="form-control" hidden aria-hidden="true"></select>
               </div>
 
               <div class="form-group" style="margin-bottom: 0;">
                 <label for="setting-home">Home URL</label>
                 <input id="setting-home" type="text" class="form-control" readonly>
+              </div>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div>
+                  <h3>Text</h3>
+                  <p class="card-subtitle">Controls WOL article font size and ruby annotations.</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="setting-font-scale">Font Size</label>
+                <select id="setting-font-scale" class="form-control">
+                  <option value="0.7">8 pt (70%)</option>
+                  <option value="0.78">9 pt (78%)</option>
+                  <option value="0.85">10 pt (85%)</option>
+                  <option value="1">12 pt (Default)</option>
+                  <option value="1.17">14 pt (117%)</option>
+                  <option value="1.38">17 pt (138%)</option>
+                  <option value="1.72">21 pt (172%)</option>
+                  <option value="1.9">23 pt (190%)</option>
+                  <option value="2.23">27 pt (223%)</option>
+                  <option value="2.67">32 pt (267%)</option>
+                  <option value="3.08">37 pt (308%)</option>
+                  <option value="3.7">44 pt (370%)</option>
+                </select>
+              </div>
+
+              <label class="checkbox-row" for="setting-ruby">
+                <input id="setting-ruby" type="checkbox">
+                <span>Show ruby characters (pinyin, Yale romanization, or furigana) when available</span>
+              </label>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div>
+                  <h3>Multimedia</h3>
+                  <p class="card-subtitle">Audio playback behavior on WOL publication and Bible pages.</p>
+                </div>
+              </div>
+
+              <label class="checkbox-row" for="setting-audio-player">
+                <input id="setting-audio-player" type="checkbox">
+                <span>Show audio player when audio is available</span>
+              </label>
+
+              <label class="checkbox-row" for="setting-audio-continuous">
+                <input id="setting-audio-continuous" type="checkbox">
+                <span>Automatically play the next audio file</span>
+              </label>
+            </section>
+
+            <section class="card">
+              <div class="card-title-row">
+                <div>
+                  <h3>Search</h3>
+                  <p class="card-subtitle">Default scope and result ordering for WOL searches.</p>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="setting-search-prox">Default Search Scope</label>
+                <select id="setting-search-prox" class="form-control">
+                  <option value="sen">In the same sentence</option>
+                  <option value="par">In the same paragraph (Default)</option>
+                  <option value="doc">In the same article</option>
+                </select>
+              </div>
+
+              <div class="form-group" style="margin-bottom: 0;">
+                <label for="setting-search-rank">Sort Results By</label>
+                <select id="setting-search-rank" class="form-control">
+                  <option value="occ">Frequency (Default)</option>
+                  <option value="newest">Newest first</option>
+                  <option value="oldest">Oldest first</option>
+                </select>
               </div>
             </section>
           </main>

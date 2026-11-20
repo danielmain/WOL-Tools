@@ -224,6 +224,7 @@ if (window.location.hash && window.location.hash.length > 1) {
 // ----------------------------------------------------
 // MOBILE SINGLE-WINDOW BACK NAVIGATION
 // ----------------------------------------------------
+let languageChanged = false;
 const mobileBackBtn = document.querySelector("#mobile-back-btn");
 if (mobileBackBtn) {
   const winLabel = window.__TAURI_INTERNALS__?.metadata?.currentWindow?.label;
@@ -231,7 +232,7 @@ if (mobileBackBtn) {
     mobileBackBtn.hidden = false;
   }
   mobileBackBtn.addEventListener("click", async () => {
-    if (window.history.length > 1) {
+    if (!languageChanged && window.history.length > 1) {
       window.history.back();
       return;
     }
@@ -565,21 +566,126 @@ async function initSettings() {
       } catch {}
     }
 
-    // Populate language dropdown
+    const settingLangSearch = document.getElementById("setting-lang-search");
+    const settingLangList = document.getElementById("setting-lang-list");
+    const settingLangCurrent = document.getElementById("setting-lang-current");
+
+    const resolveLangHome = (lang) =>
+      activeBaseHost && lang.home.startsWith("/")
+        ? `https://${activeBaseHost}${lang.home}`
+        : lang.home;
+
+    const updateCurrentLangBadge = (locale) => {
+      if (!settingLangCurrent) return;
+      const found = languagesList.find(
+        (l) => l.locale === locale || l.symbol === locale
+      );
+      settingLangCurrent.textContent = found
+        ? `${found.name} (${found.symbol})`
+        : locale || "";
+    };
+
+    // Populate hidden language select (kept as backing value for persistSettings)
     settingLang.innerHTML = "";
     for (const lang of languagesList) {
       const opt = document.createElement("option");
       opt.value = lang.locale;
       opt.dataset.region = lang.region;
       opt.dataset.symbol = lang.symbol;
-      opt.dataset.home = activeBaseHost && lang.home.startsWith("/")
-        ? `https://${activeBaseHost}${lang.home}`
-        : lang.home;
+      opt.dataset.home = resolveLangHome(lang);
       opt.textContent = `${lang.name} (${lang.symbol}) - ${lang.locale}`;
       if (lang.locale === currentSettings.language || lang.symbol === currentSettings.language) {
         opt.selected = true;
       }
       settingLang.appendChild(opt);
+    }
+    updateCurrentLangBadge(settingLang.value);
+
+    const renderLanguageList = (query) => {
+      if (!settingLangList) return;
+      const q = (query || "").trim().toLowerCase();
+      const filtered = q
+        ? languagesList.filter(
+            (l) =>
+              l.name.toLowerCase().includes(q) ||
+              l.locale.toLowerCase().includes(q) ||
+              l.symbol.toLowerCase().includes(q)
+          )
+        : languagesList;
+
+      settingLangList.innerHTML = "";
+      if (filtered.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "lang-picker-empty";
+        empty.textContent = "No matching languages found.";
+        settingLangList.appendChild(empty);
+        return;
+      }
+
+      const activeLocale = settingLang.value;
+      let selectedEl = null;
+      for (const lang of filtered) {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lang-picker-item";
+        const isSelected = lang.locale === activeLocale || lang.symbol === activeLocale;
+        if (isSelected) {
+          btn.classList.add("is-selected");
+          selectedEl = btn;
+        }
+        btn.setAttribute("role", "option");
+        btn.setAttribute("aria-selected", isSelected ? "true" : "false");
+
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = lang.name;
+
+        const metaSpan = document.createElement("span");
+        metaSpan.className = "lang-picker-meta";
+        metaSpan.textContent = `${lang.symbol} · ${lang.locale}`;
+
+        btn.appendChild(nameSpan);
+        btn.appendChild(metaSpan);
+        btn.addEventListener("click", async () => {
+          settingLang.value = lang.locale;
+          settingHome.value = resolveLangHome(lang);
+          updateCurrentLangBadge(lang.locale);
+          if (settingLangSearch) settingLangSearch.value = "";
+          settingLangList.hidden = true;
+          await persistSettings("Primary language updated. Click Back to Reader to open this library.");
+          languageChanged = true;
+        });
+        settingLangList.appendChild(btn);
+      }
+
+      if (selectedEl && !q) {
+        selectedEl.scrollIntoView({ block: "nearest" });
+      }
+    };
+
+    if (settingLangSearch && settingLangList) {
+      settingLangSearch.addEventListener("focus", () => {
+        renderLanguageList(settingLangSearch.value);
+        settingLangList.hidden = false;
+      });
+      settingLangSearch.addEventListener("input", () => {
+        renderLanguageList(settingLangSearch.value);
+        settingLangList.hidden = false;
+      });
+      settingLangSearch.addEventListener("keydown", (e) => {
+        if (e.key === "Escape") {
+          settingLangList.hidden = true;
+          settingLangSearch.blur();
+        }
+      });
+      document.addEventListener("click", (e) => {
+        if (
+          !settingLangList.hidden &&
+          e.target !== settingLangSearch &&
+          !settingLangList.contains(e.target)
+        ) {
+          settingLangList.hidden = true;
+        }
+      });
     }
 
     settingHome.value = currentSettings.home;
@@ -637,8 +743,77 @@ async function initSettings() {
       if (selected?.dataset.home) {
         settingHome.value = selected.dataset.home;
       }
-      await persistSettings("Primary language updated.");
+      await persistSettings("Primary language updated. Click Back to Reader to open this library.");
+      languageChanged = true;
     });
+
+    // WOL reading & behavior preferences (stored as WOL cookies in StateManager)
+    const cookies = (await tauriInvoke("get_cookies")) || {};
+    const settingFontScale = document.getElementById("setting-font-scale");
+    const settingRuby = document.getElementById("setting-ruby");
+    const settingAudioPlayer = document.getElementById("setting-audio-player");
+    const settingAudioContinuous = document.getElementById("setting-audio-continuous");
+    const settingSearchProx = document.getElementById("setting-search-prox");
+    const settingSearchRank = document.getElementById("setting-search-rank");
+
+    const updateWolCookie = async (name, value, message) => {
+      await tauriInvoke("set_cookie", { name, value });
+      if (message) setMessage(message);
+    };
+
+    if (settingFontScale) {
+      const rawScale = parseFloat(cookies.fontScale || "1");
+      let bestOption = "1";
+      let bestDiff = Number.MAX_VALUE;
+      for (const opt of settingFontScale.options) {
+        const diff = Math.abs(rawScale - parseFloat(opt.value));
+        if (diff < bestDiff) {
+          bestDiff = diff;
+          bestOption = opt.value;
+        }
+      }
+      settingFontScale.value = bestOption;
+      settingFontScale.addEventListener("change", () =>
+        updateWolCookie("fontScale", settingFontScale.value, "Font size updated.")
+      );
+    }
+
+    if (settingRuby) {
+      settingRuby.checked = cookies.rb === "true";
+      settingRuby.addEventListener("change", () =>
+        updateWolCookie("rb", settingRuby.checked ? "true" : "false", "Ruby characters preference updated.")
+      );
+    }
+
+    if (settingAudioPlayer) {
+      // WOL defaults audioPlayer to visible when unset
+      settingAudioPlayer.checked = cookies.audioPlayer !== "false";
+      settingAudioPlayer.addEventListener("change", () =>
+        updateWolCookie("audioPlayer", settingAudioPlayer.checked ? "true" : "false", "Audio player preference updated.")
+      );
+    }
+
+    if (settingAudioContinuous) {
+      // WOL defaults audioContinuousPlay to enabled when unset
+      settingAudioContinuous.checked = cookies.audioContinuousPlay !== "false";
+      settingAudioContinuous.addEventListener("change", () =>
+        updateWolCookie("audioContinuousPlay", settingAudioContinuous.checked ? "true" : "false", "Audio auto-play preference updated.")
+      );
+    }
+
+    if (settingSearchProx) {
+      settingSearchProx.value = ["sen", "par", "doc"].includes(cookies.prox) ? cookies.prox : "par";
+      settingSearchProx.addEventListener("change", () =>
+        updateWolCookie("prox", settingSearchProx.value, "Default search scope updated.")
+      );
+    }
+
+    if (settingSearchRank) {
+      settingSearchRank.value = ["occ", "newest", "oldest"].includes(cookies.rank) ? cookies.rank : "occ";
+      settingSearchRank.addEventListener("change", () =>
+        updateWolCookie("rank", settingSearchRank.value, "Search sort order updated.")
+      );
+    }
   } catch (err) {
     console.error("[Manager] Failed to init settings:", err);
   }
