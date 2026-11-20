@@ -277,7 +277,7 @@ pub fn build_injected_script_with_theme(
     if (document.getElementById("wol-highlights-css")) return;
     const style = document.createElement("style");
     style.id = "wol-highlights-css";
-    style.textContent = {css_json} + "\n.lnc-firstRunPopup {{ display: none !important; }}\n.article {{ max-width: none !important; padding: 1em 20px 5em 20px !important; }}\n";
+    style.textContent = {css_json} + "\n.lnc-firstRunPopup {{ display: none !important; }}\n.article {{ max-width: none !important; padding: 1em 20px 5em 20px !important; }}\na[aria-label=\"home\"], header a[href*=\"/wol/h/\"]:has(> span.icon), #regionFooter, .regionFooter {{ display: none !important; }}\nhtml, body {{ min-height: 100vh !important; min-height: 100dvh !important; width: 100% !important; max-width: none !important; margin: 0 !important; padding: 0 !important; }}\nbody {{ display: flex !important; flex-direction: column !important; }}\n#content, #regionMain, main {{ flex: 1 0 auto !important; display: flex !important; flex-direction: column !important; width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; box-sizing: border-box !important; }}\narticle, #article, .article {{ flex: 1 0 auto !important; width: 100% !important; max-width: none !important; box-sizing: border-box !important; margin-left: 0 !important; margin-right: 0 !important; margin-bottom: 0 !important; }}\n#todayNav, #todayNav nav, #todayNav .resultNavControls {{ width: 100% !important; max-width: none !important; margin-left: 0 !important; margin-right: 0 !important; box-sizing: border-box !important; }}\n#todayNav ul {{ display: flex !important; width: 100% !important; max-width: none !important; justify-content: space-between !important; box-sizing: border-box !important; }}\n#todayNav ul > li.todayNav {{ flex: 1 1 auto !important; text-align: center !important; }}\n";
     (document.head || document.documentElement).appendChild(style);
   }}
 
@@ -846,11 +846,46 @@ pub fn build_injected_script_with_theme(
     }}, true);
   }}
 
+  function redirectHomeToPublications() {{
+    if (window.top !== window.self || window.location.protocol !== "wol:") return false;
+    const path = window.location.pathname || "";
+    if (!/^\/?(?:[^/]+\/)?wol\/h\/r\d+\/lp-[^/]+\/?$/.test(path)) return false;
+    const pubLink = document.querySelector('#menuPublications a[href*="/wol/library/"]');
+    if (!pubLink) return false;
+    try {{
+      const target = new URL(pubLink.getAttribute("href"), window.location.href);
+      if (target.href !== window.location.href) {{
+        window.location.replace(target.href);
+        return true;
+      }}
+    }} catch (_) {{}}
+    return false;
+  }}
+
+  function unwrapElement(el) {{
+    if (!el || !el.parentNode) return;
+    const frag = document.createDocumentFragment();
+    while (el.firstChild) {{
+      frag.appendChild(el.firstChild);
+    }}
+    el.parentNode.replaceChild(frag, el);
+  }}
+
+  function cleanupWolLayout() {{
+    if (!isWolPage()) return;
+    document.querySelectorAll("#regionFooter, .regionFooter").forEach(function(el) {{
+      el.remove();
+    }});
+    unwrapElement(document.getElementById("wrapper"));
+  }}
+
   function onDomReady() {{
+    if (redirectHomeToPublications()) return;
     applyTheme(currentTheme);
     syncThemeFromSettings();
     syncPreferencesFromCookies();
     injectStyle();
+    cleanupWolLayout();
     injectNavPill();
     interceptWolSettingsLinks();
   }}
@@ -897,6 +932,9 @@ mod tests {
         assert!(script.contains(
             ".article { max-width: none !important; padding: 1em 20px 5em 20px !important; }"
         ));
+        assert!(script.contains(r#"a[aria-label=\"home\"]"#));
+        assert!(script.contains("#regionFooter, .regionFooter"));
+        assert!(script.contains("cleanupWolLayout"));
         assert!(script.contains("__wolCookiesShimInstalled"));
         assert!(script.contains("cookieConsent-FUNCTIONAL"));
         assert!(script.contains("wol-desktop-nav-pill"));

@@ -258,27 +258,92 @@ pub fn get_languages() -> Vec<LanguageInfo> {
     languages::all_languages().to_vec()
 }
 
+pub const DEFAULT_ENGLISH_START_URL: &str =
+    "https://wol.jw.org/en/wol/library/r1/lp-e/all-publications";
+
+fn wol_path_to_wol_url(path: &str, query: Option<&str>) -> Option<url::Url> {
+    let stripped = path.trim().trim_start_matches('/');
+    let (lang, rest) = stripped.split_once('/')?;
+    if lang.is_empty() || !rest.starts_with("wol/") {
+        return None;
+    }
+    let mut wol_url = format!("wol://{lang}/{rest}");
+    if let Some(q) = query {
+        if !q.is_empty() {
+            wol_url.push('?');
+            wol_url.push_str(q);
+        }
+    }
+    url::Url::parse(&wol_url).ok()
+}
+
+pub fn start_wol_url(settings: &AppSettings) -> Option<url::Url> {
+    if !settings.is_configured() {
+        return None;
+    }
+
+    if let Ok(parsed) = url::Url::parse(settings.home.trim()) {
+        let path = parsed.path().trim_end_matches('/');
+        if path == "/en/wol/h/r1/lp-e" {
+            return url::Url::parse("wol://en/wol/library/r1/lp-e/all-publications").ok();
+        }
+        if let Some(target) = wol_path_to_wol_url(path, parsed.query()) {
+            return Some(target);
+        }
+    }
+
+    let lang_info = languages::find_by_locale(&settings.language)
+        .or_else(|| languages::find_by_symbol(&settings.language));
+    let lib = lang_info
+        .map(|l| l.lib.as_str())
+        .unwrap_or(&settings.language);
+
+    let wol_url = format!(
+        "wol://{}/wol/h/r{}/lp-{}",
+        settings.language, settings.region, lib
+    );
+    url::Url::parse(&wol_url).ok()
+}
+
+pub fn start_wol_url_with_cache(
+    settings: &AppSettings,
+    cache: Option<&DiskCache>,
+) -> Option<url::Url> {
+    let url = start_wol_url(settings)?;
+    if url.path().starts_with("/wol/h/") {
+        if let (Some(cache), Some(base_host)) = (cache, settings.base_host.as_deref()) {
+            if let Ok(canonical) = map_wol_uri_to_canonical(&url, base_host) {
+                if let Ok(Some((_entry, bytes))) = cache.get(&canonical) {
+                    if let Ok(html) = std::str::from_utf8(&bytes) {
+                        let chrome = wol_core::dom::parse_chrome(html);
+                        if let Some(pub_entry) = chrome
+                            .menu
+                            .into_iter()
+                            .find(|e| e.id == "menuPublications" || e.href.contains("/wol/library/"))
+                        {
+                            if let Some(lib_url) = wol_path_to_wol_url(&pub_entry.href, None) {
+                                return Some(lib_url);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Some(url)
+}
+
 #[tauri::command]
-pub fn navigate_home(app: AppHandle, state_mgr: State<'_, StateManager>) -> Result<(), String> {
+pub fn navigate_home(
+    app: AppHandle,
+    state_mgr: State<'_, StateManager>,
+    cache: State<'_, DiskCache>,
+) -> Result<(), String> {
     let settings = state_mgr.get_settings().map_err(|e| e.to_string())?;
     if let Some(main_window) = app.get_webview_window("main") {
-        if !settings.is_configured() {
-            if let Ok(parsed) = url::Url::parse("tauri://localhost/setup.html") {
-                let _ = main_window.navigate(parsed);
-            }
-            return Ok(());
-        }
-        let lang_info = languages::find_by_locale(&settings.language)
-            .or_else(|| languages::find_by_symbol(&settings.language));
-        let lib = lang_info
-            .map(|l| l.lib.as_str())
-            .unwrap_or(&settings.language);
-
-        let wol_url = format!(
-            "wol://{}/wol/h/r{}/lp-{}",
-            settings.language, settings.region, lib
-        );
-        if let Ok(parsed) = url::Url::parse(&wol_url) {
+        if let Some(parsed) = start_wol_url_with_cache(&settings, Some(&cache)) {
+            let _ = main_window.navigate(parsed);
+        } else if let Ok(parsed) = url::Url::parse("tauri://localhost/setup.html") {
             let _ = main_window.navigate(parsed);
         }
     }
@@ -683,5 +748,77 @@ mod tests {
         assert!(normalize_user_url("").is_err());
         assert!(normalize_user_url("ftp://example.org/es").is_err());
         assert!(normalize_user_url("localhost").is_err());
+    }
+
+    #[test]
+    fn start_wol_url_uses_all_publications_for_english() {
+        let en_all_pubs = AppSettings {
+            base_host: Some("wol.jw.org".to_string()),
+            language: "en".to_string(),
+            region: 1,
+            home: DEFAULT_ENGLISH_START_URL.to_string(),
+            ..Default::default()
+        };
+        assert_eq!(
+            start_wol_url(&en_all_pubs).unwrap().as_str(),
+            "wol://en/wol/library/r1/lp-e/all-publications"
+        );
+
+        let legacy_en_home = AppSettings {
+            base_host: Some("wol.jw.org".to_string()),
+            language: "en".to_string(),
+            region: 1,
+            home: "https://wol.jw.org/en/wol/h/r1/lp-e".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(
+            start_wol_url(&legacy_en_home).unwrap().as_str(),
+            "wol://en/wol/library/r1/lp-e/all-publications"
+        );
+
+        let es_home = AppSettings {
+            base_host: Some("wol.jw.org".to_string()),
+            language: "es".to_string(),
+            region: 4,
+            home: "https://wol.jw.org/es/wol/h/r4/lp-s".to_string(),
+            ..Default::default()
+        };
+        assert_eq!(
+            start_wol_url(&es_home).unwrap().as_str(),
+            "wol://es/wol/h/r4/lp-s"
+        );
+
+        assert!(start_wol_url(&AppSettings::default()).is_none());
+    }
+
+    #[test]
+    fn start_wol_url_with_cache_resolves_localized_publications_from_cached_home() {
+        let dir = std::env::temp_dir().join(format!(
+            "wol_desktop_start_url_test_{}",
+            std::process::id()
+        ));
+        let _ = std::fs::remove_dir_all(&dir);
+        let cache = DiskCache::open(&dir, 1024 * 1024).unwrap();
+        let es_home_url = CanonicalUrl::new("https://wol.jw.org/es/wol/h/r4/lp-s".to_string());
+        let html = br#"<html><body><div id="menuBar"><ul class="menu"><li id="menuPublications"><a href="/es/wol/library/r4/lp-s/biblioteca">Publicaciones</a></li></ul></div></body></html>"#;
+        cache
+            .put(&es_home_url, "text/html", None, None, html)
+            .unwrap();
+
+        let es_settings = AppSettings {
+            base_host: Some("wol.jw.org".to_string()),
+            language: "es".to_string(),
+            region: 4,
+            home: "https://wol.jw.org/es/wol/h/r4/lp-s".to_string(),
+            ..Default::default()
+        };
+
+        assert_eq!(
+            start_wol_url_with_cache(&es_settings, Some(&cache))
+                .unwrap()
+                .as_str(),
+            "wol://es/wol/library/r4/lp-s/biblioteca"
+        );
+        let _ = std::fs::remove_dir_all(&dir);
     }
 }

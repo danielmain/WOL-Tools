@@ -140,7 +140,14 @@ pub fn run_app() {
                 let state_mgr = StateManager::load_or_init(&app_data_dir).map_err(|err| {
                     std::io::Error::other(format!("Failed to init state manager: {err}"))
                 })?;
-                let settings = state_mgr.get_settings().unwrap_or_default();
+                let mut settings = state_mgr.get_settings().unwrap_or_default();
+                if !settings.is_configured() {
+                    settings.base_host = Some("wol.jw.org".to_string());
+                    settings.language = "en".to_string();
+                    settings.region = 1;
+                    settings.home = commands::DEFAULT_ENGLISH_START_URL.to_string();
+                    let _ = state_mgr.set_settings(settings.clone());
+                }
 
                 let cache_dir = app_data_dir.join("cache");
                 let cache = DiskCache::open(&cache_dir, settings.cache_cap_bytes).map_err(|err| {
@@ -173,14 +180,14 @@ pub fn run_app() {
                 let _ = protocol_handler.set(handler);
 
                 app.manage(state_mgr);
-                app.manage(cache);
+                app.manage(cache.clone());
                 app.manage(crawler);
                 app.manage(sync_mgr.clone());
 
                 #[cfg(desktop)]
                 install_menu(app)?;
                 install_sync_listener(app, &sync_mgr);
-                build_main_window(app, &settings, &init_script)?;
+                build_main_window(app, &settings, &cache, &init_script)?;
                 spawn_background_sync(app, &sync_mgr);
                 Ok(())
             }
@@ -268,9 +275,10 @@ fn install_sync_listener(app: &tauri::App, sync_mgr: &SyncManager) {
 fn build_main_window(
     app: &tauri::App,
     settings: &state::AppSettings,
+    cache: &DiskCache,
     init_script: &str,
 ) -> tauri::Result<()> {
-    let initial_url = initial_webview_url(settings);
+    let initial_url = initial_webview_url(settings, Some(cache));
     let navigation_app = app.handle().clone();
     #[cfg_attr(mobile, allow(unused_mut))]
     let mut builder = WebviewWindowBuilder::new(app, "main", initial_url);
@@ -317,21 +325,13 @@ fn build_main_window(
     Ok(())
 }
 
-fn initial_webview_url(settings: &state::AppSettings) -> WebviewUrl {
-    if !settings.is_configured() {
-        return WebviewUrl::App("setup.html".into());
-    }
-    let lib = languages::find_by_locale(&settings.language)
-        .or_else(|| languages::find_by_symbol(&settings.language))
-        .map(|l| l.lib.clone())
-        .unwrap_or_else(|| settings.language.clone());
-    let start_wol_url = format!(
-        "wol://{}/wol/h/r{}/lp-{}",
-        settings.language, settings.region, lib
-    );
-    match url::Url::parse(&start_wol_url) {
-        Ok(parsed) => WebviewUrl::CustomProtocol(parsed),
-        Err(_) => WebviewUrl::App("setup.html".into()),
+fn initial_webview_url(
+    settings: &state::AppSettings,
+    cache: Option<&DiskCache>,
+) -> WebviewUrl {
+    match commands::start_wol_url_with_cache(settings, cache) {
+        Some(parsed) => WebviewUrl::CustomProtocol(parsed),
+        None => WebviewUrl::App("setup.html".into()),
     }
 }
 
