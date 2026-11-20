@@ -4,6 +4,42 @@
 
 ---
 
+### Local commands (root `package.json` → `scripts/ios.js`)
+
+```bash
+npm run ios              # cargo tauri ios dev (prefers the most recent iPhone; --device <udid|name>)
+npm run ios:sim          # dev on a simulator (needs the matching iphonesimulator runtime)
+npm run ios:build        # signed release .ipa → wol-desktop/gen/apple/build/arm64/
+npm run ios:build:debug  # debug .ipa
+npm run ios:install      # install the newest .ipa via devicectl (no rebuild)
+npm run ios:launch       # launch com.offlinewol.desktop (fails if the iPhone is locked)
+npm run ios:run          # build + install + launch
+npm run ios:xcode        # `tauri ios dev --open` → Xcode, CLI stays attached (see below)
+npm run ios:init         # regenerate gen/apple
+```
+
+Two traps this script exists to paper over:
+
+1. **A build launched inside Xcode.app needs a running Tauri CLI.** Xcode's `Build Rust Code`
+   phase runs `cargo tauri ios xcode-script`, which reads
+   `gen/apple/.tauri/cli-options-server.json`; without a live `tauri ios dev` / `ios build` that
+   file is absent and the phase fails with *"the `tauri ios dev` or `tauri ios build` command must
+   be running while Xcode builds the app"*. So `npm run ios:xcode` starts
+   `tauri ios dev --open` (CLI + Xcode) instead of merely opening the project file.
+2. **The device must be unlocked and reachable.** `tauri ios dev` passes
+   `-destination id=<udid>` to `xcodebuild`; a locked iPad dies after ~30 s with *"Timed out
+   waiting for all destinations matching the provided destination specifier"*. `scripts/ios.js`
+   orders candidates iPhone-first / most-recently-connected (devicectl lists arbitrarily) and logs
+   the device it picked — override with `--device <udid|name>`.
+
+`scripts/ios.js` cleans the environment (`/usr/bin/clang`, no `NIX_*`, rustup toolchain
+before Homebrew `cargo`), because a Nix devshell breaks iOS cross-compilation. It also refuses
+to build while another build holds Xcode's `DerivedData/…/XCBuildData/build.db` — Xcode allows
+one writer, and the GUI build never spawns an `xcodebuild` process, so the lock is probed with
+`lsof`.
+
+---
+
 ## 1. Why Tauri 2 Mobile Fits This Repo
 
 - **`wol-core/` is already GUI-agnostic** (zero Tauri or desktop dependencies). SQLite metadata + disk blob caching, `wol://` protocol handling, HTML URL rewriting, `.jwlibrary` import/export, tokenization, and sync all compile for `aarch64-apple-ios`.
@@ -127,8 +163,7 @@ The main reason Safari iOS feels poor is touch text-selection and viewport ergon
 - **Simulator note**:
   - `cargo tauri ios build --target aarch64-sim` currently stops at `Xcode Simulator SDK 27.2 is not installed` because Xcode 27.2 has `iphonesimulator27.2` SDK while `xcrun simctl list runtimes` has `iOS 27.0` (27.2 runtime not yet downloaded).
 
-### Completed (Session 6 — Signed Device Build & Installation)
-- **Signed `.ipa` Build**:
+### Completed (Session 6 — Signed Device Build & Installation)- **Signed `.ipa` Build**:
   - Verified `cd wol-desktop && PATH="$HOME/.rustup/toolchains/stable-aarch64-apple-darwin/bin:$PATH" cargo tauri ios build --debug --target aarch64 --ci` builds and signs `wol-desktop/gen/apple/build/arm64/OfflineWOL.ipa` cleanly with team `7H7P2FNJK6`.
 - **Device Installation**:
   - Installed `OfflineWOL.app` (`com.offlinewol.desktop`) onto the connected physical device `iPhone Air - Dani` (`00008150-000E41E12E62401C`) via `xcrun devicectl device install app --device 00008150-000E41E12E62401C wol-desktop/gen/apple/build/arm64/OfflineWOL.ipa`.

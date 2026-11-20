@@ -113,6 +113,23 @@ Key architectural decisions (do not reopen without cause):
 7. **Reuse the JS, shim the APIs.** `tokenize.js`, `highlight.js`, `backup.js`, `sql-wasm.*`, and `content.css` are reused; browser extension `storage`/`tabs`/`runtime` calls are shimmed via `window.__wolBridge`.
 
 ### Desktop Gotchas
+- **iOS builds go through `npm run ios*` (`scripts/ios.js`), not raw `cargo tauri`.** Xcode's
+  `Build Rust Code` phase runs with a sanitized PATH, so `cargo-tauri` (an `npx @tauri-apps/cli`
+  shim) failed with `exec: npx: not found` until the phase prepended `~/.cargo/bin` plus the node
+  dirs (`/opt/homebrew/bin`, `~/.npm-packages/bin`); the rustup toolchain dir must stay **before**
+  Homebrew `cargo` (which has no iOS std). Building from **Xcode.app alone cannot work**: the
+  phase calls `tauri ios xcode-script`, which reads `gen/apple/.tauri/cli-options-server.json`
+  and fails with *"the `tauri ios dev` or `tauri ios build` command must be running while Xcode
+  builds the app"* — use `npm run ios` or `npm run ios:xcode` (= `tauri ios dev --open`) and keep
+  it running. The Xcode notice "Run script build phase 'Build Rust
+  Code' will be run during every build" is expected (`basedOnDependencyAnalysis: false`) — cargo
+  does the incremental work; it is a notice, not an error. Never run a CLI build and an Xcode
+  build at the same time: both write `DerivedData/wol-desktop-*/…/XCBuildData/build.db`, and the
+  second one dies with `database is locked` (`scripts/ios.js` probes the lock with `lsof` first).
+- **A locked device makes `tauri ios dev` fail after a ~30 s timeout, not immediately:**
+  `xcodebuild: error: Timed out waiting for all destinations matching the provided destination
+  specifier` / `The device needs to be unlocked to continue`. Unlock it, keep it cabled, or pick
+  another one with `npm run ios -- --device <udid|name>` (the script lists what it considered).
 - **The shipped Google OAuth client is compiled in, not read from the environment.**
   `wol-core/build.rs` reads `WOL_GOOGLE_CLIENT_ID`/`WOL_GOOGLE_CLIENT_SECRET` (or `CHROME_*`) from
   the build environment, else the workspace `.env` (`WOL_ENV_FILE` overrides the path), and emits
