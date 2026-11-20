@@ -195,23 +195,41 @@ textarea.wol-note-field.wol-has-note,
 }
 
 @media (prefers-color-scheme: dark) {
-  textarea.wol-note-field,
-  .gen-field textarea {
+  html:not([data-wol-theme="light"]) textarea.wol-note-field,
+  html:not([data-wol-theme="light"]) .gen-field textarea {
     color: #e6edf3 !important;
     background-color: #1e2228 !important;
     border-color: #3d444d !important;
   }
-  textarea.wol-note-field:focus,
-  .gen-field textarea:focus {
+  html:not([data-wol-theme="light"]) textarea.wol-note-field:focus,
+  html:not([data-wol-theme="light"]) .gen-field textarea:focus {
     background-color: #252a32 !important;
     border-color: #58a6ff !important;
     box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25) !important;
   }
-  textarea.wol-note-field.wol-has-note,
-  .gen-field textarea.wol-has-note {
+  html:not([data-wol-theme="light"]) textarea.wol-note-field.wol-has-note,
+  html:not([data-wol-theme="light"]) .gen-field textarea.wol-has-note {
     border-inline-start-color: #58a6ff !important;
     background-color: #252a32 !important;
   }
+}
+
+html[data-wol-theme="dark"] textarea.wol-note-field,
+html[data-wol-theme="dark"] .gen-field textarea {
+  color: #e6edf3 !important;
+  background-color: #1e2228 !important;
+  border-color: #3d444d !important;
+}
+html[data-wol-theme="dark"] textarea.wol-note-field:focus,
+html[data-wol-theme="dark"] .gen-field textarea:focus {
+  background-color: #252a32 !important;
+  border-color: #58a6ff !important;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.25) !important;
+}
+html[data-wol-theme="dark"] textarea.wol-note-field.wol-has-note,
+html[data-wol-theme="dark"] .gen-field textarea.wol-has-note {
+  border-inline-start-color: #58a6ff !important;
+  background-color: #252a32 !important;
 }
 
 .wol-note-card {
@@ -236,7 +254,7 @@ textarea.wol-note-field.wol-has-note,
 }
 
 @media (prefers-color-scheme: dark) {
-  .wol-note-card {
+  html:not([data-wol-theme="light"]) .wol-note-card {
     background-color: #1e2228 !important;
     border-color: #3d444d !important;
     border-inline-start-color: #58a6ff !important;
@@ -244,6 +262,7 @@ textarea.wol-note-field.wol-has-note,
   }
 }
 
+html[data-wol-theme="dark"] .wol-note-card,
 body.wol-dark-mode .wol-note-card {
   background-color: #1e2228 !important;
   border-color: #3d444d !important;
@@ -369,16 +388,19 @@ body.wol-dark-mode .wol-note-card {
 .wol-note-card .wol-note-error { flex-basis: 100%; color: #b42318; }
 
 @media (prefers-color-scheme: dark) {
-  .wol-note-card .wol-note-edit input,
-  .wol-note-card .wol-note-edit textarea,
-  .wol-note-card .wol-note-edit .wol-note-cancel {
+  html:not([data-wol-theme="light"]) .wol-note-card .wol-note-edit input,
+  html:not([data-wol-theme="light"]) .wol-note-card .wol-note-edit textarea,
+  html:not([data-wol-theme="light"]) .wol-note-card .wol-note-edit .wol-note-cancel {
     background: #252a32 !important;
     border-color: #596575 !important;
     color: #e6edf3 !important;
   }
-  .wol-note-card .wol-note-error { color: #ff9b91; }
+  html:not([data-wol-theme="light"]) .wol-note-card .wol-note-error { color: #ff9b91; }
 }
 
+html[data-wol-theme="dark"] .wol-note-card .wol-note-edit input,
+html[data-wol-theme="dark"] .wol-note-card .wol-note-edit textarea,
+html[data-wol-theme="dark"] .wol-note-card .wol-note-edit .wol-note-cancel,
 body.wol-dark-mode .wol-note-card .wol-note-edit input,
 body.wol-dark-mode .wol-note-card .wol-note-edit textarea,
 body.wol-dark-mode .wol-note-card .wol-note-edit .wol-note-cancel {
@@ -386,4 +408,5 @@ body.wol-dark-mode .wol-note-card .wol-note-edit .wol-note-cancel {
   border-color: #596575 !important;
   color: #e6edf3 !important;
 }
+html[data-wol-theme="dark"] .wol-note-card .wol-note-error,
 body.wol-dark-mode .wol-note-card .wol-note-error { color: #ff9b91; }

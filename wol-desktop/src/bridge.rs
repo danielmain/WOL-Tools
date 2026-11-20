@@ -265,7 +265,15 @@ pub fn build_injected_script_with_theme(
   window.chrome = window.__wolBridge;
   window.browser = window.__wolBridge;
 
+  function isWolPage() {{
+    const proto = window.location.protocol;
+    const host = window.location.hostname;
+    if (host === "tauri.localhost" || host.endsWith(".tauri.localhost")) return false;
+    return proto === "wol:" || proto === "http:" || proto === "https:";
+  }}
+
   function injectStyle() {{
+    if (!isWolPage()) return;
     if (document.getElementById("wol-highlights-css")) return;
     const style = document.createElement("style");
     style.id = "wol-highlights-css";
@@ -273,16 +281,13 @@ pub fn build_injected_script_with_theme(
     (document.head || document.documentElement).appendChild(style);
   }}
 
-  function injectNavPill() {{
-    if (window.top !== window.self) return;
-    if (!["wol:", "http:", "https:"].includes(window.location.protocol)) return;
-    if (document.getElementById("wol-desktop-nav-pill")) return;
-
-    if (!document.getElementById("wol-desktop-nav-css")) {{
-      const navStyle = document.createElement("style");
-      navStyle.id = "wol-desktop-nav-css";
-      navStyle.classList.add("darkreader");
-      navStyle.textContent = `
+  function ensureNavStyle() {{
+    if (window.top !== window.self || !isWolPage()) return;
+    if (document.getElementById("wol-desktop-nav-css")) return;
+    const navStyle = document.createElement("style");
+    navStyle.id = "wol-desktop-nav-css";
+    navStyle.classList.add("darkreader");
+    navStyle.textContent = `
         #wol-desktop-nav-pill {{
           position: fixed;
           top: 7px;
@@ -411,8 +416,14 @@ pub fn build_injected_script_with_theme(
           color: #93c5fd;
         }}
       `;
-      (document.head || document.documentElement).appendChild(navStyle);
-    }}
+    const target = document.head || document.documentElement;
+    if (target) target.appendChild(navStyle);
+  }}
+
+  function injectNavPill() {{
+    if (window.top !== window.self || !isWolPage()) return;
+    ensureNavStyle();
+    if (document.getElementById("wol-desktop-nav-pill")) return;
 
     const pill = document.createElement("div");
     pill.id = "wol-desktop-nav-pill";
@@ -648,7 +659,31 @@ pub fn build_injected_script_with_theme(
 
   // --- Dark Reader Theme Controller ---
   let currentTheme = "{initial_theme_str}";
+  try {{
+    const cachedTheme = isWolPage() && window.localStorage && window.localStorage.getItem("__wol_theme");
+    if (cachedTheme === "dark" || cachedTheme === "light" || cachedTheme === "system") {{
+      currentTheme = cachedTheme;
+    }}
+  }} catch (e) {{}}
   const darkMediaQuery = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
+
+  function ensureDarkPreload(enable) {{
+    const existing = document.getElementById("wol-dark-preload");
+    if (!enable) {{
+      if (existing) existing.remove();
+      return;
+    }}
+    if (existing) return;
+    const target = document.documentElement || document.head;
+    if (!target) return;
+    const style = document.createElement("style");
+    style.id = "wol-dark-preload";
+    style.textContent = [
+      "html[data-wol-theme=\"dark\"] {{ background-color: #181a1b !important; color-scheme: dark !important; }}",
+      "html[data-wol-theme=\"dark\"] body, html[data-wol-theme=\"dark\"] #main, html[data-wol-theme=\"dark\"] #content, html[data-wol-theme=\"dark\"] #article {{ background-color: #181a1b !important; color: #e8e6e3 !important; }}"
+    ].join("\n");
+    target.appendChild(style);
+  }}
 
   function resolveIsDark(mode) {{
     if (mode === "dark") return true;
@@ -658,10 +693,30 @@ pub fn build_injected_script_with_theme(
 
   function applyTheme(mode) {{
     currentTheme = mode || "system";
+    if (!isWolPage()) {{
+      ensureDarkPreload(false);
+      if (document.documentElement) {{
+        document.documentElement.removeAttribute("data-wol-theme");
+      }}
+      if (typeof DarkReader !== "undefined") {{
+        try {{
+          DarkReader.disable();
+        }} catch (e) {{
+          console.warn("[WOL Theme] DarkReader error:", e);
+        }}
+      }}
+      return;
+    }}
+    try {{
+      if (window.localStorage) {{
+        window.localStorage.setItem("__wol_theme", currentTheme);
+      }}
+    }} catch (e) {{}}
     const isDark = resolveIsDark(currentTheme);
     if (document.documentElement) {{
       document.documentElement.setAttribute("data-wol-theme", isDark ? "dark" : "light");
     }}
+    ensureDarkPreload(isDark);
     if (typeof DarkReader === "undefined") return;
     try {{
       if (isDark) {{
@@ -672,14 +727,34 @@ pub fn build_injected_script_with_theme(
           {{ brightness: 100, contrast: 95, sepia: 0 }},
           {{
             css: [
-              "mark.wol-hl {{ color: #1a1a1a !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl {{ color: #1a1a1a !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl a {{ color: #1a4b84 !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c1 {{ background-color: #ffe36b !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c2 {{ background-color: #b6e89a !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c3 {{ background-color: #a9d4fb !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c4 {{ background-color: #f7b4c4 !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c5 {{ background-color: #ffc48a !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c6 {{ background-color: #d8c0f8 !important; }}",
+              "html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c0 {{ background-color: #e6e6e6 !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-1 {{ background-color: #ffe36b !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-2 {{ background-color: #b6e89a !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-3 {{ background-color: #a9d4fb !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-4 {{ background-color: #f7b4c4 !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-5 {{ background-color: #ffc48a !important; }}",
+              "html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-6 {{ background-color: #d8c0f8 !important; }}",
               ".wol-hl-toolbar {{ background: #1e2228 !important; border-color: rgba(255, 255, 255, 0.14) !important; }}",
               ".wol-hl-btn-remove {{ background: #2c313a !important; color: #e6edf3 !important; border-color: rgba(255, 255, 255, 0.14) !important; }}"
             ].join("\n")
           }}
         );
+        requestAnimationFrame(function() {{
+          if (document.querySelector(".darkreader--override, .darkreader--fallback")) {{
+            ensureDarkPreload(false);
+          }}
+        }});
       }} else {{
         DarkReader.disable();
+        ensureNavStyle();
       }}
     }} catch (e) {{
       console.warn("[WOL Theme] DarkReader error:", e);
@@ -687,6 +762,15 @@ pub fn build_injected_script_with_theme(
   }}
 
   window.__wolApplyTheme = applyTheme;
+  function syncThemeFromSettings() {{
+    if (!isWolPage()) return;
+    if (!(window.__TAURI_INTERNALS__ && window.__TAURI_INTERNALS__.invoke)) return;
+    window.__TAURI_INTERNALS__.invoke("get_settings").then(function(s) {{
+      if (s && s.theme) {{
+        applyTheme(s.theme);
+      }}
+    }}).catch(function() {{}});
+  }}
   if (darkMediaQuery && typeof darkMediaQuery.addEventListener === "function") {{
     darkMediaQuery.addEventListener("change", function() {{
       if (currentTheme === "system") {{
@@ -695,9 +779,12 @@ pub fn build_injected_script_with_theme(
     }});
   }}
   applyTheme(currentTheme);
+  syncThemeFromSettings();
+  window.addEventListener("pageshow", syncThemeFromSettings);
 
   function onDomReady() {{
     applyTheme(currentTheme);
+    syncThemeFromSettings();
     injectStyle();
     injectNavPill();
   }}
@@ -757,5 +844,38 @@ mod tests {
         assert!(dark_script.contains("let currentTheme = \"dark\";"));
         let light_script = build_injected_script_with_theme(None, None, ThemeMode::Light);
         assert!(light_script.contains("let currentTheme = \"light\";"));
+        assert!(light_script.contains("isWolPage()"));
+        assert!(light_script.contains("tauri.localhost"));
+    }
+
+    #[test]
+    fn dark_mode_preserves_highlight_colors() {
+        let script = build_injected_script_with_theme(None, None, ThemeMode::Dark);
+        for (idx, hex) in [
+            ("1", "#ffe36b"),
+            ("2", "#b6e89a"),
+            ("3", "#a9d4fb"),
+            ("4", "#f7b4c4"),
+            ("5", "#ffc48a"),
+            ("6", "#d8c0f8"),
+        ] {
+            let mark_rule = format!(
+                r#"html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c{idx} {{ background-color: {hex} !important; }}"#
+            );
+            let btn_rule = format!(
+                r#"html[data-wol-theme=\"dark\"] .wol-hl-toolbar .wol-hl-btn-{idx} {{ background-color: {hex} !important; }}"#
+            );
+            assert!(script.contains(&mark_rule), "missing {mark_rule}");
+            assert!(script.contains(&btn_rule), "missing {btn_rule}");
+        }
+        assert!(script.contains(
+            r#"html[data-wol-theme=\"dark\"] mark.wol-hl.wol-c0 { background-color: #e6e6e6 !important; }"#
+        ));
+        assert!(script.contains(
+            r#"html[data-wol-theme=\"dark\"] mark.wol-hl { color: #1a1a1a !important; }"#
+        ));
+        assert!(script.contains(
+            r#"html[data-wol-theme=\"dark\"] mark.wol-hl a { color: #1a4b84 !important; }"#
+        ));
     }
 }
